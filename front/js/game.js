@@ -13,23 +13,20 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
-            //cell.addEventListener('mouseenter', (event) => {displayPossibleMove(cell)});
             cell.addEventListener('click', () => movePlayer(cell));
         } else {
             cell.classList.add('barrier-cell');
+            cell.addEventListener('mouseenter', (event) => {
+                event.preventDefault();
+                handleCellAction(cell, i, j, 'displayBarrier');
+            });
+            cell.addEventListener('mouseleave', (event) => {
+                event.preventDefault();
+                handleCellAction(cell, i, j, 'hideBarrier');
+            });
             cell.addEventListener('click', function (event) {
                 event.preventDefault();
-                if (i % 2 === 0 && j % 2 !== 0) {
-                    if (i === 16)
-                        toggleBarrier(cell, document.getElementById(`cell-${i - 1}-${j}`), document.getElementById(`cell-${i - 2}-${j}`), true);
-                    else
-                        toggleBarrier(cell, document.getElementById(`cell-${i + 1}-${j}`), document.getElementById(`cell-${i + 2}-${j}`), true);
-                } else if (j % 2 === 0 && i % 2 !== 0) {
-                    if (j === 16)
-                        toggleBarrier(document.getElementById(`cell-${i}-${j - 2}`), document.getElementById(`cell-${i}-${j - 1}`), cell, false);
-                    else
-                        toggleBarrier(cell, document.getElementById(`cell-${i}-${j + 1}`), document.getElementById(`cell-${i}-${j + 2}`), false);
-                }
+                handleCellAction(cell, i, j, 'lockBarrier');
             });
         }
 
@@ -53,6 +50,31 @@ function createPlayer(className, bgColor) {
     return player;
 }
 
+function handleCellAction(cell, i, j, actionType) {
+    let cell2, cell3;
+    let isVertical = i % 2 === 0 && j % 2 !== 0;
+    let isHorizontal = j % 2 === 0 && i % 2 !== 0;
+    let isEdge = (isVertical && i === 16) || (isHorizontal && j === 16);
+
+    if (isVertical) {
+        cell2 = document.getElementById(`cell-${isEdge ? i - 1 : i + 1}-${j}`);
+        cell3 = document.getElementById(`cell-${isEdge ? i - 2 : i + 2}-${j}`);
+    } else if (isHorizontal) {
+        cell2 = document.getElementById(`cell-${i}-${isEdge ? j - 1 : j + 1}`);
+        cell3 = document.getElementById(`cell-${i}-${isEdge ? j - 2 : j + 2}`);
+    }
+
+    if (cell2 && cell3) {
+        if (actionType === 'displayBarrier') {
+            displayPossibleToggleBarrier(cell, cell2, cell3, isVertical);
+        } else if (actionType === 'hideBarrier') {
+            hidePossibleToggleBarrier(cell, cell2, cell3);
+        } else if (actionType === 'lockBarrier') {
+            lockBarrier(cell, cell2, cell3, isVertical);
+        }
+    }
+}
+
 function displayPossibleMove() {
     console.log("Appel de la méthode displayPossibleMove");
     if (!gameActive) return;
@@ -72,11 +94,39 @@ function hidePossibleMove() {
 
     const playerCell = currentPlayer.parentElement;
 
-    const neighborsList = getNeighborsWithBarriers(playerCell);
+    const neighborsList = getGeographicNeighbors(playerCell);
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
         //console.log("Dans la fonction : " + neighbor.id);
     }
+}
+
+function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical) {
+    toggleBarrier(targetCell, targetCell2, targetCell3, isVertical);
+}
+
+function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
+    if(!targetCell.classList.contains('locked') && !targetCell2.classList.contains('locked') && !targetCell3.classList.contains('locked')) {
+        var taretCellChild = targetCell.querySelector('div');
+        var taretCell2Child = targetCell2.querySelector('div');
+        var taretCell3Child = targetCell3.querySelector('div');
+        targetCell.removeChild(taretCellChild);
+        targetCell2.removeChild(taretCell2Child);
+        targetCell3.removeChild(taretCell3Child);
+    }
+    
+}
+
+function lockBarrier(targetCell, targetCell2, targetCell3) {
+    hidePossibleMove();
+
+    targetCell.classList.add('locked');
+    targetCell2.classList.add('locked');
+    targetCell3.classList.add('locked');
+
+    updatePathLength();
+    turn();
+    displayPossibleMove();
 }
 
 function movePlayer(targetCell) {
@@ -270,7 +320,6 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.backgroundImage = 'url("img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
         }
-        hidePossibleMove();
         cell.appendChild(barrier);
         if (cell2) {
             const barrier2 = document.createElement('div');
@@ -312,10 +361,6 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
         } else {
             player2Path = calculateShortestPath(player2Cell, 0);
         }*/
-
-        updatePathLength();
-        turn();
-        displayPossibleMove();
     }
 }
 
