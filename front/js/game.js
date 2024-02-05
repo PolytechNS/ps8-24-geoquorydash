@@ -164,6 +164,7 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
 }
 
 function lockBarrier(targetCell, targetCell2, targetCell3) {
+    canPlayerReachArrival();
     hidePossibleMove();
 
     targetCell.classList.add('locked');
@@ -173,6 +174,46 @@ function lockBarrier(targetCell, targetCell2, targetCell3) {
     updatePathLength();
     turn();
     displayPossibleMove();
+}
+
+function canPlayerReachArrival() {
+    const currentCell = currentPlayer.parentElement;
+    alreadyVisitedCell = []; // La liste des cases que l'on va visiter
+    let canReach = false;
+
+    if(currentPlayer === player1) {
+        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player1");
+    } else if(currentPlayer === player2) {
+        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player2");
+    }
+
+    if (canReach) {
+        console.log("Le joueur " + (currentPlayer === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
+    } else {
+        console.log("Le joueur " + (currentPlayer === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
+    }
+
+    return canReach;
+}
+
+function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
+    if(alreadyVisitedCell.includes(currentCell)) { // Dans ce cas là, la cellule a déjà été visitée
+        return false;
+    }
+
+    const [x, y] = currentCell.id.split('-').slice(1).map(Number);
+    if ((player === "player1" && x === 16) || (player === "player2" && x === 0)) {
+        return true;
+    }
+
+    alreadyVisitedCell.push(currentCell);
+    const neighborsList = getNeighborsWithBarriers(currentCell);
+    for (const neighbor of neighborsList) {
+        if (checkPathToReachTheEnd(neighbor, alreadyVisitedCell, player)) {
+            return true;
+        }
+    }
+    return false;
 }
 
 function movePlayer(targetCell) {
