@@ -75,21 +75,61 @@ function handleCellAction(cell, i, j, actionType) {
     }
 }
 
-function displayPossibleMove() {
-    console.log("Appel de la méthode displayPossibleMove");
+function playerIsNeighbor() {
     if (!gameActive) return;
 
     const playerCell = currentPlayer.parentElement;
 
     const neighborsList = getNeighborsWithBarriers(playerCell);
     for(const neighbor of neighborsList) {
-        neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        //console.log("Dans la fonction : " + neighbor.id);
+        if(neighbor.querySelector('.player')) {
+            return neighbor;
+        }
+    }
+    return null;
+}
+
+function displayPossibleMove() {
+    if (!gameActive) return;
+
+    const playerCell = currentPlayer.parentElement;
+    const neighborsList = getNeighborsWithBarriers(playerCell);
+
+    if(neighborPlayer = playerIsNeighbor()) {
+        const [x, y] = playerCell.id.split('-').slice(1).map(Number);
+        const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
+        if(x === nx) {
+            if(y < ny) {
+                forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
+            } else {
+                forwardCell = document.getElementById(`cell-${x}-${y - 4}`);
+            }
+        } else {
+            if(x < nx) {
+                forwardCell = document.getElementById(`cell-${x + 4}-${y}`);
+            } else {
+                forwardCell = document.getElementById(`cell-${x - 4}-${y}`);
+            }
+        }
+        if(!checkBarriersBetween(neighborPlayer.id, forwardCell.id)) {
+            forwardCell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        }
+
+        for(const neighbor of neighborsList) {
+            if(playerIsNeighbor()) {
+               if(neighbor.id !== playerIsNeighbor().id) {
+                    neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                } 
+            }
+        }
+    } else {
+        for(const neighbor of neighborsList) {
+            neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        }
     }
 }
 
 function hidePossibleMove() {
-    console.log("Appel de la méthode hidePossibleMove");
     if (!gameActive) return;
 
     const playerCell = currentPlayer.parentElement;
@@ -98,6 +138,12 @@ function hidePossibleMove() {
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
         //console.log("Dans la fonction : " + neighbor.id);
+    }
+    if(neighborPlayer = playerIsNeighbor()) {
+        const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
+        for(const neighbor2 of neighborsOfPlayer2) {
+            neighbor2.style.backgroundColor = 'transparent';
+        }
     }
 }
 
@@ -204,7 +250,9 @@ function checkBarriersBetween(startCellId, targetCellId) {
 }
 
 
-
+// Cette fonction, appelée lorsque l'on tente de faire un saut de 2 cases d'un coup, vérifie si un joueur est présent sur la case
+// située entre celle du joueur courant et celle où l'on veut atterir, et elle retourne la case contenant le joueur que l'on cherche à 
+// sauter dans le cas où il y a bien un joueur entre les deux cases
 function getJumpedPlayer(startCellId, targetCellId) {
     const [startX, startY] = startCellId.split('-').slice(1).map(Number);
     const [targetX, targetY] = targetCellId.split('-').slice(1).map(Number);
