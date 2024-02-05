@@ -261,6 +261,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
 function turn() {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
     updateBoardDisplay(board, currentPlayer);
+    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'player1' ? '1' : '2'}`;
 }
 
 function endGame(message) {
