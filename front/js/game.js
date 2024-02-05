@@ -1,3 +1,5 @@
+import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
@@ -37,15 +39,20 @@ for (let i = 0; i < 17; i++) {
     }
 }
 
+
 const player1Cell = document.getElementById('cell-0-8');
 player1Cell.appendChild(player1);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
 
+initializeVisibility(board);
+updateBoardDisplay(board, currentPlayer);
+
 function createPlayer(className, bgColor) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
+    player.id = `${className}`;
     return player;
 }
 
@@ -116,8 +123,6 @@ function checkBarriersBetween(startCellId, targetCellId) {
     const barrierCell = document.getElementById(`cell-${interX}-${interY}`);
     return barrierCell && barrierCell.querySelector('.barrier');
 }
-
-
 
 function getJumpedPlayer(startCellId, targetCellId) {
     const [startX, startY] = startCellId.split('-').slice(1).map(Number);
@@ -197,12 +202,14 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.width = '80%';
             barrier.style.backgroundImage = 'url("img/BarriereVerticale.png")';
             barrier.style.backgroundPosition = 'top';
+            adjustVisibilityForWallsVertical(cell.id, currentPlayer.id);
         }
         else {
             barrier.style.height = '80%';
             barrier.style.width = '100%';
             barrier.style.backgroundImage = 'url("img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
+            adjustVisibilityForWallsHorizontal(cell.id, currentPlayer.id);
         }
         cell.appendChild(barrier);
         if (cell2) {
@@ -251,9 +258,9 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
     }
 }
 
-
 function turn() {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
+    updateBoardDisplay(board, currentPlayer);
 }
 
 function endGame(message) {
