@@ -211,6 +211,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.backgroundPosition = 'left';
             adjustVisibilityForWallsHorizontal(cell.id, currentPlayer.id);
         }
+        barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
         if (cell2) {
             const barrier2 = document.createElement('div');
@@ -227,6 +228,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier2.style.backgroundImage = 'url("img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
+            barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
         }
         if (cell3) {
@@ -244,6 +246,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier3.style.backgroundImage = 'url("img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
+            barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
         }
 
