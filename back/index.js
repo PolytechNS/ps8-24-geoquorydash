@@ -1,50 +1,31 @@
-const http = require('http');
-const express = require('express');
-const socketIo = require('socket.io');
+// The http module contains methods to handle http queries.
+const http = require('http')
+// Let's import our logic.
+const fileQuery = require('./queryManagers/front.js')
+const apiQuery = require('./queryManagers/api.js')
 
-// Import des gestionnaires de requêtes pour les fichiers et l'API
-const fileQuery = require('./queryManagers/front.js');
-const apiQuery = require('./queryManagers/api.js');
-
-// Création de l'application Express
-const app = express();
-
-// Création du serveur HTTP à partir de l'application Express
-const server = http.createServer(app);
-
-// Création de l'instance Socket.IO en utilisant le serveur HTTP
-const io = socketIo(server);
-
-// Middleware pour gérer les requêtes REST
-app.use('/api', (req, res, next) => {
-    // Passer la requête au gestionnaire API
-    apiQuery.manage(req, res);
-});
-
-// Middleware pour gérer les requêtes de fichiers
-app.use('/', (req, res, next) => {
-    // Passer la requête au gestionnaire de fichiers
-    fileQuery.manage(req, res);
-});
-
-// Gestion des connexions Socket.IO
-io.on('connection', (socket) => {
-    console.log('Un utilisateur s\'est connecté.');
-
-    // Gestion des événements Socket.IO
-    socket.on('chat message', (msg) => {
-        console.log('Nouveau message : ' + msg);
-        // Diffusion du message à tous les utilisateurs connectés
-        io.emit('chat message', msg);
+/* The http module contains a createServer function, which takes one argument, which is the function that
+** will be called whenever a new request arrives to the server.
+ */
+http.createServer(function (request, response) {
+    // First, let's check the URL to see if it's a REST request or a file request.
+    // We will remove all cases of "../" in the url for security purposes.
+    let filePath = request.url.split("/").filter(function(elem) {
+        return elem !== "..";
     });
 
-    socket.on('disconnect', () => {
-        console.log('Un utilisateur s\'est déconnecté.');
-    });
-});
-
-// Lancement du serveur
-const PORT = process.env.PORT || 8000;
-server.listen(PORT, () => {
-    console.log(`Serveur en cours d'exécution sur le port ${PORT}`);
-});
+    try {
+        // If the URL starts by /api, then it's a REST request (you can change that if you want).
+        if (filePath[1] === "api") {
+            apiQuery.manage(request, response);
+            // If it doesn't start by /api, then it's a request for a file.
+        } else {
+            fileQuery.manage(request, response);
+        }
+    } catch(error) {
+        console.log(`error while processing ${request.url}: ${error}`)
+        response.statusCode = 400;
+        response.end(`Something in your request (${request.url}) is strange...`);
+    }
+// For the server to be listening to request, it needs a port, which is set thanks to the listen function.
+}).listen(8000);
