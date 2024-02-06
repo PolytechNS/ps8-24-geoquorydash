@@ -64,11 +64,25 @@ function handleCellAction(cell, i, j, actionType) {
     let isEdge = (isVertical && i === 16) || (isHorizontal && j === 16);
 
     if (isVertical) {
-        cell2 = document.getElementById(`cell-${isEdge ? i - 1 : i + 1}-${j}`);
-        cell3 = document.getElementById(`cell-${isEdge ? i - 2 : i + 2}-${j}`);
+        if(isEdge){
+            cell2 = document.getElementById(`cell-${i - 1}-${j}`);
+            cell3 = cell;
+            cell = document.getElementById(`cell-${i - 2}-${j}`);
+        } else {
+            cell2 = document.getElementById(`cell-${i + 1}-${j}`);
+            cell3 = document.getElementById(`cell-${i + 2}-${j}`);
+        }
+        
+        
     } else if (isHorizontal) {
-        cell2 = document.getElementById(`cell-${i}-${isEdge ? j - 1 : j + 1}`);
-        cell3 = document.getElementById(`cell-${i}-${isEdge ? j - 2 : j + 2}`);
+        if(isEdge) {
+            cell2 = document.getElementById(`cell-${i}-${j - 1}`);
+            cell3 = cell;
+            cell = document.getElementById(`cell-${i}-${j - 2}`);
+        } else {
+            cell2 = document.getElementById(`cell-${i}-${j + 1}`);
+            cell3 = document.getElementById(`cell-${i}-${j + 2}`);
+        }
     }
 
     if (cell2 && cell3) {
