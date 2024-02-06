@@ -86,11 +86,13 @@ function updateBoardDisplay(board, player) {
         if (currentPlayerClass === 'player1') {
             playerCells[i].style.opacity = visibilityMap[i] >= 0 ? 1 : 0.1;
             document.getElementById('player1').style.opacity = 1;
+            document.getElementById('player1').parentElement.style.opacity = 1;
             let player2 = document.getElementById('player2');
             player2.style.opacity = player2.parentElement.style.opacity === '0.1' ? 0 : 1;
         } else {
             playerCells[i].style.opacity = visibilityMap[i] <= 0 ? 1 : 0.1;
             document.getElementById('player2').style.opacity = 1;
+            document.getElementById('player2').parentElement.style.opacity = 1;
             let player1 = document.getElementById('player1');
             player1.style.opacity = player1.parentElement.style.opacity === '0.1' ? 0 : 1;
         }
