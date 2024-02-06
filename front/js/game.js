@@ -22,7 +22,7 @@ for (let i = 0; i < 17; i++) {
                 event.preventDefault();
                 if (i % 2 === 0 && j % 2 !== 0) {
                     if (i === 16)
-                        toggleBarrier(cell, document.getElementById(`cell-${i - 1}-${j}`), document.getElementById(`cell-${i - 2}-${j}`), true);
+                        toggleBarrier(document.getElementById(`cell-${i - 2}-${j}`), document.getElementById(`cell-${i - 1}-${j}`), cell, true);
                     else
                         toggleBarrier(cell, document.getElementById(`cell-${i + 1}-${j}`), document.getElementById(`cell-${i + 2}-${j}`), true);
                 } else if (j % 2 === 0 && i % 2 !== 0) {
