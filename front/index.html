@@ -13,11 +13,13 @@
     <div class="infoContainer">
         <div id="player1PathLength">Le chemin du joueur 1 : 9</div>
         <div id="player2PathLength">Le chemin du joueur 2 : 9</div>
+        <div id="playerTurn">C'est au tour du joueur 1</div>
     </div>
 </div>
 <div id="message" class="hidden"></div>
-
-<script src="js/game.js"></script>
+<svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintRed"><feColorMatrix type="matrix" values="0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0  0 0 0 1 0" /></filter></svg>
+<svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintGreen"><feColorMatrix type="matrix" values="0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2823529411764706 0.2823529411764706 0.2823529411764706  0 0  0 0 0 1 0" /></filter></svg><script type="module" src="js/game.js"></script>
+<script type="module" src="js/fogOfWar.js"></script>
 
 </body>
 </html>

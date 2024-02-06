@@ -1,3 +1,5 @@
+import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
@@ -35,11 +37,15 @@ for (let i = 0; i < 17; i++) {
     }
 }
 
+
 const player1Cell = document.getElementById('cell-0-8');
 player1Cell.appendChild(player1);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
+
+initializeVisibility(board);
+updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
 console.log("Move displayed");
@@ -47,6 +53,7 @@ console.log("Move displayed");
 function createPlayer(className, bgColor) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
+    player.id = `${className}`;
     return player;
 }
 
@@ -95,9 +102,11 @@ function displayPossibleMove() {
     const playerCell = currentPlayer.parentElement;
     const neighborsList = getNeighborsWithBarriers(playerCell);
 
+    let neighborPlayer = null;
     if(neighborPlayer = playerIsNeighbor()) {
         const [x, y] = playerCell.id.split('-').slice(1).map(Number);
         const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
+        let forwardCell = null;
         if(x === nx) {
             if(y < ny) {
                 forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
@@ -139,6 +148,8 @@ function hidePossibleMove() {
         neighbor.style.backgroundColor = 'transparent';
         //console.log("Dans la fonction : " + neighbor.id);
     }
+    
+    let neighborPlayer = null;
     if(neighborPlayer = playerIsNeighbor()) {
         const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
         for(const neighbor2 of neighborsOfPlayer2) {
@@ -163,7 +174,7 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
     
 }
 
-function lockBarrier(targetCell, targetCell2, targetCell3) {
+function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     if(!canPlayerReachArrival(player1)) {
         retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
         return;
@@ -177,6 +188,12 @@ function lockBarrier(targetCell, targetCell2, targetCell3) {
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
 
+    if(isVertical) {
+        adjustVisibilityForWallsVertical(targetCell.id, currentPlayer.id);
+    } else {
+        adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
+    }
+
     updatePathLength();
     turn();
     displayPossibleMove();
@@ -184,7 +201,7 @@ function lockBarrier(targetCell, targetCell2, targetCell3) {
 
 function canPlayerReachArrival(player) {
     const currentCell = player.parentElement;
-    alreadyVisitedCell = []; // La liste des cases que l'on va visiter
+    let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
 
     if(player === player1) {
@@ -305,7 +322,6 @@ function checkBarriersBetween(startCellId, targetCellId) {
     return barrierCell && barrierCell.querySelector('.barrier');
 }
 
-
 // Cette fonction, appelée lorsque l'on tente de faire un saut de 2 cases d'un coup, vérifie si un joueur est présent sur la case
 // située entre celle du joueur courant et celle où l'on veut atterir, et elle retourne la case contenant le joueur que l'on cherche à 
 // sauter dans le cas où il y a bien un joueur entre les deux cases
@@ -417,13 +433,16 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.width = '80%';
             barrier.style.backgroundImage = 'url("img/BarriereVerticale.png")';
             barrier.style.backgroundPosition = 'top';
+            //adjustVisibilityForWallsVertical(cell.id, currentPlayer.id);
         }
         else {
             barrier.style.height = '80%';
             barrier.style.width = '100%';
             barrier.style.backgroundImage = 'url("img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
+            //adjustVisibilityForWallsHorizontal(cell.id, currentPlayer.id);
         }
+        barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
         if (cell2) {
             const barrier2 = document.createElement('div');
@@ -440,6 +459,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier2.style.backgroundImage = 'url("img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
+            barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
         }
         if (cell3) {
@@ -457,6 +477,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier3.style.backgroundImage = 'url("img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
+            barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
         }
         /*
@@ -468,9 +489,10 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
     }
 }
 
-
 function turn() {
     currentPlayer = currentPlayer === player1 ? player2 : player1;
+    updateBoardDisplay(board, currentPlayer);
+    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'player1' ? '1' : '2'}`;
 }
 
 function endGame(message) {
