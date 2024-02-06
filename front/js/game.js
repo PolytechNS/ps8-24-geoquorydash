@@ -164,7 +164,13 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
 }
 
 function lockBarrier(targetCell, targetCell2, targetCell3) {
-    canPlayerReachArrival();
+    if(!canPlayerReachArrival(player1)) {
+        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
+        return;
+    } else if(!canPlayerReachArrival(player2)) {
+        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
+        return;
+    }
     hidePossibleMove();
 
     targetCell.classList.add('locked');
@@ -176,24 +182,33 @@ function lockBarrier(targetCell, targetCell2, targetCell3) {
     displayPossibleMove();
 }
 
-function canPlayerReachArrival() {
-    const currentCell = currentPlayer.parentElement;
+function canPlayerReachArrival(player) {
+    const currentCell = player.parentElement;
     alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
 
-    if(currentPlayer === player1) {
+    if(player === player1) {
         canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player1");
-    } else if(currentPlayer === player2) {
+    } else if(player === player2) {
         canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player2");
     }
 
     if (canReach) {
-        console.log("Le joueur " + (currentPlayer === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
+        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
     } else {
-        console.log("Le joueur " + (currentPlayer === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
+        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
     }
 
     return canReach;
+}
+
+function retrieveImpossibleMovePopUp(message) {
+    const messageElement = document.getElementById('message');
+    messageElement.innerText = message;
+    messageElement.classList.add('visible');
+    setTimeout(function() {
+        messageElement.classList.remove('visible');
+    }, 2000);
 }
 
 function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
