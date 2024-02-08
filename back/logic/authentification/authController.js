@@ -9,6 +9,8 @@ function signup(req, res) {
             res.end('Invalid JSON');
             return;
         }
+        console.log('Signup called');
+        console.log(username, password);
         // Your signup logic here...
         const token = generateToken(username);
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -23,6 +25,8 @@ function login(req, res) {
             res.end('Invalid JSON');
             return;
         }
+        console.log('Login called');
+        console.log(username, password);
         // Your login logic here...
         const token = generateToken(username);
         res.writeHead(200, { 'Content-Type': 'application/json' });

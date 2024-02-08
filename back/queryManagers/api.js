@@ -14,7 +14,7 @@ function manageRequest(request, response) {
     }
 
     response.statusCode = 200;
-    response.end(`Thanks for calling ${request.url}`);
+    //response.end(`Thanks for calling ${request.url}`);
 }
 
 /* This method is a helper in case you stumble upon CORS problems. It shouldn't be used as-is:
