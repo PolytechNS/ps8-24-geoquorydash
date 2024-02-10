@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>Home</title>
     <link rel="stylesheet" href="home.css">
 </head>
 <body>
@@ -18,7 +18,16 @@
         <a href="friendsPage/friends.html"><img src="img/button_friends.png" alt="Friends"></a>
         <a href="statPage/stat.html"><img src="img/button_stat.png" alt="Stat"></a>
         <a href="successPage/success.html"><img src="img/button_success.png" alt="Success"></a>
-        <a href="accountPage/account.html"><img src="img/button_account.png" alt="Account"></a>
+        <a href="#" id="openAccountPage"><img src="img/button_account.png" alt="Account"></a>
     </div>
+
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <iframe id="accountFrame" src=""></iframe>
+        </div>
+    </div>
+
+    <script src="home.js"></script>
 </body>
 </html>
