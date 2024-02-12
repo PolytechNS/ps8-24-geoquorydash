@@ -7,6 +7,49 @@ body {
 }
 
 .top-image {
-    width: 50vw;
-    margin-bottom: 5vh;
+    height: 10vh;
+    width: auto;
+    margin-top: 1vh;
+    margin-bottom: 8vh;
 }
+
+#usernameBlock,
+#passwordBlock {
+    margin-bottom: 10vh;
+}
+
+#validationBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+#signUpButton {
+    width: 30vw;
+    height: auto;
+}
+
+#validationBlock img {
+    width: 20vw;
+    height: auto;
+}
+
+label {
+    display: block;
+}
+
+label img {
+    height: 8vh;
+    width: auto;
+}
+
+#usernameSignup,
+#passwordSignup {
+    width: 80vw;
+    height: 8vh;
+    font-size: 7vh;
+}
+
+
+
