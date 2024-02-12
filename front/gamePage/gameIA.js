@@ -1,4 +1,5 @@
 import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+import { delay } from "../js/utils.js";
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
@@ -269,14 +270,14 @@ function handleIAMove(move) {
         if (movePlayer(targetCell) === 0) {
             socket.emit('newMove');
             // Réessayer après un délai
-            setTimeout(tryMove, 200); // Attend 100ms avant de réessayer
+            setTimeout(tryMove, 100); // Attend 100ms avant de réessayer
         }
     }
     tryMove();
 }
 
 
-function movePlayer(targetCell) {
+async function movePlayer(targetCell) {
     if (!gameActive) return;
 
     const playerCellId = currentPlayer.parentElement.id;
@@ -290,6 +291,7 @@ function movePlayer(targetCell) {
             const closePlayer = targetCell.querySelector('.player');
             if (!(closePlayer && closePlayer !== currentPlayer)) {
                 hidePossibleMove();
+                if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
                 targetCell.appendChild(currentPlayer);
                 if (currentPlayer === BotPlayer && targetX === 16) {
                     endGame('Le joueur 1 a gagné!');
@@ -305,6 +307,8 @@ function movePlayer(targetCell) {
 
                 updatePathLength();
 
+                if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
+
                 turn();
                 displayPossibleMove();
                 return 1;
@@ -318,6 +322,8 @@ function movePlayer(targetCell) {
 
         if (jumpedPlayer && !barrierInBetween && !secondBarrierInBetween) {
             hidePossibleMove();
+            if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
+
             targetCell.appendChild(currentPlayer);
 
             if (currentPlayer === BotPlayer && targetX === 16) {
@@ -334,6 +340,9 @@ function movePlayer(targetCell) {
 
             updatePathLength();
 
+            if (currentPlayer === BotPlayer) {
+                await delay(1000); // Attend ici pendant 2 secondes
+            }
             turn();
             displayPossibleMove();
             return 1;
