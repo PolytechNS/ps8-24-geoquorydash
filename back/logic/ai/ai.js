@@ -21,9 +21,6 @@ function computeMove(gameState) {
     // Get a random integer between 0 and possibleMoves.length-1
     let moveIndex = Math.floor(Math.random()*possibleMoves.length);
 
-    pos.x=possibleMoves[moveIndex].x;
-    pos.y=possibleMoves[moveIndex].y;
-
     return possibleMoves[moveIndex];
 }
 

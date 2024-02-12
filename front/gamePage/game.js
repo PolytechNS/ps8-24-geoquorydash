@@ -159,7 +159,6 @@ function hidePossibleMove() {
     const neighborsList = getGeographicNeighbors(playerCell);
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
-        //console.log("Dans la fonction : " + neighbor.id);
     }
 
     let neighborPlayer = null;
@@ -430,7 +429,6 @@ function getNeighborsWithBarriers(cell) {
 
     for(const neighborCell of geographicNeighbors) {
         if(!checkBarriersBetween(cell.id, neighborCell.id)) {
-            //console.log("Voisin après barrière : " + neighborCell.id);
             neighbors.push(neighborCell);
         }
     }

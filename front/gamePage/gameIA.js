@@ -1,4 +1,4 @@
-import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+import { updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
 import { delay } from "../js/utils.js";
 import socket from "../sockets/socketConnection.js";
 
@@ -47,7 +47,7 @@ player1Cell.appendChild(BotPlayer);
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
 
-initializeVisibility(board);
+//initializeVisibility();
 updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
@@ -117,7 +117,6 @@ function displayPossibleMove() {
 
     const playerCell = currentPlayer.parentElement;
     const neighborsList = getNeighborsWithBarriers(playerCell);
-    // console.log(playerCell.id.split('-').slice(1).map(Number));
     let neighborPlayer = null;
     if(neighborPlayer = playerIsNeighbor()) {
         const [x, y] = playerCell.id.split('-').slice(1).map(Number);
@@ -162,7 +161,6 @@ function hidePossibleMove() {
     const neighborsList = getGeographicNeighbors(playerCell);
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
-        //console.log("Dans la fonction : " + neighbor.id);
     }
 
     let neighborPlayer = null;
@@ -266,13 +264,14 @@ function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
 
 async function handleIAMove(move) {
     const targetCell = document.getElementById(`cell-${move.x}-${move.y}`);
-        let result = await movePlayer(targetCell);
-        if (!result ) {
-            console.log('retry');
-            socket.emit('newMove');
-            await delay(100);
-        }
-    socket.emit('newMoveValid', move);
+    let result = await movePlayer(targetCell);
+    if (!result ) {
+        socket.emit("retry");
+        socket.emit('newMove');
+        await delay(100);
+    } else {
+        socket.emit('newMoveValid', move);
+    }
 
     return 1;
 }
@@ -321,12 +320,7 @@ async function movePlayer(targetCell) {
 
     } else if ((Math.abs(targetX - x) === 4 && targetY === y) || (Math.abs(targetY - y) === 4 && targetX === x)) {
         const jumpedCell = getJumpedPlayer(playerCellId, targetCellId);
-        let barrierInBetween;
-        try {
-            barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
-        }catch (error){
-            console.error("Une erreur s'est produite lors de l'accès à l'ID de jumpedCell :", targetCellId);
-        }
+        const barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
         const secondBarrierInBetween = checkBarriersBetween(jumpedCell.id, targetCellId);
         const jumpedPlayer = getJumpedPlayer(playerCellId, targetCellId);
 
@@ -472,7 +466,6 @@ function getNeighborsWithBarriers(cell) {
 
     for(const neighborCell of geographicNeighbors) {
         if(!checkBarriersBetween(cell.id, neighborCell.id)) {
-            //console.log("Voisin après barrière : " + neighborCell.id);
             neighbors.push(neighborCell);
         }
     }

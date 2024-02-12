@@ -1,4 +1,4 @@
-const { computeMove } = require("./logic/ai/ai.js")
+const { computeMove } = require("../ai/ai.js")
 
 class GameManager {
     gridMap = [];
@@ -29,9 +29,22 @@ class GameManager {
         };
     }
 
-    // Methods to manage the game
-    handleMove(){
+    tryMove(){
         return computeMove(this.gameState);
+    }
+
+
+    validateMove(move) {
+        let pos;
+        for (let player of this.gameState.players) {
+            if (player.id === 'ia') {
+                pos = player.position;
+                break;
+            }
+        }
+
+        pos.x=move.x;
+        pos.y=move.y;
     }
 }
 
