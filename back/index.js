@@ -3,11 +3,13 @@ const http = require('http')
 // Let's import our logic.
 const fileQuery = require('./queryManagers/front.js')
 const apiQuery = require('./queryManagers/api.js')
+const {PORT} = require('./utils/constants')
+const setupSocket = require('./socketManager');
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
 ** will be called whenever a new request arrives to the server.
  */
-http.createServer(function (request, response) {
+const server = http.createServer(function (request, response) {
     // First, let's check the URL to see if it's a REST request or a file request.
     // We will remove all cases of "../" in the url for security purposes.
     let filePath = request.url.split("/").filter(function(elem) {
@@ -28,7 +30,14 @@ http.createServer(function (request, response) {
         response.end(`Something in your request (${request.url}) is strange...`);
     }
 // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
-}).listen(8000);
+});
+
+setupSocket(server);
+
+server.listen(PORT, function() {
+    console.log(`Server is listening on port ${PORT}`);
+    console.log(`http://localhost:${PORT}`);
+});
 
 const { MongoClient } = require('mongodb');
 const uri = "mongodb://mongo:27017/myapp_db";    // Lors de la connexion du back à mongo, cette db n'existe pas encore mais elle sera créée lors de l'insertion du premier élément

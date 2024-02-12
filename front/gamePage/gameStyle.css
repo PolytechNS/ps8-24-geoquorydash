@@ -5,7 +5,7 @@ body {
     height: 100vh;
     width: 100vw;
     margin: 0;
-    background-image: url('img/Image_fond_geometry_dash.jpeg');
+    background-image: url('../img/Image_fond_geometry_dash.jpeg');
     background-size: cover;
     background-repeat: no-repeat;
 }
@@ -36,15 +36,14 @@ body {
     position: absolute;
 }
 
-.player1 {
-    background-image: url('img/Skin002.png');
+.player1, .BotPlayer {
+    background-image: url('../img/Skin002.png');
     background-size: cover;
     filter: url(#svgTintRed);
-
 }
 
 .player2 {
-    background-image: url('img/Skin005.png');
+    background-image: url('../img/Skin005.png');
     background-size: cover;
     filter: url(#svgTintGreen);
 }
@@ -58,7 +57,7 @@ body {
 }
 
 .cell.player-cell {
-    background-image: url('img/RegularBlock01.png');
+    background-image: url('../img/RegularBlock01.png');
     background-size: cover;
 }
 

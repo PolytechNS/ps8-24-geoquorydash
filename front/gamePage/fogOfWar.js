@@ -9,24 +9,21 @@ function initializeVisibility(board) {
 
     for (let i = 0; i < playerCells.length; i++) {
         visibilityMap[i] = [];
-            if (i < 36) {
-                visibilityMap[i] = 1; // Visibility +1
-            } else if (i <= 44) {
-                visibilityMap[i] = 0; // Visibility 0
-            } else {
-                visibilityMap[i] = -1; // Visibility -1
-            }
+        if (i < 36) {
+            visibilityMap[i] = 1; // Visibility +1
+        } else if (i <= 44) {
+            visibilityMap[i] = 0; // Visibility 0
+        } else {
+            visibilityMap[i] = -1; // Visibility -1
+        }
     }
 
-    let Player1Cell = board.getElementsByClassName('player1')[0].parentElement.id;
-    let Player2Cell = board.getElementsByClassName('player2')[0].parentElement.id;
-    oldPlayer1AdjacentsCells = getAdjacentPlayerCellsIndices(Player1Cell);
-    oldPlayer2AdjacentsCells = getAdjacentPlayerCellsIndices(Player2Cell);
+
 }
 
 function getCurrentPlayerClass(player) {
-    if (player.classList.contains('player1')) {
-        return 'player1';
+    if (player.classList.contains('BotPlayer')) {
+        return 'BotPlayer';
     } else if (player.classList.contains('player2')) {
         return 'player2';
     }
@@ -37,8 +34,9 @@ function getCurrentPlayerClass(player) {
 
 function updateBoardVisibility(board) {
     // Get the player cells
-    let Player1Cell = board.getElementsByClassName('player1')[0].parentElement.id;
+    let Player1Cell = board.getElementsByClassName('BotPlayer')[0].parentElement.id;
     let Player2Cell = board.getElementsByClassName('player2')[0].parentElement.id;
+
 
     // Get the indices of the players cell
     let { i:iP1, j:jP1 } = getIndicesFromId(Player1Cell);
@@ -63,6 +61,7 @@ function updateBoardVisibility(board) {
         let index = oldPlayer1AdjacentsCells[i];
         visibilityMap[index] -= 1;
     }
+
     for (let i = 0; i < oldPlayer2AdjacentsCells.length; i++) {
         let index = oldPlayer2AdjacentsCells[i];
         visibilityMap[index] += 1;
@@ -72,8 +71,6 @@ function updateBoardVisibility(board) {
     oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
     oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
 
-
-    console.log(visibilityMap);
 }
 
 // Function to update the board display based on visibility
@@ -83,20 +80,22 @@ function updateBoardDisplay(board, player) {
     updateBoardVisibility(board);
 
     for (let i = 0; i < playerCells.length; i++) {
-        if (currentPlayerClass === 'player1') {
+        if (currentPlayerClass === 'BotPlayer') {
             playerCells[i].style.opacity = visibilityMap[i] >= 0 ? 1 : 0.1;
-            document.getElementById('player1').style.opacity = 1;
-            document.getElementById('player1').parentElement.style.opacity = 1;
+            document.getElementById('BotPlayer').style.opacity = 1;
+            document.getElementById('BotPlayer').parentElement.style.opacity = 1;
             let player2 = document.getElementById('player2');
             player2.style.opacity = player2.parentElement.style.opacity === '0.1' ? 0 : 1;
         } else {
             playerCells[i].style.opacity = visibilityMap[i] <= 0 ? 1 : 0.1;
             document.getElementById('player2').style.opacity = 1;
             document.getElementById('player2').parentElement.style.opacity = 1;
-            let player1 = document.getElementById('player1');
+            let player1 = document.getElementById('BotPlayer');
             player1.style.opacity = player1.parentElement.style.opacity === '0.1' ? 0 : 1;
         }
     }
+
+    //console.log(visibilityMap);
 }
 
 function getIndicesFromId(cellId) {
@@ -157,7 +156,7 @@ function getAdjacentBarrierCellsIndicesHorizontal(i,j) {
         farAdjacentIndices.push(baseIndex - 1);
         farAdjacentIndices.push(baseIndex + 8);
     }
-    if (j<15){
+    if (j<14){
         farAdjacentIndices.push(baseIndex + 2);
         farAdjacentIndices.push(baseIndex + 11);
     }
@@ -188,7 +187,6 @@ function getAdjacentBarrierCellsIndicesVertical(i,j) {
     nearAdjacentIndices.push(baseIndex + 9);
     nearAdjacentIndices.push(baseIndex + 10);
 
-    console.log('i: ' + i + ' j: ' + j);
     if (j>1){
         farAdjacentIndices.push(baseIndex - 1);
         farAdjacentIndices.push(baseIndex + 8);
@@ -216,7 +214,7 @@ function adjustVisibilityForWallsHorizontal(barrierCellId, currentPlayer) {
     let { i, j } = getIndicesFromId(barrierCellId);
     let adjacentBarrierCells = getAdjacentBarrierCellsIndicesHorizontal(i, j);
 
-    if (currentPlayer === 'player1'){
+    if (currentPlayer === 'BotPlayer'){
         let visibilityToAdd = 2;
         for (let i = 0; i < adjacentBarrierCells.length; i++){
             for (let j = 0; j < adjacentBarrierCells[i].length; j++){
@@ -238,7 +236,7 @@ function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
     let { i, j } = getIndicesFromId(barrierCellId);
     let adjacentBarrierCells = getAdjacentBarrierCellsIndicesVertical(i, j);
 
-    if (currentPlayer === 'player1'){
+    if (currentPlayer === 'BotPlayer'){
         let visibilityToAdd = 2;
         for (let i = 0; i < adjacentBarrierCells.length; i++){
             for (let j = 0; j < adjacentBarrierCells[i].length; j++){

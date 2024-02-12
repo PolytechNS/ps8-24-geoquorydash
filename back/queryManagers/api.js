@@ -1,7 +1,20 @@
 // Main method, exported at the end of the file. It's the one that will be called when a REST request is received.
+const authRouter = require('../logic/authentification/authRouter');
 function manageRequest(request, response) {
+    addCors(response);
+
+    if (request.method === 'OPTIONS') {
+        response.writeHead(204);
+        response.end();
+        return;
+    }
+
+    if (request.url.startsWith('/api/auth')) {
+        authRouter(request, response);
+    }
+
     response.statusCode = 200;
-    response.end(`Thanks for calling ${request.url}`);
+    //response.end(`Thanks for calling ${request.url}`);
 }
 
 /* This method is a helper in case you stumble upon CORS problems. It shouldn't be used as-is:

@@ -1,12 +1,15 @@
 import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+import { delay } from "../js/utils.js";
+import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
-const player1 = createPlayer('player1', 'blue');
+const BotPlayer = createPlayer('BotPlayer', 'blue');
 const player2 = createPlayer('player2', 'red');
 let player1Path = [];
 let player2Path = [];
-let currentPlayer = player1;
+let currentPlayer = player2;
 let gameActive = true;
+
 
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
@@ -39,7 +42,7 @@ for (let i = 0; i < 17; i++) {
 
 
 const player1Cell = document.getElementById('cell-0-8');
-player1Cell.appendChild(player1);
+player1Cell.appendChild(BotPlayer);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
@@ -48,7 +51,6 @@ initializeVisibility(board);
 updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
-console.log("Move displayed");
 
 function createPlayer(className, bgColor) {
     const player = document.createElement('div');
@@ -72,8 +74,8 @@ function handleCellAction(cell, i, j, actionType) {
             cell2 = document.getElementById(`cell-${i + 1}-${j}`);
             cell3 = document.getElementById(`cell-${i + 2}-${j}`);
         }
-        
-        
+
+
     } else if (isHorizontal) {
         if(isEdge) {
             cell2 = document.getElementById(`cell-${i}-${j - 1}`);
@@ -115,7 +117,7 @@ function displayPossibleMove() {
 
     const playerCell = currentPlayer.parentElement;
     const neighborsList = getNeighborsWithBarriers(playerCell);
-
+    // console.log(playerCell.id.split('-').slice(1).map(Number));
     let neighborPlayer = null;
     if(neighborPlayer = playerIsNeighbor()) {
         const [x, y] = playerCell.id.split('-').slice(1).map(Number);
@@ -142,7 +144,7 @@ function displayPossibleMove() {
             if(playerIsNeighbor()) {
                if(neighbor.id !== playerIsNeighbor().id) {
                     neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                } 
+                }
             }
         }
     } else {
@@ -162,7 +164,7 @@ function hidePossibleMove() {
         neighbor.style.backgroundColor = 'transparent';
         //console.log("Dans la fonction : " + neighbor.id);
     }
-    
+
     let neighborPlayer = null;
     if(neighborPlayer = playerIsNeighbor()) {
         const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
@@ -185,11 +187,11 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
         targetCell2.removeChild(taretCell2Child);
         targetCell3.removeChild(taretCell3Child);
     }
-    
+
 }
 
 function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-    if(!canPlayerReachArrival(player1)) {
+    if(!canPlayerReachArrival(BotPlayer)) {
         retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
         return;
     } else if(!canPlayerReachArrival(player2)) {
@@ -218,16 +220,16 @@ function canPlayerReachArrival(player) {
     let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
 
-    if(player === player1) {
+    if(player === BotPlayer) {
         canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player1");
     } else if(player === player2) {
         canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player2");
     }
 
     if (canReach) {
-        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
+        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
     } else {
-        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
+        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
     }
 
     return canReach;
@@ -262,7 +264,22 @@ function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
     return false;
 }
 
-function movePlayer(targetCell) {
+async function handleIAMove(move) {
+    const targetCell = document.getElementById(`cell-${move.x}-${move.y}`);
+        let result = await movePlayer(targetCell);
+        if (!result ) {
+            console.log('retry');
+            socket.emit('newMove');
+            await delay(100);
+        }
+    socket.emit('newMoveValid', move);
+
+    return 1;
+}
+
+
+
+async function movePlayer(targetCell) {
     if (!gameActive) return;
 
     const playerCellId = currentPlayer.parentElement.id;
@@ -276,8 +293,11 @@ function movePlayer(targetCell) {
             const closePlayer = targetCell.querySelector('.player');
             if (!(closePlayer && closePlayer !== currentPlayer)) {
                 hidePossibleMove();
+
+                if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
                 targetCell.appendChild(currentPlayer);
-                if (currentPlayer === player1 && targetX === 16) {
+                if (currentPlayer === BotPlayer && targetX === 16) {
                     endGame('Le joueur 1 a gagné!');
                 } else if (currentPlayer === player2 && targetX === 0) {
                     endGame('Le joueur 2 a gagné!');
@@ -290,21 +310,34 @@ function movePlayer(targetCell) {
                 }*/
 
                 updatePathLength();
+
+                if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
                 turn();
                 displayPossibleMove();
+                return 1;
             }
         }
+
     } else if ((Math.abs(targetX - x) === 4 && targetY === y) || (Math.abs(targetY - y) === 4 && targetX === x)) {
         const jumpedCell = getJumpedPlayer(playerCellId, targetCellId);
-        const barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
+        let barrierInBetween;
+        try {
+            barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
+        }catch (error){
+            console.error("Une erreur s'est produite lors de l'accès à l'ID de jumpedCell :", targetCellId);
+        }
         const secondBarrierInBetween = checkBarriersBetween(jumpedCell.id, targetCellId);
         const jumpedPlayer = getJumpedPlayer(playerCellId, targetCellId);
 
         if (jumpedPlayer && !barrierInBetween && !secondBarrierInBetween) {
             hidePossibleMove();
+
+            if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
             targetCell.appendChild(currentPlayer);
 
-            if (currentPlayer === player1 && targetX === 16) {
+            if (currentPlayer === BotPlayer && targetX === 16) {
                 endGame('Le joueur 1 a gagné!');
             } else if (currentPlayer === player2 && targetX === 0) {
                 endGame('Le joueur 2 a gagné!');
@@ -317,10 +350,18 @@ function movePlayer(targetCell) {
             }*/
 
             updatePathLength();
+
+            if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
             turn();
             displayPossibleMove();
+
+            return 1;
         }
     }
+
+    return 0;
+
 }
 
 
@@ -337,7 +378,7 @@ function checkBarriersBetween(startCellId, targetCellId) {
 }
 
 // Cette fonction, appelée lorsque l'on tente de faire un saut de 2 cases d'un coup, vérifie si un joueur est présent sur la case
-// située entre celle du joueur courant et celle où l'on veut atterir, et elle retourne la case contenant le joueur que l'on cherche à 
+// située entre celle du joueur courant et celle où l'on veut atterir, et elle retourne la case contenant le joueur que l'on cherche à
 // sauter dans le cas où il y a bien un joueur entre les deux cases
 function getJumpedPlayer(startCellId, targetCellId) {
     const [startX, startY] = startCellId.split('-').slice(1).map(Number);
@@ -445,18 +486,16 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
         if (isVertical) {
             barrier.style.height = '100%';
             barrier.style.width = '80%';
-            barrier.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+            barrier.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
             barrier.style.backgroundPosition = 'top';
-            //adjustVisibilityForWallsVertical(cell.id, currentPlayer.id);
         }
         else {
             barrier.style.height = '80%';
             barrier.style.width = '100%';
-            barrier.style.backgroundImage = 'url("img/Barriere.png")';
+            barrier.style.backgroundImage = 'url("../img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
-            //adjustVisibilityForWallsHorizontal(cell.id, currentPlayer.id);
         }
-        barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+        barrier.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
         if (cell2) {
             const barrier2 = document.createElement('div');
@@ -464,16 +503,16 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             if (isVertical) {
                 barrier2.style.height = '100%';
                 barrier2.style.width = '80%';
-                barrier2.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+                barrier2.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
             else {
                 barrier2.style.height = '80%';
                 barrier2.style.width = '100%';
-                barrier2.style.backgroundImage = 'url("img/Barriere.png")';
+                barrier2.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
-            barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier2.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
         }
         if (cell3) {
@@ -482,31 +521,31 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             if (isVertical) {
                 barrier3.style.height = '100%';
                 barrier3.style.width = '80%';
-                barrier3.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+                barrier3.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
                 barrier3.style.backgroundPosition = 'bottom';
             }
             else {
                 barrier3.style.height = '80%';
                 barrier3.style.width = '100%';
-                barrier3.style.backgroundImage = 'url("img/Barriere.png")';
+                barrier3.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
-            barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier3.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
         }
-        /*
-        if (currentPlayer === player1) {
-            player1Path = calculateShortestPath(player1Cell, 16);
-        } else {
-            player2Path = calculateShortestPath(player2Cell, 0);
-        }*/
     }
 }
 
 function turn() {
-    currentPlayer = currentPlayer === player1 ? player2 : player1;
+    currentPlayer = currentPlayer === BotPlayer ? player2 : BotPlayer;
+
+    if (currentPlayer === BotPlayer){
+        socket.emit('newMove');
+    }
+
     updateBoardDisplay(board, currentPlayer);
-    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'player1' ? '1' : '2'}`;
+
+    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'BotPlayer' ? '1' : '2'}`;
 }
 
 function endGame(message) {
@@ -516,3 +555,5 @@ function endGame(message) {
     messageElement.classList.add('visible');
     board.classList.add('hidden');
 }
+
+export {handleIAMove};
