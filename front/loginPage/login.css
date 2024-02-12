@@ -1,0 +1,57 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    margin: 0;
+}
+
+.top-image {
+    height: 10vh;
+    width: auto;
+    margin-top: 1vh;
+    margin-bottom: 8vh;
+}
+
+#usernameBlock,
+#passwordBlock {
+    margin-bottom: 10vh;
+}
+
+#validationBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
+
+#loginButton {
+    width: 30vw;
+    height: auto;
+    margin-left: 22vw;
+    margin-right: 5vh;
+}
+
+#validationBlock img {
+    width: 20vw;
+    height: auto;
+}
+
+label {
+    display: block;
+}
+
+label img {
+    height: 8vh;
+    width: auto;
+}
+
+#usernameLogin,
+#passwordLogin {
+    width: 80vw;
+    height: 8vh;
+    font-size: 7vh;
+}
+
+
+
