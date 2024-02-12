@@ -1,59 +1,82 @@
-// The http module contains methods to handle http queries.
 const http = require('http')
-// Let's import our logic.
-const fileQuery = require('./queryManagers/front.js')
-const apiQuery = require('./queryManagers/api.js')
-const {PORT} = require('./utils/constants')
+const { PORT } = require('./utils/constants')
 const setupSocket = require('./socketManager');
 
-/* The http module contains a createServer function, which takes one argument, which is the function that
-** will be called whenever a new request arrives to the server.
- */
-const server = http.createServer(function (request, response) {
-    // First, let's check the URL to see if it's a REST request or a file request.
-    // We will remove all cases of "../" in the url for security purposes.
-    let filePath = request.url.split("/").filter(function(elem) {
+const fileQuery = require('./queryManagers/front.js')
+const apiQuery = require('./queryManagers/api.js')
+
+const server = http.createServer(async function (request, response) {
+    let filePath = request.url.split("/").filter(function (elem) {
         return elem !== "..";
     });
 
     try {
-        // If the URL starts by /api, then it's a REST request (you can change that if you want).
         if (filePath[1] === "api") {
-            apiQuery.manage(request, response);
-            // If it doesn't start by /api, then it's a request for a file.
+            if (request.method === 'POST' && request.url === '/api/users') {
+                handleCreateUser(request, response);
+            } else if (request.method === 'GET' && request.url.startsWith('/api/login')) {
+                handleLogin(request, response);
+            } else {
+                apiQuery.manage(request, response);
+            }
         } else {
             fileQuery.manage(request, response);
         }
-    } catch(error) {
+    } catch (error) {
         console.log(`error while processing ${request.url}: ${error}`)
         response.statusCode = 400;
         response.end(`Something in your request (${request.url}) is strange...`);
     }
-// For the server to be listening to request, it needs a port, which is set thanks to the listen function.
 });
 
 setupSocket(server);
 
-server.listen(PORT, function() {
+server.listen(PORT, function () {
     console.log(`Server is listening on port ${PORT}`);
     console.log(`http://localhost:${PORT}`);
 });
 
-const { MongoClient } = require('mongodb');
-const uri = "mongodb://mongo:27017/myapp_db";    // Lors de la connexion du back à mongo, cette db n'existe pas encore mais elle sera créée lors de l'insertion du premier élément
-const client = new MongoClient(uri);
-
-async function run() {
+async function handleCreateUser(request, response) {
     try {
-        await client.connect();
-        console.log("Connecté à MongoDB");
-        // Opérations sur la base de données
-    } catch (err) {
-        // Gère les erreurs de connexion
-        console.error("Erreur lors de la connexion à MongoDB:", err);
-    } finally {
-        await client.close();
+        let body = '';
+        request.on('data', (chunk) => {
+            body += chunk.toString();
+        });
+
+        request.on('end', async () => {
+            const userData = JSON.parse(body);
+            await addUser(userData);
+
+            response.statusCode = 201;
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ message: 'User created successfully' }));
+        });
+    } catch (error) {
+        console.error('Error creating user:', error);
+        response.statusCode = 500;
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ error: 'Internal server error' }));
     }
 }
 
-run().catch(console.dir);
+async function handleLogin(request, response) {
+    try {
+        const username = request.url.split('=')[1];
+        const user = await getUserByUsername(username);
+
+        if (user) {
+            response.statusCode = 200;
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ message: 'Login successful', user }));
+        } else {
+            response.statusCode = 404;
+            response.setHeader('Content-Type', 'application/json');
+            response.end(JSON.stringify({ error: 'User not found' }));
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        response.statusCode = 500;
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ error: 'Internal server error' }));
+    }
+}

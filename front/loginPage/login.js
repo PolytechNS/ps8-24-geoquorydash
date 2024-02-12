@@ -9,12 +9,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         AuthService.login(username, password)
             .then(data => {
+                alert('Connecté');
                 console.log('Login success:', data);
                 localStorage.setItem('token', data.token);
                 window.location.href = '../home.html';
             })
             .catch(error => {
                 console.error('Login error:', error);
+                alert('Nom d\'utilisateur ou mot de passe incorrect');
             });
     });
 });
