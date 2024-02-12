@@ -210,7 +210,6 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
         adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
     }
 
-    updatePathLength();
     turn();
     displayPossibleMove();
 }
@@ -309,8 +308,6 @@ async function movePlayer(targetCell) {
                     player2Path = calculateShortestPath(targetCell, 0);
                 }*/
 
-                updatePathLength();
-
                 if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
 
                 turn();
@@ -348,8 +345,6 @@ async function movePlayer(targetCell) {
             } else {
                 player2Path = calculateShortestPath(targetCell, 0);
             }*/
-
-            updatePathLength();
 
             if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
 
@@ -398,13 +393,6 @@ function getJumpedPlayer(startCellId, targetCellId) {
     return null;
 }
 
-function updatePathLength() {
-    const player1PathLengthElement = document.getElementById('player1PathLength');
-    const player2PathLengthElement = document.getElementById('player2PathLength');
-
-    player1PathLengthElement.innerText = `Le chemin du joueur 1 : ${player1Path.length}`;
-    player2PathLengthElement.innerText = `Le chemin du joueur 2 : ${player2Path.length}`;
-}
 /*
 function calculateShortestPath(startCell, targetRow) {
     const queue = [{ cell: startCell, path: [] }];
