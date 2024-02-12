@@ -264,17 +264,19 @@ function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
     return false;
 }
 
-function handleIAMove(move) {
+async function handleIAMove(move) {
     const targetCell = document.getElementById(`cell-${move.x}-${move.y}`);
-    function tryMove() {
-        if (movePlayer(targetCell) === 0) {
+        let result = await movePlayer(targetCell);
+        if (!result ) {
+            console.log('retry');
             socket.emit('newMove');
-            // Réessayer après un délai
-            setTimeout(tryMove, 100); // Attend 100ms avant de réessayer
+            await delay(100);
         }
-    }
-    tryMove();
+    socket.emit('newMoveValid', move);
+
+    return 1;
 }
+
 
 
 async function movePlayer(targetCell) {
@@ -291,7 +293,9 @@ async function movePlayer(targetCell) {
             const closePlayer = targetCell.querySelector('.player');
             if (!(closePlayer && closePlayer !== currentPlayer)) {
                 hidePossibleMove();
-                if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
+
+                if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
                 targetCell.appendChild(currentPlayer);
                 if (currentPlayer === BotPlayer && targetX === 16) {
                     endGame('Le joueur 1 a gagné!');
@@ -307,22 +311,29 @@ async function movePlayer(targetCell) {
 
                 updatePathLength();
 
-                if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
+                if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
 
                 turn();
                 displayPossibleMove();
                 return 1;
             }
         }
+
     } else if ((Math.abs(targetX - x) === 4 && targetY === y) || (Math.abs(targetY - y) === 4 && targetX === x)) {
         const jumpedCell = getJumpedPlayer(playerCellId, targetCellId);
-        const barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
+        let barrierInBetween;
+        try {
+            barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
+        }catch (error){
+            console.error("Une erreur s'est produite lors de l'accès à l'ID de jumpedCell :", targetCellId);
+        }
         const secondBarrierInBetween = checkBarriersBetween(jumpedCell.id, targetCellId);
         const jumpedPlayer = getJumpedPlayer(playerCellId, targetCellId);
 
         if (jumpedPlayer && !barrierInBetween && !secondBarrierInBetween) {
             hidePossibleMove();
-            if (currentPlayer === BotPlayer) await delay(1000); // Attend ici pendant 2 secondes
+
+            if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
 
             targetCell.appendChild(currentPlayer);
 
@@ -340,16 +351,17 @@ async function movePlayer(targetCell) {
 
             updatePathLength();
 
-            if (currentPlayer === BotPlayer) {
-                await delay(1000); // Attend ici pendant 2 secondes
-            }
+            if (currentPlayer === BotPlayer) await delay(10); // Attend ici pendant 2 secondes
+
             turn();
             displayPossibleMove();
+
             return 1;
         }
-    } else {
-        return 0;
     }
+
+    return 0;
+
 }
 
 
