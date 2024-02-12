@@ -3,13 +3,10 @@ import { delay } from "../js/utils.js";
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
-const BotPlayer = createPlayer('BotPlayer', 'blue');
-const player2 = createPlayer('player2', 'red');
-let player1Path = [];
-let player2Path = [];
+const player2 = createPlayer('player2');
+const BotPlayer = createPlayer('BotPlayer');
 let currentPlayer = player2;
 let gameActive = true;
-
 
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
@@ -52,7 +49,7 @@ updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
 
-function createPlayer(className, bgColor) {
+function createPlayer(className) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
     player.id = `${className}`;

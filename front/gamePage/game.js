@@ -1,10 +1,8 @@
 import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
 
 const board = document.getElementById('board');
-const player1 = createPlayer('player1', 'blue');
-const player2 = createPlayer('player2', 'red');
-let player1Path = [];
-let player2Path = [];
+const player1 = createPlayer('player1');
+const player2 = createPlayer('player2');
 let currentPlayer = player1;
 let gameActive = true;
 
@@ -49,7 +47,7 @@ updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
 
-function createPlayer(className, bgColor) {
+function createPlayer(className) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
     player.id = `${className}`;
