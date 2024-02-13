@@ -1,3 +1,5 @@
+const { getPossibleMove } = require("../game/gameEngine");
+
 // This function doesn't handle walls.
 function computeMove(gameState) {
     let pos;
@@ -8,15 +10,7 @@ function computeMove(gameState) {
         }
     }
 
-    let possibleMoves = [];
-    // Check if moving left is possible.
-    if (pos.y > 0) possibleMoves.push({x: pos.x, y: pos.y-2});
-    // Check if moving right is possible.
-    if (pos.y < 16) possibleMoves.push({x: pos.x, y: pos.y+2});
-    // Check if moving down is possible.
-    if (pos.x > 0) possibleMoves.push({x: pos.x-2, y: pos.y});
-    // Check if moving up is possible.
-    if (pos.y < 16) possibleMoves.push({x: pos.x+2, y: pos.y});
+    let possibleMoves = getPossibleMove();
 
     // Get a random integer between 0 and possibleMoves.length-1
     let moveIndex = Math.floor(Math.random()*possibleMoves.length);

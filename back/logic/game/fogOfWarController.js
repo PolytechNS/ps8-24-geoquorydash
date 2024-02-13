@@ -1,4 +1,6 @@
-const {gameState} = require("./gameManager");
+const gameManager = require('./gameInstance'); // Instance unique de GameManager
+let gameState = gameManager.getGameState();
+
 
 class FogOfWar{
     visibilityMap = [];
