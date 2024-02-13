@@ -1,8 +1,8 @@
 import socket from "../sockets/socketConnection.js";
 
-let visibilityMap = [];
+/*let visibilityMap = [];
 let oldPlayer1AdjacentsCells = [];
-let oldPlayer2AdjacentsCells = [];
+let oldPlayer2AdjacentsCells = [];*/
 
 let playerCells = document.getElementsByClassName('player-cell');
 
@@ -38,7 +38,7 @@ function getCurrentPlayerClass(player) {
 }
 
 // Function to initialize the visibility of the board
-function initializeVisibility() {
+/*function initializeVisibility() {
     console.log(playerCells.length);
     for (let i = 0; i < playerCells.length; i++) {
         visibilityMap[i] = [];
@@ -50,10 +50,11 @@ function initializeVisibility() {
             visibilityMap[i] = -1; // Visibility -1
         }
     }
-}
+}*/
 
 
 
+/*
 function updateBoardVisibility(board) {
     // Get the player cells
     let Player1Cell = board.getElementsByClassName('BotPlayer')[0].parentElement.id;
@@ -94,8 +95,9 @@ function updateBoardVisibility(board) {
     oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
 
 }
+*/
 
-// Function to update the board display based on visibility
+/*// Function to update the board display based on visibility
 
 function getIndicesFromId(cellId) {
     // Split the id by '-' and extract the numeric parts
@@ -104,8 +106,9 @@ function getIndicesFromId(cellId) {
     let j = parseInt(parts[2], 10);
 
     return { i, j };
-}
+}*/
 
+/*
 function getAdjacentPlayerCellsIndices(i, j) {
     let adjacentIndices = [];
 
@@ -253,6 +256,7 @@ function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
         }
     }
 }
+*/
 
 
 export {  updateBoardDisplay };
