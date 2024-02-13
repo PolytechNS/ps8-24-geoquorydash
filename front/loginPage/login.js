@@ -11,8 +11,9 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 console.log('Login success:', data);
                 localStorage.setItem('token', data.token);
-                window.location.href = '../home.html';
                 alert('Connexion effectuée');
+                const modal = window.parent.document.querySelector('.modal');
+                modal.style.display = 'none';
             })
             .catch(error => {
                 console.error('Login error:', error);
