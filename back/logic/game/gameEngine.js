@@ -1,4 +1,5 @@
 const gameManager = require('./gameManager'); // Assurez-vous que le chemin soit correct
+const fogOfWar = require('./fogOfWarController');
 const { arrayOfPositionContainsPosition } = require('../../utils/utils.js');
 let player1 = gameManager.getPlayerById('ia');
 let player2 = gameManager.getPlayerById('p2');
@@ -26,9 +27,10 @@ function moveAI() {
     movePlayer(iaMove);
 }
 
-function updateWalls(wall) {
+function updateWalls(wall, isVertical) {
     if(canPlayerReachArrival()) {
         currentPlayer.walls.push(wall);
+        fogOfWar.adjustVisibilityForWalls(wall, isVertical);
         turn();
     }
 }

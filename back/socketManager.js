@@ -8,14 +8,13 @@ const setupSocket = (server) => {
 
     io.of('/api/game').on('connection', (socket) => {
          console.log('ON Connection');
-
-         console.log('EMIT initializeBoard');
+         //console.log('EMIT initializeBoard');
         socket.emit("initializeBoard", gameManager.gameState, fogOfWar.visibilityMap);
         fogOfWar.updateBoardVisibility();
         //fogOfWar.displayVisibilityMap();
 
         socket.on('disconnect', () => {
-            // console.log('Client disconnected');
+            console.log('Client disconnected');
         });
 
         socket.on('movePlayer', (targetPosition) => {
@@ -43,14 +42,13 @@ const setupSocket = (server) => {
             socket.emit('possibleMoveList', possibleMove);
         });
 
-        socket.on('toggleWall', (wall) => {
+        socket.on('toggleWall', (wall, isVertical) => {
             // console.log("ON toggleWall");
-
-            updateWalls(wall);
+            updateWalls(wall, isVertical);
             fogOfWar.updateBoardVisibility();
 
             // console.log("EMIT updateBoard");
-            socket.emit('updateBoard', gameManager.getCurrentPlayer(), fogOfWar.visibilityMap, gameManager.gameState);
+            socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
         })
     });
 }

@@ -24,8 +24,9 @@ class FogOfWar{
 
     updateBoardVisibility() {
         // Get the indices of the players cell
-        let { i:iP1, j:jP1 } = { i: gameManager.gameState.players[0].position.x, j: gameManager.gameState.players[0].position.y}
-        let { i: iP2, j: jP2 } = { i: gameManager.gameState.players[1].position.x, j: gameManager.gameState.players[1].position.y}
+        let gameState = gameManager.gameState;
+        let { i:iP1, j:jP1 } = { i: gameState.players[0].position.x, j: gameState.players[0].position.y}
+        let { i: iP2, j: jP2 } = { i: gameState.players[1].position.x, j: gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);
@@ -161,27 +162,20 @@ class FogOfWar{
         return adjacentIndices;
     }
 
-    adjustVisibilityForWalls(player, getAdjacentBarrierCellsIndices) {
-        let { i, j } = player.walls[player.walls.length - 1];
-        let adjacentBarrierCells = getAdjacentBarrierCellsIndices(i, j);
-
-        let visibilityToAdd = player.id === 'ia' ? 2 : -2;
+    adjustVisibilityForWalls(wall, isVertical) {
+        let { x, y } = wall[0];
+        console.log(wall[0]);
+        let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
+        console.log('adjacentBarrierCells: ', adjacentBarrierCells);
+        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' ? 2 : -2;
 
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
                 this.visibilityMap[cellIndex] += visibilityToAdd;
             });
-            // Ajustez visibilityToAdd en fonction du type de joueur
-            visibilityToAdd += player.id === 'ia' ? -1 : 1;
+            visibilityToAdd += gameManager.getCurrentPlayer().id === 'ia' ? -1 : 1;
         });
-    }
-
-    adjustVisibilityForWallsHorizontal(player) {
-        this.adjustVisibilityForWalls(player, this.getAdjacentBarrierCellsIndicesHorizontal);
-    }
-
-    adjustVisibilityForWallsVertical(player) {
-        this.adjustVisibilityForWalls(player, this.getAdjacentBarrierCellsIndicesVertical);
+        this.displayVisibilityMap();
     }
 
     displayVisibilityMap() {
