@@ -160,7 +160,7 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
 
-    // console.log("EMIT toggleWall")
+    console.log("EMIT toggleWall")
     socket.emit('toggleWall', wall, isVertical);
 
 

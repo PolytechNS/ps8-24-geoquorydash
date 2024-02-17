@@ -42,15 +42,10 @@ function checkBarriersBetween(startPosition, targetPosition) {
 
     const interX = x1 + (x2 - x1) / 2;
     const interY = y1 + (y2 - y1) / 2;
-    wallPosition = {x: interX, y: interY};
+    let possibleWallPosition = {x: interX, y: interY};
 
     const boardWalls = gameManager.getBoardWalls();
-    boardWalls.forEach(wall => {
-        if(wall.includes(wallPosition)) {
-            return true;
-        }
-    })
-    return false;
+    return arrayOfPositionContainsPosition(boardWalls, possibleWallPosition);
 }
 
 function getPossibleMove() {
@@ -84,6 +79,7 @@ function getPossibleMove() {
                possibleMove.push(adjacentCellPosition);
             }
         }
+        return possibleMove;
     } else {
         return adjacentCellsPositionsWithWalls;
     }

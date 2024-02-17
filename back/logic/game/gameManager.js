@@ -67,9 +67,11 @@ class GameManager {
         let boardWalls = [];
         this.gameState.players.forEach(player => {
             player.walls.forEach(wall => {
-                boardWalls.push(wall);
-            })
-        })
+                wall.forEach(cell => {
+                    boardWalls.push(cell);
+                });
+            });
+        });
         return boardWalls;
     }
 
