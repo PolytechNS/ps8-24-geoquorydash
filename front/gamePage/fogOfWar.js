@@ -1,32 +1,41 @@
-import socket from "../sockets/socketConnection.js";
-
 /*let visibilityMap = [];
 let oldPlayer1AdjacentsCells = [];
 let oldPlayer2AdjacentsCells = [];*/
 
-let playerCells = document.getElementsByClassName('player-cell');
+import {askPossibleMove} from "./gameIA.js";
 
-function updateBoardDisplay(player, visibilityMap) {
-    let currentPlayerClass = getCurrentPlayerClass(player);
-
+function hideOldPossibleMoves(currentPlayer) {
+    let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
-        if (currentPlayerClass === 'BotPlayer') {
-            playerCells[i].style.opacity = visibilityMap[i] >= 0 ? 1 : 0.1;
-            document.getElementById('BotPlayer').style.opacity = 1;
-            document.getElementById('BotPlayer').parentElement.style.opacity = 1;
-            let player2 = document.getElementById('player2');
-            player2.style.opacity = player2.parentElement.style.opacity === '0.1' ? 0 : 1;
-        } else {
-            playerCells[i].style.opacity = visibilityMap[i] <= 0 ? 1 : 0.1;
-            document.getElementById('player2').style.opacity = 1;
-            document.getElementById('player2').parentElement.style.opacity = 1;
-            let player1 = document.getElementById('BotPlayer');
-            player1.style.opacity = player1.parentElement.style.opacity === '0.1' ? 0 : 1;
-        }
+        playerCells[i].style.backgroundColor = '';
     }
 }
 
-function getCurrentPlayerClass(player) {
+
+function updateBoardDisplay(gameState, visibilityMap) {
+    let playerCells = document.getElementsByClassName('player-cell');
+    let currentPlayer = gameState.players.find(player => player.isCurrentPlayer === true);
+    let currentPlayerPosition = currentPlayer.position;
+
+    for (let i = 0; i < playerCells.length; i++) {
+        playerCells[i].style.opacity = visibilityMap[i] <= 0 ? 1 : 0.1;
+    }
+
+    hideOldPossibleMoves(currentPlayer);
+
+    let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
+    currentPlayerCell.appendChild(document.getElementById('player2'));
+    document.getElementById('player2').style.opacity = 1;
+    document.getElementById('player2').parentElement.style.opacity = 1;
+
+    let otherPlayerPosition = gameState.players.find(player => player.id !== currentPlayer.id).position;
+    let otherPlayerCell = document.getElementById(`cell-${otherPlayerPosition.x}-${otherPlayerPosition.y}`);
+    otherPlayerCell.appendChild(document.getElementById('BotPlayer'));
+
+    askPossibleMove();
+}
+
+/*function getCurrentPlayerClass(player) {
     if (player.classList.contains('BotPlayer')) {
         return 'BotPlayer';
     } else if (player.classList.contains('player2')) {
@@ -35,7 +44,7 @@ function getCurrentPlayerClass(player) {
 
     // Default return if no player is identified
     return null;
-}
+}*/
 
 // Function to initialize the visibility of the board
 /*function initializeVisibility() {

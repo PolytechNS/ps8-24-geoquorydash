@@ -9,12 +9,13 @@ class GameManager {
             position: null,
             id: null,
             walls: [],
-            isCurrentPlayer
+            isCurrentPlayer: false
             }
         ]
     };
 
     constructor() {
+        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         this.gameState = {
             players: [
@@ -32,11 +33,12 @@ class GameManager {
                 }
             ]
         };
+        return this;
     }
 
     // Methods to manage the game
-    tryMove(){
-        return computeMove(this.gameState);
+    computeMoveForAI(getPossibleMove){
+        return computeMove(this.gameState, getPossibleMove);
     }
 
 
@@ -58,14 +60,13 @@ class GameManager {
     }
 
     getPlayerById(playerId) {
-        const player = this.gameState.players.find(player => player.id === playerId);
-        return player;
+        return this.gameState.players.find(player => player.id === playerId);
     }
 
     getBoardWalls() {
         let boardWalls = [];
-        players.forEach(player => {
-            walls.forEach(wall => {
+        this.gameState.players.forEach(player => {
+            player.walls.forEach(wall => {
                 boardWalls.push(wall);
             })
         })
@@ -77,4 +78,5 @@ class GameManager {
     }
 }
 
-module.exports = GameManager;
+const gameManagerInstance = new GameManager();
+module.exports = gameManagerInstance;

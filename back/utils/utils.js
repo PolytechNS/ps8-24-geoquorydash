@@ -13,3 +13,12 @@ module.exports.parseJSON = (req, callback) => {
         }
     });
 };
+
+module.exports.arrayOfPositionContainsPosition = (array, position) => {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i].x === position.x && array[i].y === position.y) {
+            return true;
+        }
+    }
+    return false;
+}

@@ -1,5 +1,4 @@
-const gameManager = require('./gameInstance'); // Instance unique de GameManager
-let gameState = gameManager.getGameState();
+const gameManager = require('./gameManager'); // Instance unique de GameManager
 
 
 class FogOfWar{
@@ -18,12 +17,15 @@ class FogOfWar{
                 this.visibilityMap[i] = -1; // Visibility -1
             }
         }
+
+        this.updateBoardVisibility();
+        //console.log(this.visibilityMap);
     }
 
     updateBoardVisibility() {
         // Get the indices of the players cell
-        let { i:iP1, j:jP1 } = gameState.players[0].position;
-        let { i: iP2, j: jP2 } = gameState.players[1].position;
+        let { i:iP1, j:jP1 } = { i: gameManager.gameState.players[0].position.x, j: gameManager.gameState.players[0].position.y}
+        let { i: iP2, j: jP2 } = { i: gameManager.gameState.players[1].position.x, j: gameManager.gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);
@@ -182,7 +184,22 @@ class FogOfWar{
         this.adjustVisibilityForWalls(player, this.getAdjacentBarrierCellsIndicesVertical);
     }
 
+    displayVisibilityMap() {
+        console.log('');
+        for (let i = 0; i < 9; i++) {
+            let row = '';
+            for (let j = 0; j < 9; j++) {
+                if(this.visibilityMap[i * 9 + j] >= 0) {
+                    row += ' ' + this.visibilityMap[i * 9 + j] + ' ';
+                } else {
+                    row += this.visibilityMap[i * 9 + j] + ' ';
+                }
+            }
+             console.log(row);
+        }
+    }
 
 }
 
-module.exports = FogOfWar;
+const fogOfWarInstance = new FogOfWar();
+module.exports = fogOfWarInstance;

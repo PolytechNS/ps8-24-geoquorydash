@@ -39,8 +39,8 @@ server.listen(PORT, function() {
     console.log(`Server is listening on port ${PORT}`);
     console.log(`http://localhost:${PORT}`);
 });
-/*
-const { MongoClient } = require('mongodb');
+
+/*const { MongoClient } = require('mongodb');
 const uri = "mongodb://mongo:27017/myapp_db";    // Lors de la connexion du back à mongo, cette db n'existe pas encore mais elle sera créée lors de l'insertion du premier élément
 const client = new MongoClient(uri);
 
