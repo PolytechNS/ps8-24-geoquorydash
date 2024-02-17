@@ -24,6 +24,8 @@ function movePlayer(targetPosition) {
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getPossibleMove());
+    console.log("L'IA se déplace en : ", iaMove);
+    console.log("La position de l'autre joueur : ", otherPlayer.position, otherPlayer.id);
     movePlayer(iaMove);
 }
 
@@ -54,8 +56,7 @@ function getPossibleMove() {
 
     const adjacentCellsPositionsWithWalls = getAdjacentCellsPositionsWithWalls(currentPlayer.position);
     if(isOtherPlayerOnAdjacentCells(adjacentCellsPositionsWithWalls)) {
-        const [xPosition, yPosition] = [currentPlayer.position.x, currentPlayer.position.y];
-        const [nx, ny] = [otherPlayer.position.x, otherPlayer.position.y];
+        console.log("L'autre joueur est sur une case adjacente");
         let forwardPosition = null;
         if(currentPlayer.position.x === otherPlayer.position.x) {
             if(currentPlayer.position.y < otherPlayer.position.y) {
@@ -73,9 +74,11 @@ function getPossibleMove() {
         if(!checkBarriersBetween(otherPlayer, forwardPosition)) {
             possibleMove.push(forwardPosition);
         }
+        console.log("La position de l'autre joueur : ", otherPlayer.position);
 
         for(const adjacentCellPosition of adjacentCellsPositionsWithWalls) {
-            if(adjacentCellPosition !== otherPlayer) {
+            if(arrayOfPositionContainsPosition(adjacentCellPosition, otherPlayer.position)) {
+                console.log(adjacentCellPosition);
                possibleMove.push(adjacentCellPosition);
             }
         }
@@ -183,6 +186,8 @@ function turn() {
     for (let player of gameManager.getGameState().players) {
         player.isCurrentPlayer = !player.isCurrentPlayer;
     }
+    otherPlayer = currentPlayer;
+    currentPlayer = gameManager.getCurrentPlayer();
 
     moveAI(); // On fait bouger l'IA
 
@@ -190,6 +195,7 @@ function turn() {
     for (let player of gameManager.getGameState().players) {
         player.isCurrentPlayer = !player.isCurrentPlayer;
     }
+    otherPlayer = currentPlayer;
     currentPlayer = gameManager.getCurrentPlayer();
 }
 
