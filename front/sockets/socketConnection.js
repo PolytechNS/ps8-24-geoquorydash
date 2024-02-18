@@ -1,6 +1,6 @@
 var socket = io('/api/game');
 import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
-import {displayPossibleMove} from '../gamePage/gameIA.js';
+import { displayPossibleMove, endGame } from '../gamePage/gameIA.js';
 
 
 socket.on('connect', function() {
@@ -20,6 +20,11 @@ socket.on('updateBoard', function(gameState, visibilityMap) {
 socket.on('possibleMoveList', function(possibleMove) {
     // console.log("ON possibleMoveList, J'affiche les déplacements possibles");
     displayPossibleMove(possibleMove);
+});
+
+socket.on('endGame', function(player) {
+    // console.log("ON possibleMoveList, J'affiche les déplacements possibles");
+    endGame(player);
 });
 
 export default socket;

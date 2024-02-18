@@ -286,13 +286,12 @@ function updateBoard(gameState) {
     player2Cell.appendChild(player2);
 }
 */
-/*function endGame(message) {
-    gameActive = false;
+function endGame(player) {
     const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
+    messageElement.innerText = "Le joueur " + player.id + " a gagne !";
     messageElement.classList.add('visible');
     board.classList.add('hidden');
-}*/
+}
 /*function displayPossibleMove() {
     if (!gameActive) return;
 
@@ -365,4 +364,4 @@ function hidePossibleMove() {
 */
 
 
-export { askPossibleMove, displayPossibleMove };
+export { askPossibleMove, displayPossibleMove, endGame };

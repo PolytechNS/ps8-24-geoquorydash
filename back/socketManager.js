@@ -20,7 +20,8 @@ const setupSocket = (server) => {
         socket.on('movePlayer', (targetPosition) => {
              //console.log("ON movePlayer, targetPosition recu : ", targetPosition);
 
-            movePlayer(targetPosition);
+            var response = movePlayer(targetPosition);
+            if (response) socket.emit("endGame", response);
             fogOfWar.updateBoardVisibility();
 
             turn();

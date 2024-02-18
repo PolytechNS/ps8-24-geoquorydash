@@ -15,17 +15,16 @@ function movePlayer(targetPosition) {
 
     if (currentPlayer === player1 && targetPosition.x === 16) {
         endGame('Le joueur 2 a gagné!');
+        return currentPlayer;
     } else if (currentPlayer === player2 && targetPosition.x === 0) {
         endGame('Le joueur 1 a gagné!');
+        return currentPlayer;
     }
-    return 1;
 }
 
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getPossibleMove());
-    console.log("L'IA se déplace en : ", iaMove);
-    console.log("La position de l'autre joueur : ", otherPlayer.position, otherPlayer.id);
     movePlayer(iaMove);
 }
 
@@ -56,7 +55,6 @@ function getPossibleMove() {
 
     const adjacentCellsPositionsWithWalls = getAdjacentCellsPositionsWithWalls(currentPlayer.position);
     if(isOtherPlayerOnAdjacentCells(adjacentCellsPositionsWithWalls)) {
-        console.log("L'autre joueur est sur une case adjacente");
         let forwardPosition = null;
         if(currentPlayer.position.x === otherPlayer.position.x) {
             if(currentPlayer.position.y < otherPlayer.position.y) {
@@ -74,7 +72,6 @@ function getPossibleMove() {
         if(!checkBarriersBetween(otherPlayer, forwardPosition)) {
             possibleMove.push(forwardPosition);
         }
-        console.log("La position de l'autre joueur : ", otherPlayer.position);
 
         for(const adjacentCellPosition of adjacentCellsPositionsWithWalls) {
             if(arrayOfPositionContainsPosition(adjacentCellPosition, otherPlayer.position)) {
