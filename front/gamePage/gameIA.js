@@ -1,5 +1,4 @@
-import { updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
-import { delay } from "../js/utils.js";
+import { updateBoardDisplay } from "./fogOfWar.js";
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
@@ -18,7 +17,6 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
-            cell.addEventListener('click', () => socketMovePlayer(i, j));
         } else {
             cell.classList.add('barrier-cell');
             cell.addEventListener('mouseenter', (event) => {
@@ -40,17 +38,11 @@ for (let i = 0; i < 17; i++) {
     }
 }
 
-
 const player1Cell = document.getElementById('cell-0-8');
 player1Cell.appendChild(BotPlayer);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
-
-//initializeVisibility();
-updateBoardDisplay(board, currentPlayer);
-
-askPossibleMove();
 
 function createPlayer(className, bgColor) {
     const player = document.createElement('div');
@@ -98,77 +90,34 @@ function handleCellAction(cell, i, j, actionType) {
     }
 }
 
-/*function displayPossibleMove() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-    const neighborsList = getNeighborsWithBarriers(playerCell);
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const [x, y] = playerCell.id.split('-').slice(1).map(Number);
-        const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
-        let forwardCell = null;
-        if(x === nx) {
-            if(y < ny) {
-                forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
-            } else {
-                forwardCell = document.getElementById(`cell-${x}-${y - 4}`);
-            }
-        } else {
-            if(x < nx) {
-                forwardCell = document.getElementById(`cell-${x + 4}-${y}`);
-            } else {
-                forwardCell = document.getElementById(`cell-${x - 4}-${y}`);
-            }
-        }
-        if(!checkBarriersBetween(neighborPlayer.id, forwardCell.id)) {
-            forwardCell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        }
-
-        for(const neighbor of neighborsList) {
-            if(playerIsNeighbor()) {
-               if(neighbor.id !== playerIsNeighbor().id) {
-                    neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                }
-            }
-        }
-    } else {
-        for(const neighbor of neighborsList) {
-            neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        }
-    }
-}*/
-
-export function askPossibleMove() {
+function askPossibleMove() {
+    // console.log("EMIT possibleMoveRequest")
     socket.emit('possibleMoveRequest');
 }
 
 function displayPossibleMove(possibleMove) {
-    possibleMove.forEach(move => {
-        let cell;
-        cell = document.getElementById(`cell-${move.x}-${move.y}`);
-        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-    })
-}
-
-function hidePossibleMove() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-
-    const neighborsList = getGeographicNeighbors(playerCell);
-    for(const neighbor of neighborsList) {
-        neighbor.style.backgroundColor = 'transparent';
-    }
-
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
-        for(const neighbor2 of neighborsOfPlayer2) {
-            neighbor2.style.backgroundColor = 'transparent';
+    var allElements = document.querySelectorAll('*');
+    allElements.forEach(function(cell) {
+        // Supprimer l'écouteur en utilisant la référence stockée
+        if (cell.moveEventListener) {
+            cell.removeEventListener('click', cell.moveEventListener);
+            cell.moveEventListener = null; // Nettoyer la référence
         }
-    }
+    });
+
+    possibleMove.forEach(move => {
+        let cell = document.getElementById(`cell-${move.x}-${move.y}`);
+        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+
+        // Créer une nouvelle fonction de rappel qui inclut les paramètres spécifiques
+        let callback = () => socketMovePlayer(move.x, move.y);
+        cell.addEventListener('click', callback);
+        // Stocker la référence de cette fonction pour pouvoir la supprimer plus tard
+        cell.moveEventListener = callback;
+    });
 }
+
+
 
 function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     toggleBarrier(targetCell, targetCell2, targetCell3, isVertical);
@@ -187,14 +136,14 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
 }
 
 function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-    if(!canPlayerReachArrival(BotPlayer)) {
+/*    if(!canPlayerReachArrival(BotPlayer)) {
         retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
         return;
     } else if(!canPlayerReachArrival(player2)) {
         retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
         return;
-    }
-    hidePossibleMove();
+    }*/
+    //hidePossibleMove();
 
     let wall;
     wall = [];
@@ -211,93 +160,21 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
 
-    socket.emit('toggleWall', wall);
+    console.log("EMIT toggleWall")
+    socket.emit('toggleWall', wall, isVertical);
 
-    if(isVertical) {
-        adjustVisibilityForWallsVertical(targetCell.id, currentPlayer.id);
-    } else {
-        adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
-    }
 
-    updatePathLength();
+/*    updatePathLength();
     turn();
-    askPossibleMove();
+    askPossibleMove();*/
 }
 
-function canPlayerReachArrival(player) {
-    const currentCell = player.parentElement;
-    let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
-    let canReach = false;
-
-    if(player === BotPlayer) {
-        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player1");
-    } else if(player === player2) {
-        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player2");
-    }
-
-    if (canReach) {
-        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
-    } else {
-        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
-    }
-
-    return canReach;
-}
-
-function retrieveImpossibleMovePopUp(message) {
-    const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);
-}
-
-
-// movePlayer
 function socketMovePlayer(i, j) {
-    let position = {x: i, y: j};
-    socket.emit('movePlayer', position);
+    let targetPosition = {x: i, y: j};
+
+    // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
+    socket.emit('movePlayer', targetPosition);
 }
-
-function updatePathLength() {
-    const player1PathLengthElement = document.getElementById('player1PathLength');
-    const player2PathLengthElement = document.getElementById('player2PathLength');
-
-    player1PathLengthElement.innerText = `Le chemin du joueur 1 : ${player1Path.length}`;
-    player2PathLengthElement.innerText = `Le chemin du joueur 2 : ${player2Path.length}`;
-}
-/*
-function calculateShortestPath(startCell, targetRow) {
-    const queue = [{ cell: startCell, path: [] }];
-    const visited = new Set();
-
-    while (queue.length > 0) {
-        const { cell, path } = queue.shift();
-        const [x, y] = cell.id.split('-').slice(1).map(Number);
-
-        if (x === targetRow) {
-            return path;
-        }
-
-        const neighbors = getNeighborsWithBarriers(cell);
-        for (const neighbor of neighbors) {
-            const neighborId = neighbor.id;
-            const isBarrier = neighbor.querySelector('.barrier');
-
-            if (!visited.has(neighborId) && !(isBarrier && !path.includes(neighborId))) {
-                visited.add(neighborId);
-                if (neighbor.classList.contains('player-cell')) {
-                    queue.push({ cell: neighbor, path: [...path, neighborId] });
-                } else {
-                    queue.push({ cell: neighbor, path });
-                }
-            }
-        }
-    }
-
-    return [];
-}*/
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
     if (!cell.querySelector('.barrier') && (!cell2.querySelector('.barrier') || !cell2) && (!cell3.querySelector('.barrier') || !cell3)) {
@@ -356,6 +233,48 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
     }
 }
 
+
+/*
+function updatePathLength() {
+    const player1PathLengthElement = document.getElementById('player1PathLength');
+    const player2PathLengthElement = document.getElementById('player2PathLength');
+
+    player1PathLengthElement.innerText = `Le chemin du joueur 1 : ${player1Path.length}`;
+    player2PathLengthElement.innerText = `Le chemin du joueur 2 : ${player2Path.length}`;
+}
+*/
+/*
+function calculateShortestPath(startCell, targetRow) {
+    const queue = [{ cell: startCell, path: [] }];
+    const visited = new Set();
+
+    while (queue.length > 0) {
+        const { cell, path } = queue.shift();
+        const [x, y] = cell.id.split('-').slice(1).map(Number);
+
+        if (x === targetRow) {
+            return path;
+        }
+
+        const neighbors = getNeighborsWithBarriers(cell);
+        for (const neighbor of neighbors) {
+            const neighborId = neighbor.id;
+            const isBarrier = neighbor.querySelector('.barrier');
+
+            if (!visited.has(neighborId) && !(isBarrier && !path.includes(neighborId))) {
+                visited.add(neighborId);
+                if (neighbor.classList.contains('player-cell')) {
+                    queue.push({ cell: neighbor, path: [...path, neighborId] });
+                } else {
+                    queue.push({ cell: neighbor, path });
+                }
+            }
+        }
+    }
+
+    return [];
+}*/
+/*
 function updateBoard(gameState) {
     const player1 = gameState.players.find(player => player.id === 'ia');
     const player1Cell = document.getElementById(`cell-${player1.position.x}-${player1.position.y}`);
@@ -366,23 +285,83 @@ function updateBoard(gameState) {
     const player2Cell = document.getElementById(`cell-${player1.position.x}-${player1.position.y}`);
     player2Cell.appendChild(player2);
 }
-
-function turn() {
-    currentPlayer = currentPlayer === BotPlayer ? player2 : BotPlayer;
-
-    if (currentPlayer === BotPlayer){
-        socket.emit('newMove');
-    }
-
-    updateBoardDisplay(board, currentPlayer);
-
-    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'BotPlayer' ? '1' : '2'}`;
-}
-
-function endGame(message) {
-    gameActive = false;
+*/
+function endGame(player) {
     const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
+    messageElement.innerText = "Le joueur " + player.id + " a gagne !";
     messageElement.classList.add('visible');
     board.classList.add('hidden');
 }
+/*function displayPossibleMove() {
+    if (!gameActive) return;
+
+    const playerCell = currentPlayer.parentElement;
+    const neighborsList = getNeighborsWithBarriers(playerCell);
+    let neighborPlayer = null;
+    if(neighborPlayer = playerIsNeighbor()) {
+        const [x, y] = playerCell.id.split('-').slice(1).map(Number);
+        const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
+        let forwardCell = null;
+        if(x === nx) {
+            if(y < ny) {
+                forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
+            } else {
+                forwardCell = document.getElementById(`cell-${x}-${y - 4}`);
+            }
+        } else {
+            if(x < nx) {
+                forwardCell = document.getElementById(`cell-${x + 4}-${y}`);
+            } else {
+                forwardCell = document.getElementById(`cell-${x - 4}-${y}`);
+            }
+        }
+        if(!checkBarriersBetween(neighborPlayer.id, forwardCell.id)) {
+            forwardCell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        }
+
+        for(const neighbor of neighborsList) {
+            if(playerIsNeighbor()) {
+               if(neighbor.id !== playerIsNeighbor().id) {
+                    neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+                }
+            }
+        }
+    } else {
+        for(const neighbor of neighborsList) {
+            neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        }
+    }
+}*/
+/*
+function retrieveImpossibleMovePopUp(message) {
+    const messageElement = document.getElementById('message');
+    messageElement.innerText = message;
+    messageElement.classList.add('visible');
+    setTimeout(function() {
+        messageElement.classList.remove('visible');
+    }, 2000);
+}
+*/
+/*
+function hidePossibleMove() {
+    if (!gameActive) return;
+
+    const playerCell = currentPlayer.parentElement;
+
+    const neighborsList = getGeographicNeighbors(playerCell);
+    for(const neighbor of neighborsList) {
+        neighbor.style.backgroundColor = 'transparent';
+    }
+
+    let neighborPlayer = null;
+    if(neighborPlayer = playerIsNeighbor()) {
+        const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
+        for(const neighbor2 of neighborsOfPlayer2) {
+            neighbor2.style.backgroundColor = 'transparent';
+        }
+    }
+}
+*/
+
+
+export { askPossibleMove, displayPossibleMove, endGame };

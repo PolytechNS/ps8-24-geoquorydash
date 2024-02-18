@@ -1,16 +1,7 @@
-const { getPossibleMove } = require("../game/gameEngine");
-
 // This function doesn't handle walls.
-function computeMove(gameState) {
-    let pos;
-    for (let player of gameState.players) {
-        if (player.id === 'ia') {
-            pos = player.position;
-            break;
-        }
-    }
+function computeMoveForAI(gameState, getPossibleMove) {
 
-    let possibleMoves = getPossibleMove();
+    let possibleMoves = getPossibleMove;
 
     // Get a random integer between 0 and possibleMoves.length-1
     let moveIndex = Math.floor(Math.random()*possibleMoves.length);
@@ -18,4 +9,4 @@ function computeMove(gameState) {
     return possibleMoves[moveIndex];
 }
 
-module.exports = { computeMove };
+module.exports = { computeMove: computeMoveForAI };

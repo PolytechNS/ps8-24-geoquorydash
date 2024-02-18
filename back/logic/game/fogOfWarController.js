@@ -1,5 +1,4 @@
-const gameManager = require('./gameInstance'); // Instance unique de GameManager
-let gameState = gameManager.getGameState();
+const gameManager = require('./gameManager'); // Instance unique de GameManager
 
 
 class FogOfWar{
@@ -18,12 +17,16 @@ class FogOfWar{
                 this.visibilityMap[i] = -1; // Visibility -1
             }
         }
+
+        this.updateBoardVisibility();
+        //console.log(this.visibilityMap);
     }
 
     updateBoardVisibility() {
         // Get the indices of the players cell
-        let { i:iP1, j:jP1 } = gameState.players[0].position;
-        let { i: iP2, j: jP2 } = gameState.players[1].position;
+        let gameState = gameManager.gameState;
+        let { i:iP1, j:jP1 } = { i: gameState.players[0].position.x, j: gameState.players[0].position.y}
+        let { i: iP2, j: jP2 } = { i: gameState.players[1].position.x, j: gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);
@@ -159,30 +162,36 @@ class FogOfWar{
         return adjacentIndices;
     }
 
-    adjustVisibilityForWalls(player, getAdjacentBarrierCellsIndices) {
-        let { i, j } = player.walls[player.walls.length - 1];
-        let adjacentBarrierCells = getAdjacentBarrierCellsIndices(i, j);
-
-        let visibilityToAdd = player.id === 'ia' ? 2 : -2;
+    adjustVisibilityForWalls(wall, isVertical) {
+        let { x, y } = wall[0];
+        let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
+        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' ? 2 : -2;
 
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
                 this.visibilityMap[cellIndex] += visibilityToAdd;
             });
-            // Ajustez visibilityToAdd en fonction du type de joueur
-            visibilityToAdd += player.id === 'ia' ? -1 : 1;
+            visibilityToAdd += gameManager.getCurrentPlayer().id === 'ia' ? -1 : 1;
         });
+        // this.displayVisibilityMap();
     }
 
-    adjustVisibilityForWallsHorizontal(player) {
-        this.adjustVisibilityForWalls(player, this.getAdjacentBarrierCellsIndicesHorizontal);
+    displayVisibilityMap() {
+        console.log('');
+        for (let i = 0; i < 9; i++) {
+            let row = '';
+            for (let j = 0; j < 9; j++) {
+                if(this.visibilityMap[i * 9 + j] >= 0) {
+                    row += ' ' + this.visibilityMap[i * 9 + j] + ' ';
+                } else {
+                    row += this.visibilityMap[i * 9 + j] + ' ';
+                }
+            }
+             console.log(row);
+        }
     }
-
-    adjustVisibilityForWallsVertical(player) {
-        this.adjustVisibilityForWalls(player, this.getAdjacentBarrierCellsIndicesVertical);
-    }
-
 
 }
 
-module.exports = FogOfWar;
+const fogOfWarInstance = new FogOfWar();
+module.exports = fogOfWarInstance;

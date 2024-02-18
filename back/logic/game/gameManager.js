@@ -1,4 +1,4 @@
-let computeMove = null;
+const { computeMove } = require("../ai/ai.js")
 
 class GameManager {
     gridMap = [];
@@ -6,15 +6,16 @@ class GameManager {
     gameState = {
         players: [
             {
-                position: null,
-                id: null,
-                walls: [],
-                isCurrentPlayer: false
+            position: null,
+            id: null,
+            walls: [],
+            isCurrentPlayer: false
             }
         ]
     };
 
     constructor() {
+        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         this.gameState = {
             players: [
@@ -32,19 +33,12 @@ class GameManager {
                 }
             ]
         };
-
-        // Initialisation des murs pour chaque joueur
-        this.gameState.players.forEach(player => {
-            player.walls = [];
-        });
+        return this;
     }
 
     // Methods to manage the game
-    tryMove() {
-        if (!computeMove)
-            computeMove = require("../ai/ai.js").computeMove;
-
-        return computeMove(this.gameState);
+    computeMoveForAI(getPossibleMove){
+        return computeMove(this.gameState, getPossibleMove);
     }
 
 
@@ -57,8 +51,8 @@ class GameManager {
             }
         }
 
-        pos.x = move.x;
-        pos.y = move.y;
+        pos.x=move.x;
+        pos.y=move.y;
     }
 
     getGameState() {
@@ -66,17 +60,18 @@ class GameManager {
     }
 
     getPlayerById(playerId) {
-        const player = this.gameState.players.find(player => player.id === playerId);
-        return player;
+        return this.gameState.players.find(player => player.id === playerId);
     }
 
     getBoardWalls() {
         let boardWalls = [];
         this.gameState.players.forEach(player => {
-            this.gameState.walls.forEach(wall => {
-                boardWalls.push(wall);
-            })
-        })
+            player.walls.forEach(wall => {
+                wall.forEach(cell => {
+                    boardWalls.push(cell);
+                });
+            });
+        });
         return boardWalls;
     }
 
@@ -85,6 +80,5 @@ class GameManager {
     }
 }
 
-console.log("oue")
-
-module.exports = GameManager;
+const gameManagerInstance = new GameManager();
+module.exports = gameManagerInstance;
