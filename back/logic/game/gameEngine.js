@@ -28,12 +28,19 @@ function moveAI() {
     movePlayer(iaMove);
 }
 
-function updateWalls(wall, isVertical) {
+function toggleWall(wall, isVertical) {
+    if (!gameActive) return;
     if(canPlayerReachArrival()) {
-        currentPlayer.walls.push(wall);
-        fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-        turn();
+        updateWalls(wall, isVertical);
+        return 1;
     }
+    return 0;
+}
+
+function updateWalls(wall, isVertical) {
+    currentPlayer.walls.push(wall);
+    fogOfWar.adjustVisibilityForWalls(wall, isVertical);
+    turn();
 }
 
 // Cette fonction marche très bien car elle est appelée uniquement dans les cas adéquat, lorsque deux cellules sont voisines
@@ -125,7 +132,7 @@ function getAdjacentCellsPositionsWithWalls(cellPosition) {
 }
 
 function canPlayerReachArrival() {
-    currentPosition = currentPlayer.position;
+    var currentPosition = currentPlayer.position;
     let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
 
@@ -145,7 +152,7 @@ function canPlayerReachArrival() {
 }
 
 function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player) {
-    if(alreadyVisitedCell.includes(currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
+    if(arrayOfPositionContainsPosition(alreadyVisitedCell, currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
         return false;
     }
 
@@ -201,4 +208,4 @@ function endGame(message) {
     // Envoi un message au front avec une socket pour gérer les affichages
 }
 
-module.exports = {getPossibleMove, movePlayer, updateWalls, moveIA: moveAI, turn};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn};
