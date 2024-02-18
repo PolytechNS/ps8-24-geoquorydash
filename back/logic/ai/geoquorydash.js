@@ -29,61 +29,60 @@ function dijkstraAlgorithm(position) {
     // Initialisation des variables
     let alreadyVisitedCells = [];
     let cellsWithWeights = [];
+    /* cellsWithWeights est un tableau de structure de la forme { position: position, pathLength: pathLength, predecessor: predecessor } avec
+    position la case concernée, pathLength la distance pour atteindre cette case depuis notre position de base, et predecessor la case qui précède
+    la case dont on est en train de calculer le chemin */
     let pathLength = 0;
     cellsWithWeights.push([position, pathLength])
 
     // On commence à travailler
-    let shortestPathLength = getShortestPathLength(position, alreadyVisitedCells, cellsWithWeights, pathLength);
+    let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength);
 
     console.log("Le chemin le plus court pour atteindre l'arrivée est de longueur " + shortestPathLength);
+
+    let shortestPath = reconstructPath(shortestPathFinalPosition, cellsWithWeights);
+    console.log("Le prochain mouvement à faire est donc de se déplacer en " + shortestPath[0]);
 }
 
-function getShortestPathLength(position, alreadyVisitedCells, cellsWithWeights, pathLength) {
+function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength) {
     while(position.x !== 16) {
         updateWeightsFromACell(position, alreadyVisitedCells, cellsWithWeights, pathLength + 1);
         position = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
     
     // Si on sort de la boucle while, ça veut dire qu'on a trouvé une cellule qui a un x qui vaut 16, donc une case qui nous fait gagner
-    let shortestPathLength = 0;
-    cellsWithWeights.forEach(element => {
-        if(equalsPositions(element[0], position)) {
-            shortestPathLength = element[1];
-        }
-    });
-
-    return shortestPathLength;
+    let finalPositionCell = cellsWithWeights.find(cell => equalsPositions(cell.position, position));
+    return finalPositionCell.position;
 }
 
 // Cette fonction sert, pour une cellule donnée, à mettre à jour le poids de ses voisins, voisins pour lesquels on a encore jamais calculé le poids de ses voisins à lui
 function updateWeightsFromACell(position, alreadyVisitedCells, cellsWithWeights, pathLength) {
     let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(position);
     adjacentCellsPosition.forEach(adjacentPosition => {
-        if(!alreadyVisitedCells.includes(adjacentPosition)) { // On vérifie que la cellule pour laquelle on update le pathLength n'est pas une cellule sur laquelle on a déjà travaillé
-            
-            alreadyVisitedCells.push(position);
-            cellsWithWeights.forEach(element => {
-                if(equalsPositions(element[0], adjacentPosition)) {
-                    if(element[1] > pathLength) {
-                        element[1] = pathLength;
-                    }
-                    return;
+        if(!alreadyVisitedCells.some(cell => equalsPositions(cell, adjacentPosition))) { // On vérifie que la cellule pour laquelle on update le pathLength n'est pas une cellule sur laquelle on a déjà travaillé
+
+            let existingCell = cellsWithWeights.find(cell => equalsPositions(cell.position, adjacentPosition));
+            if (existingCell) {
+                if (existingCell.pathLength > pathLength) {
+                    existingCell.pathLength = pathLength;
+                    existingCell.predecessor = position;
                 }
-            });
-            cellsWithWeights.push([adjacentPosition, pathLength]);
+            } else {
+                cellsWithWeights.push({ position: adjacentPosition, pathLength: pathLength, predecessor: position });
+            }
         }
-        
     });
+    alreadyVisitedCells.push(position);
 }
 
 function getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights) {
     let minimumWeightCell = null;
     let minimumWeight = 9999;
     cellsWithWeights.forEach(element => {
-        if(!alreadyVisitedCells.includes(element[0])) { // On vérifie qu'on ne va pas travailler sur une cellule sur laquelle on a déjà travaillé
-            if(element[1] < minimumWeight) {
-                minimumWeight = element[1];
-                minimumWeightCell = element[0];
+        if(!alreadyVisitedCells.some(cell => equalsPositions(cell, element.position))) { // On vérifie qu'on ne va pas travailler sur une cellule sur laquelle on a déjà travaillé
+            if(element.pathLength < minimumWeight) {
+                minimumWeight = element.pathLength;
+                minimumWeightCell = element.position;
             }
         }
     });
@@ -94,6 +93,20 @@ function getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights) {
 function equalsPositions(pos1, pos2) {
     return pos1.x === pos2.x && pos1.y === pos2.y;
 }
+
+function reconstructPath(shortestPathFinalPosition, cellsWithWeights) {
+    let path = [];
+    let current = shortestPathFinalPosition;
+
+    while (current) {
+        path.unshift(current); // Ajoute la position actuelle au début du chemin
+        let cell = cellsWithWeights.find(cell => equalsPositions(cell.position, current));
+        current = cell ? cell.predecessor : null; // Définit la position actuelle sur le prédécesseur
+    }
+
+    return path;
+}
+
 
 
 
