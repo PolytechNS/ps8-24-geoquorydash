@@ -32,6 +32,11 @@ class GameManager {
                 }
             ]
         };
+
+        // Initialisation des murs pour chaque joueur
+        this.gameState.players.forEach(player => {
+            player.walls = [];
+        });
     }
 
     // Methods to manage the game
@@ -67,8 +72,8 @@ class GameManager {
 
     getBoardWalls() {
         let boardWalls = [];
-        players.forEach(player => {
-            walls.forEach(wall => {
+        this.gameState.players.forEach(player => {
+            this.gameState.walls.forEach(wall => {
                 boardWalls.push(wall);
             })
         })

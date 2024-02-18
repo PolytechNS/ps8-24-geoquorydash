@@ -110,7 +110,7 @@ function isAPlayableCell(position) {
 }
 
 function getAdjacentCellsPositions(cellPosition) { // Cette méthode retourne une liste de positions
-    let [xPosition, yPosition] = null;
+    let [xPosition, yPosition] = [0, 0];
     if(cellPosition) {
         [xPosition, yPosition] = [cellPosition.x, cellPosition.y]
     } else {
@@ -119,10 +119,10 @@ function getAdjacentCellsPositions(cellPosition) { // Cette méthode retourne un
 
     const adjacentCells = [];
 
-    if (x > 0) adjacentCells.push({x: xPosition-2, y: yPosition});
-    if (x < 16) adjacentCells.push({x: xPosition+2, y: yPosition});
-    if (y > 0) adjacentCells.push({x: xPosition, y: yPosition-2});
-    if (y < 16) adjacentCells.push({x: xPosition, y: yPosition+2});
+    if (xPosition > 0) adjacentCells.push({x: xPosition-2, y: yPosition});
+    if (xPosition < 16) adjacentCells.push({x: xPosition+2, y: yPosition});
+    if (yPosition > 0) adjacentCells.push({x: xPosition, y: yPosition-2});
+    if (yPosition < 16) adjacentCells.push({x: xPosition, y: yPosition+2});
 
     return adjacentCells;
 }

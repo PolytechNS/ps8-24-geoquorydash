@@ -139,7 +139,7 @@ function handleCellAction(cell, i, j, actionType) {
     }
 }*/
 
-function askPossibleMove() {
+export function askPossibleMove() {
     socket.emit('possibleMoveRequest');
 }
 
