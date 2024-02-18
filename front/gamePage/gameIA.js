@@ -1,13 +1,9 @@
-import { updateBoardDisplay } from "./fogOfWar.js";
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
 const BotPlayer = createPlayer('BotPlayer', 'blue');
 const player2 = createPlayer('player2', 'red');
-let player1Path = [];
-let player2Path = [];
 let currentPlayer = player2;
-let gameActive = true;
 
 
 for (let i = 0; i < 17; i++) {

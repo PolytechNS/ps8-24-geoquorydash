@@ -1,7 +1,3 @@
-/*let visibilityMap = [];
-let oldPlayer1AdjacentsCells = [];
-let oldPlayer2AdjacentsCells = [];*/
-
 import {askPossibleMove} from "./gameIA.js";
 
 function hideOldPossibleMoves(currentPlayer) {
