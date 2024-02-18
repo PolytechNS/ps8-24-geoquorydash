@@ -1,10 +1,8 @@
 import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
 
 const board = document.getElementById('board');
-const player1 = createPlayer('player1', 'blue');
-const player2 = createPlayer('player2', 'red');
-let player1Path = [];
-let player2Path = [];
+const player1 = createPlayer('player1');
+const player2 = createPlayer('player2');
 let currentPlayer = player1;
 let gameActive = true;
 
@@ -15,7 +13,7 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
-            cell.addEventListener('click', () => movePlayer(cell));
+            //cell.addEventListener('click', () => movePlayer(cell));
         } else {
             cell.classList.add('barrier-cell');
             cell.addEventListener('mouseenter', (event) => {
@@ -49,7 +47,7 @@ updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
 
-function createPlayer(className, bgColor) {
+function createPlayer(className) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
     player.id = `${className}`;
@@ -159,7 +157,6 @@ function hidePossibleMove() {
     const neighborsList = getGeographicNeighbors(playerCell);
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
-        //console.log("Dans la fonction : " + neighbor.id);
     }
 
     let neighborPlayer = null;
@@ -208,7 +205,6 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
             adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
         }
 
-        updatePathLength();
         turn();
         displayPossibleMove();
     } else {
@@ -294,7 +290,6 @@ function movePlayer(targetCell) {
                     player2Path = calculateShortestPath(targetCell, 0);
                 }*/
 
-                updatePathLength();
                 turn();
                 displayPossibleMove();
             }
@@ -321,7 +316,6 @@ function movePlayer(targetCell) {
                 player2Path = calculateShortestPath(targetCell, 0);
             }*/
 
-            updatePathLength();
             turn();
             displayPossibleMove();
         }
@@ -362,13 +356,6 @@ function getJumpedPlayer(startCellId, targetCellId) {
     return null;
 }
 
-function updatePathLength() {
-    const player1PathLengthElement = document.getElementById('player1PathLength');
-    const player2PathLengthElement = document.getElementById('player2PathLength');
-
-    player1PathLengthElement.innerText = `Le chemin du joueur 1 : ${player1Path.length}`;
-    player2PathLengthElement.innerText = `Le chemin du joueur 2 : ${player2Path.length}`;
-}
 /*
 function calculateShortestPath(startCell, targetRow) {
     const queue = [{ cell: startCell, path: [] }];
@@ -436,7 +423,6 @@ function getNeighborsWithBarriers(cell) {
 
     for(const neighborCell of geographicNeighbors) {
         if(!checkBarriersBetween(cell.id, neighborCell.id)) {
-            //console.log("Voisin après barrière : " + neighborCell.id);
             neighbors.push(neighborCell);
         }
     }
