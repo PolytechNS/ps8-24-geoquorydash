@@ -1,4 +1,4 @@
-const { computeMove } = require("../ai/ai.js")
+let computeMove = null;
 
 class GameManager {
     gridMap = [];
@@ -6,10 +6,10 @@ class GameManager {
     gameState = {
         players: [
             {
-            position: null,
-            id: null,
-            walls: [],
-            isCurrentPlayer
+                position: null,
+                id: null,
+                walls: [],
+                isCurrentPlayer: false
             }
         ]
     };
@@ -35,7 +35,10 @@ class GameManager {
     }
 
     // Methods to manage the game
-    tryMove(){
+    tryMove() {
+        if (!computeMove)
+            computeMove = require("../ai/ai.js").computeMove;
+
         return computeMove(this.gameState);
     }
 
@@ -49,8 +52,8 @@ class GameManager {
             }
         }
 
-        pos.x=move.x;
-        pos.y=move.y;
+        pos.x = move.x;
+        pos.y = move.y;
     }
 
     getGameState() {
@@ -76,5 +79,7 @@ class GameManager {
         return this.gameState.players.find(player => player.isCurrentPlayer === true);
     }
 }
+
+console.log("oue")
 
 module.exports = GameManager;
