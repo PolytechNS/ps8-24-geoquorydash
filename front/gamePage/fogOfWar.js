@@ -113,7 +113,7 @@ function getIndicesFromId(cellId) {
     return { i, j };
 }*/
 
-/*
+
 function getAdjacentPlayerCellsIndices(i, j) {
     let adjacentIndices = [];
 
@@ -261,7 +261,6 @@ function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
         }
     }
 }
-*/
 
 
-export {  updateBoardDisplay };
+export {  updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical };
