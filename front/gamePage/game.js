@@ -48,7 +48,6 @@ initializeVisibility(board);
 updateBoardDisplay(board, currentPlayer);
 
 displayPossibleMove();
-console.log("Move displayed");
 
 function createPlayer(className, bgColor) {
     const player = document.createElement('div');
@@ -189,28 +188,34 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
 }
 
 function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-    if(!canPlayerReachArrival(player1)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
-        return;
-    } else if(!canPlayerReachArrival(player2)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
-        return;
-    }
-    hidePossibleMove();
+    if(isBarrierPlacementValid(targetCell, targetCell2, targetCell3)) {
+        if(!canPlayerReachArrival(player1)) {
+            retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
+            return;
+        } else if(!canPlayerReachArrival(player2)) {
+            retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
+            return;
+        }
+        hidePossibleMove();
 
-    targetCell.classList.add('locked');
-    targetCell2.classList.add('locked');
-    targetCell3.classList.add('locked');
+        targetCell.classList.add('locked');
+        targetCell2.classList.add('locked');
+        targetCell3.classList.add('locked');
 
-    if(isVertical) {
-        adjustVisibilityForWallsVertical(targetCell.id, currentPlayer.id);
+        if(isVertical) {
+            adjustVisibilityForWallsVertical(targetCell.id, currentPlayer.id);
+        } else {
+            adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
+        }
+
+        updatePathLength();
+        turn();
+        displayPossibleMove();
     } else {
-        adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
-    }
+        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, il y a deja une barriere");
+        return;
 
-    updatePathLength();
-    turn();
-    displayPossibleMove();
+    }
 }
 
 function canPlayerReachArrival(player) {
@@ -439,22 +444,20 @@ function getNeighborsWithBarriers(cell) {
 }
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
-    if (!cell.querySelector('.barrier') && (!cell2.querySelector('.barrier') || !cell2) && (!cell3.querySelector('.barrier') || !cell3)) {
+    if (isBarrierPlacementValid(cell, cell2, cell3)) {
         const barrier = document.createElement('div');
         barrier.className = 'barrier';
         if (isVertical) {
             barrier.style.height = '100%';
             barrier.style.width = '80%';
-            barrier.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+            barrier.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
             barrier.style.backgroundPosition = 'top';
-            //adjustVisibilityForWallsVertical(cell.id, currentPlayer.id);
         }
         else {
             barrier.style.height = '80%';
             barrier.style.width = '100%';
-            barrier.style.backgroundImage = 'url("img/Barriere.png")';
+            barrier.style.backgroundImage = 'url("../img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
-            //adjustVisibilityForWallsHorizontal(cell.id, currentPlayer.id);
         }
         barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
@@ -464,13 +467,13 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             if (isVertical) {
                 barrier2.style.height = '100%';
                 barrier2.style.width = '80%';
-                barrier2.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+                barrier2.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
             else {
                 barrier2.style.height = '80%';
                 barrier2.style.width = '100%';
-                barrier2.style.backgroundImage = 'url("img/Barriere.png")';
+                barrier2.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
             barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
@@ -482,26 +485,28 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             if (isVertical) {
                 barrier3.style.height = '100%';
                 barrier3.style.width = '80%';
-                barrier3.style.backgroundImage = 'url("img/BarriereVerticale.png")';
+                barrier3.style.backgroundImage = 'url("../img/BarriereVerticale.png")';
                 barrier3.style.backgroundPosition = 'bottom';
             }
             else {
                 barrier3.style.height = '80%';
                 barrier3.style.width = '100%';
-                barrier3.style.backgroundImage = 'url("img/Barriere.png")';
+                barrier3.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
             barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
         }
-        /*
-        if (currentPlayer === player1) {
-            player1Path = calculateShortestPath(player1Cell, 16);
-        } else {
-            player2Path = calculateShortestPath(player2Cell, 0);
-        }*/
     }
 }
+
+function isBarrierPlacementValid(cell, cell2, cell3) {
+    const isCellEmpty = !cell.classList.contains('locked');
+    const isCell2Empty = !cell2.classList.contains('locked');
+    const isCell3Empty = !cell3.classList.contains('locked');
+    return isCellEmpty && isCell2Empty && isCell3Empty;
+}
+
 
 function turn() {
     currentPlayer = currentPlayer === player1 ? player2 : player1;

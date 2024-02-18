@@ -1,14 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title></title>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+    <link rel="stylesheet" href="home.css">
+</head>
+<body>
+    <img src="img/home/title.png" alt="Title" class="top-image">
 
-    <body>
-        <button onclick="location.href='loginPage/login.html'">Login</button>
-        <button onclick="location.href='signupPage/signup.html'">Signup</button>
-        <button onclick="location.href='gamePage/gamePage.html'">Game</button>
-    </body>
+    <div class="main">
+        <a href="skinPage/skin.html"><img src="img/home/button_skin.png" alt="Skin"></a>
+        <a href="gamePage/gamePage.html" class="btn-game"><img src="img/home/button_game.png" alt="Game"></a>
+        <a href="settingsPage/settings.html"><img src="img/home/button_settings.png" alt="Settings"></a>
+    </div>
+    <div class="secondary">
+        <a href="friendsPage/friends.html"><img src="img/home/button_friends.png" alt="Friends"></a>
+        <a href="statPage/stat.html"><img src="img/home/button_stat.png" alt="Stat"></a>
+        <a href="successPage/success.html"><img src="img/home/button_success.png" alt="Success"></a>
+        <a href="#" id="openAccountPage"><img src="img/home/button_account.png" alt="Account"></a>
+    </div>
+
+    <div id="accountModal" class="modal">
+        <div class="modal-content">
+            <iframe id="accountFrame" src="accountPage/account.html"></iframe>
+        </div>
+    </div>
+
+    <script src="home.js"></script>
+</body>
 </html>
