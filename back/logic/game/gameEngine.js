@@ -24,7 +24,7 @@ function movePlayer(targetPosition) {
 
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
-    const iaMove = gameManager.computeMoveForAI(getPossibleMove());
+    const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
     movePlayer(iaMove);
 }
 

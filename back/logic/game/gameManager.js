@@ -1,4 +1,5 @@
 const { computeMove } = require("../ai/ai.js")
+const { dijkstraAlgorithm } = require("../ai/geoquorydash.js")
 
 class GameManager {
     gridMap = [];
@@ -37,8 +38,10 @@ class GameManager {
     }
 
     // Methods to manage the game
-    computeMoveForAI(getPossibleMove){
-        return computeMove(this.gameState, getPossibleMove);
+    computeMoveForAI(getAdjacentCellsPositionsWithWalls){
+        let iaPlayer = this.gameState.players.find(player => player.id === "ia");
+        let iaPosition = iaPlayer.position;
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
     }
 
 
