@@ -81,14 +81,13 @@ function handleCellAction(cell, i, j, actionType) {
             displayPossibleToggleBarrier(cell, cell2, cell3, isVertical);
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
-        } else if (actionType === 'lockBarrier' ) {
+        } else if (actionType === 'lockBarrier' && cell.classList.contains('previewMode')) {
             socketToggleWall(cell, cell2, cell3, isVertical);
         }
     }
 }
 
 function askPossibleMove() {
-    // console.log("EMIT possibleMoveRequest")
     socket.emit('possibleMoveRequest');
 }
 
@@ -126,6 +125,9 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
         targetCell.removeChild(taretCellChild);
         targetCell2.removeChild(taretCell2Child);
         targetCell3.removeChild(taretCell3Child);
+        targetCell.classList.remove('previewMode');
+        targetCell2.classList.remove('previewMode');
+        targetCell3.classList.remove('previewMode');
     }
 
 }
@@ -142,7 +144,6 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    console.log("EMIT toggleWall")
     socket.emit('toggleWall', wall, isVertical);
 }
 function lockBarrier(wall) {
@@ -153,12 +154,13 @@ function lockBarrier(wall) {
     targetCell.classList.add('locked');
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
+    targetCell.classList.remove('previewMode');
+    targetCell2.classList.remove('previewMode');
+    targetCell3.classList.remove('previewMode');
 }
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
-
-    // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
     socket.emit('movePlayer', targetPosition);
 }
 
@@ -180,6 +182,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
         }
         barrier.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
+        cell.classList.add('previewMode');
         if (cell2) {
             const barrier2 = document.createElement('div');
             barrier2.className = 'barrier';
@@ -197,6 +200,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier2.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
+            cell2.classList.add('previewMode');
         }
         if (cell3) {
             const barrier3 = document.createElement('div');
@@ -215,6 +219,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier3.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
+            cell3.classList.add('previewMode');
         }
     }
 }
