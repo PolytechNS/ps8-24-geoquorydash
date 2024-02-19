@@ -1,6 +1,6 @@
-const gameManager = require('./gameManager'); // Assurez-vous que le chemin soit correct
+const gameManager = require('./gameManager');
 const fogOfWar = require('./fogOfWarController');
-const { arrayOfPositionContainsPosition } = require('../../utils/utils.js');
+const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
 let player1 = gameManager.getPlayerById('ia');
 let player2 = gameManager.getPlayerById('p2');
 let currentPlayer = gameManager.getCurrentPlayer();
@@ -10,7 +10,6 @@ let gameActive = true;
 function movePlayer(targetPosition) {
     if (!gameActive) return;
 
-    // const possibleMove = getPossibleMove();
     currentPlayer.position = targetPosition;
 
     if (currentPlayer === player1 && targetPosition.x === 16) {
@@ -28,16 +27,28 @@ function moveAI() {
     movePlayer(iaMove);
 }
 
-function updateWalls(wall, isVertical) {
-    if(canPlayerReachArrival()) {
-        currentPlayer.walls.push(wall);
-        fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-        turn();
+function toggleWall(wall, isVertical) {
+    if (!gameActive) return;
+
+    var walls = gameManager.getBoardWalls();
+    for (const wallCell of wall) {
+        walls.push(wallCell);
     }
+
+    if(canPlayerReachArrival(walls)) {
+        updateWalls(wall, isVertical);
+        return 1;
+    }
+    return 0;
 }
 
-// Cette fonction marche très bien car elle est appelée uniquement dans les cas adéquat, lorsque deux cellules sont voisines
-function checkBarriersBetween(startPosition, targetPosition) {
+function updateWalls(wall, isVertical) {
+    currentPlayer.walls.push(wall);
+    fogOfWar.adjustVisibilityForWalls(wall, isVertical);
+    turn();
+}
+
+function checkBarriersBetween(startPosition, targetPosition, walls) {
     const [x1, y1] = [startPosition.x, startPosition.y];
     const [x2, y2] = [targetPosition.x, targetPosition.y];
 
@@ -45,7 +56,7 @@ function checkBarriersBetween(startPosition, targetPosition) {
     const interY = y1 + (y2 - y1) / 2;
     let possibleWallPosition = {x: interX, y: interY};
 
-    const boardWalls = gameManager.getBoardWalls();
+    const boardWalls = walls ? walls : gameManager.getBoardWalls();
     return arrayOfPositionContainsPosition(boardWalls, possibleWallPosition);
 }
 
@@ -74,8 +85,7 @@ function getPossibleMove() {
         }
 
         for(const adjacentCellPosition of adjacentCellsPositionsWithWalls) {
-            if(arrayOfPositionContainsPosition(adjacentCellPosition, otherPlayer.position)) {
-                console.log(adjacentCellPosition);
+            if(!arePositionsEquals(adjacentCellPosition, otherPlayer.position)) {
                possibleMove.push(adjacentCellPosition);
             }
         }
@@ -91,13 +101,6 @@ function isOtherPlayerOnAdjacentCells(currentPlayerAdjacentCells) {
     return arrayOfPositionContainsPosition(currentPlayerAdjacentCells, otherPlayer.position);
 }
 
-function isAPlayableCell(position) {
-    if((position.x % 2) !== 0 || (position.y % 2) !== 0) {
-        return false;
-    }
-    return true;
-}
-
 function getAdjacentCellsPositions(cellPosition) { // Cette méthode retourne une liste de positions
     let [xPosition, yPosition] = [cellPosition.x, cellPosition.y]
 
@@ -111,69 +114,46 @@ function getAdjacentCellsPositions(cellPosition) { // Cette méthode retourne un
     return adjacentCells;
 }
 
-function getAdjacentCellsPositionsWithWalls(cellPosition) {
+function getAdjacentCellsPositionsWithWalls(cellPosition,walls) {
     const adjacentCellsPositionsWithWalls = [];
     const adjacentCellsPositions = getAdjacentCellsPositions(cellPosition);
-
     for(const adjacentCellPosition of adjacentCellsPositions) {
-        if(!checkBarriersBetween(currentPlayer.position, adjacentCellPosition)) {
+        if(!checkBarriersBetween(cellPosition, adjacentCellPosition, walls)) {
             adjacentCellsPositionsWithWalls.push(adjacentCellPosition);
         }
     }
-    // currentPlayer === player2 ? console.log(adjacentCellsPositionsWithWalls) : console.log("ia demande les positions");
     return adjacentCellsPositionsWithWalls;
 }
 
-function canPlayerReachArrival() {
-    currentPosition = currentPlayer.position;
+function canPlayerReachArrival(walls) {
     let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
-
-    if(currentPlayer === player1) {
-        canReach = checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, "player1");
-    } else if(currentPlayer === player2) {
-        canReach = checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, "player2");
-    }
-
-    if (canReach) {
-        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
-    } else {
-        //console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
-    }
+    let canReachPlayer1 = checkPathToReachTheEnd(player1.position, alreadyVisitedCell, "player1", walls);
+    alreadyVisitedCell = [];
+    let canReachPlayer2 = checkPathToReachTheEnd(player2.position, alreadyVisitedCell, "player2", walls);
+    canReach = canReachPlayer1 && canReachPlayer2;
 
     return canReach;
 }
 
-function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player) {
-    if(alreadyVisitedCell.includes(currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
+function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player, walls) {
+    console.log(alreadyVisitedCell);
+    if(arrayOfPositionContainsPosition(alreadyVisitedCell, currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
         return false;
     }
 
-    const [x, y] = [currentPosition.x, currentPosition.y];
-    if ((player === "player1" && x === 16) || (player === "player2" && x === 0)) {
+    if ((player === "player1" && currentPosition.x === 16) || (player === "player2" && currentPosition.x === 0)) {
         return true;
     }
 
     alreadyVisitedCell.push(currentPosition);
-    const adjacentCellsPositions = getAdjacentCellsPositionsWithWalls(currentPosition);
+    const adjacentCellsPositions = getAdjacentCellsPositionsWithWalls(currentPosition, walls);
     for (const adjacentCellPosition of adjacentCellsPositions) {
-        if (checkPathToReachTheEnd(adjacentCellPosition, alreadyVisitedCell, player)) {
+        if (checkPathToReachTheEnd(adjacentCellPosition, alreadyVisitedCell, player, walls)) {
             return true;
         }
     }
     return false;
-}
-
-function checkIfAIturn() {
-    if (!gameActive) return;
-
-    for (let player of gameManager.getGameState().players) {
-        if (player.isCurrentPlayer) {
-            if (player.id === 'ia') {
-                turn();
-            }
-        }
-    }
 }
 
 function turn() {
@@ -198,7 +178,6 @@ function turn() {
 
 function endGame(message) {
     gameActive = false;
-    // Envoi un message au front avec une socket pour gérer les affichages
 }
 
-module.exports = {getPossibleMove, movePlayer, updateWalls, moveIA: moveAI, turn};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn};
