@@ -1,6 +1,6 @@
 const gameManager = require('./gameManager'); // Assurez-vous que le chemin soit correct
 const fogOfWar = require('./fogOfWarController');
-const { arrayOfPositionContainsPosition } = require('../../utils/utils.js');
+const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
 let player1 = gameManager.getPlayerById('ia');
 let player2 = gameManager.getPlayerById('p2');
 let currentPlayer = gameManager.getCurrentPlayer();
@@ -87,7 +87,7 @@ function getPossibleMove() {
         }
 
         for(const adjacentCellPosition of adjacentCellsPositionsWithWalls) {
-            if(arrayOfPositionContainsPosition(adjacentCellPosition, otherPlayer.position)) {
+            if(!arePositionsEquals(adjacentCellPosition, otherPlayer.position)) {
                possibleMove.push(adjacentCellPosition);
             }
         }
