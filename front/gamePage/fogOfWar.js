@@ -21,12 +21,14 @@ function updateBoardDisplay(gameState, visibilityMap) {
 
     let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
     currentPlayerCell.appendChild(document.getElementById('player2'));
-    document.getElementById('player2').style.opacity = 1;
-    document.getElementById('player2').parentElement.style.opacity = 1;
+    currentPlayerCell.firstElementChild.style.opacity = 1;
+    currentPlayerCell.style.opacity = 1;
 
     let otherPlayerPosition = gameState.players.find(player => player.id !== currentPlayer.id).position;
     let otherPlayerCell = document.getElementById(`cell-${otherPlayerPosition.x}-${otherPlayerPosition.y}`);
-    otherPlayerCell.appendChild(document.getElementById('BotPlayer'));
+    var otherPlayer = document.getElementById('BotPlayer');
+    otherPlayerCell.appendChild(otherPlayer);
+    otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
 
     askPossibleMove();
 }
