@@ -1,22 +1,37 @@
 const gameManager = require('./gameManager'); // Assurez-vous que le chemin soit correct
 const fogOfWar = require('./fogOfWarController');
 const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
-let player1 = gameManager.getPlayerById('ia');
-let player2 = gameManager.getPlayerById('p2');
-let currentPlayer = gameManager.getCurrentPlayer();
-let otherPlayer = player1;
-let gameActive = true;
+
+let player1, player2, currentPlayer, otherPlayer, gameActive = true;
+
+async function initializeGame() {
+    await gameManager.initialize();
+    player1 = gameManager.getPlayerById('ia');
+    player2 = gameManager.getPlayerById('p2');
+    currentPlayer = gameManager.getCurrentPlayer();
+    otherPlayer = player1;
+}
+
+initializeGame().then(() => {
+    console.log('Initialisation terminée.');
+}).catch((error) => {
+    console.error('Erreur lors de l\'initialisation du jeu :', error);
+});
+console.log(player1, player2, currentPlayer, otherPlayer, gameActive);
 
 function movePlayer(targetPosition) {
     if (!gameActive) return;
 
     // const possibleMove = getPossibleMove();
     currentPlayer.position = targetPosition;
+    console.log(currentPlayer.position);
 
     if (currentPlayer === player1 && targetPosition.x === 16) {
+        console.log('Le joueur 2 a gagné!');
         endGame('Le joueur 2 a gagné!');
         return currentPlayer;
     } else if (currentPlayer === player2 && targetPosition.x === 0) {
+        console.log('Le joueur 1 a gagné!');
         endGame('Le joueur 1 a gagné!');
         return currentPlayer;
     }
@@ -208,6 +223,7 @@ function turn() {
 
 function endGame(message) {
     gameActive = false;
+    gameManager.endGame();
     // Envoi un message au front avec une socket pour gérer les affichages
 }
 

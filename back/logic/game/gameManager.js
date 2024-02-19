@@ -1,5 +1,4 @@
 const { computeMoveForAI } = require("../ai/ai.js")
-const { getGameState } = require("../authentification/authController.js")
 const createUserCollection = require('../../models/users');
 
 class GameManager {
@@ -27,7 +26,7 @@ class GameManager {
             const usersCollection = await createUserCollection();
             const userGameState = await usersCollection.findOne({ username: "lucie" });
             if (userGameState && userGameState.gameState) {
-                console.log('GameState:', userGameState.gameState);
+                console.log('GameState initialized from DB:');
                 return userGameState.gameState;
             } else {
                 console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
@@ -40,7 +39,66 @@ class GameManager {
 
     async initialize() {
         const userGameState = await this.initializeGameStateFromDB();
-        this.gameState = userGameState;
+        if (userGameState) {
+            this.gameState = userGameState;
+            console.log('GameState DB');
+        } else {
+            this.gameState = {
+                players: [
+                    {
+                        id: "ia",
+                        position: { x: 0, y: 8 },
+                        walls: [],
+                        isCurrentPlayer: false
+                    },
+                    {
+                        id: "p2",
+                        position: { x: 16, y: 8 },
+                        walls: [],
+                        isCurrentPlayer: true
+                    }
+                ]
+            };
+            console.log('GameState default');
+        }
+    }
+
+    async endGame(){
+        this.gameState = {
+            players: [
+                {
+                    id: "ia",
+                    position: { x: 0, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: false
+                },
+                {
+                    id: "p2",
+                    position: { x: 16, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: true
+                }
+            ]
+        };
+        fetch('/api/auth/updateGameState', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ gameState: this.gameState })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update gameState');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Game state updated successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error updating gameState:', error);
+            });
     }
 
     // Methods to manage the game
@@ -88,4 +146,5 @@ class GameManager {
 }
 
 const gameManagerInstance = new GameManager();
+
 module.exports = gameManagerInstance;
