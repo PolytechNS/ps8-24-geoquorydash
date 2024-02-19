@@ -44,7 +44,6 @@ class GameManager {
         return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
     }
 
-
     validateMove(move) {
         let pos;
         for (let player of this.gameState.players) {

@@ -1,7 +1,7 @@
 const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
-const { movePlayer, getPossibleMove, updateWalls, moveIA , turn} = require("./logic/game/gameEngine");
+const { movePlayer, getPossibleMove, toggleWall, moveIA , turn} = require("./logic/game/gameEngine");
 
 const setupSocket = (server) => {
     const io = socketIo(server);
@@ -44,13 +44,21 @@ const setupSocket = (server) => {
         });
 
         socket.on('toggleWall', (wall, isVertical) => {
-            // console.log("ON toggleWall");
-            updateWalls(wall, isVertical);
-            fogOfWar.updateBoardVisibility();
+            console.log("ON toggleWall");
 
-            // console.log("EMIT updateBoard");
-            socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+            var response = toggleWall(wall, isVertical);
+            if(response) {
+                // console.log("EMIT lockWall");
+                socket.emit('lockWall', wall);
+                fogOfWar.updateBoardVisibility();
+                // console.log("EMIT updateBoard");
+                socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+            } else {
+                console.log("EMIT ImpossibleWallPosition");
+                socket.emit('ImpossibleWallPosition');
+            }
         })
+
     });
 }
 

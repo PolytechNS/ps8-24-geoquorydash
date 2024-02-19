@@ -16,9 +16,13 @@ module.exports.parseJSON = (req, callback) => {
 
 module.exports.arrayOfPositionContainsPosition = (array, position) => {
     for (let i = 0; i < array.length; i++) {
-        if (array[i].x === position.x && array[i].y === position.y) {
+        if (this.arePositionsEquals(array[i], position)) {
             return true;
         }
     }
     return false;
+}
+
+module.exports.arePositionsEquals = (position1, position2) => {
+    return position1.x === position2.x && position1.y === position2.y;
 }
