@@ -1,3 +1,5 @@
+const { computeMove } = require("../ai/ai.js")
+const { dijkstraAlgorithm } = require("../ai/geoquorydash.js")
 const { computeMoveForAI } = require("../ai/ai.js")
 const createUserCollection = require('../../models/users');
 
@@ -16,6 +18,7 @@ class GameManager {
     };
 
     constructor() {
+        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         return this;
     }
@@ -102,8 +105,10 @@ class GameManager {
     }
 
     // Methods to manage the game
-    computeMoveForAI(getPossibleMove){
-        return computeMoveForAI(this.gameState, getPossibleMove);
+    computeMoveForAI(getAdjacentCellsPositionsWithWalls){
+        let iaPlayer = this.gameState.players.find(player => player.id === "ia");
+        let iaPosition = iaPlayer.position;
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
     }
 
 
@@ -146,5 +151,4 @@ class GameManager {
 }
 
 const gameManagerInstance = new GameManager();
-
 module.exports = gameManagerInstance;
