@@ -7,6 +7,8 @@ function handleAuthRoutes(req, res) {
         authController.signup(req, res);
     } else if (url.pathname === '/api/auth/login' && req.method === 'POST') {
         authController.login(req, res);
+    } else if (url.pathname === '/api/auth/updateGameState' && req.method === 'POST') {
+        authController.updateGameState(req, res);
     } else {
         // Not Found
         res.writeHead(404, { 'Content-Type': 'text/plain' });

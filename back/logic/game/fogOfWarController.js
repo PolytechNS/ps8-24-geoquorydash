@@ -1,6 +1,5 @@
 const gameManager = require('./gameManager'); // Instance unique de GameManager
 
-
 class FogOfWar{
     visibilityMap = [];
     oldPlayer1AdjacentsCells = [];
@@ -18,15 +17,20 @@ class FogOfWar{
             }
         }
 
+        this.initialize();
+    }
+
+    async initialize() {
+        await gameManager.initialize();
         this.updateBoardVisibility();
         //console.log(this.visibilityMap);
     }
 
-    updateBoardVisibility() {
+    async updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;
-        let { i:iP1, j:jP1 } = { i: gameState.players[0].position.x, j: gameState.players[0].position.y}
-        let { i: iP2, j: jP2 } = { i: gameState.players[1].position.x, j: gameState.players[1].position.y}
+        let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
+        let {i: iP2, j: jP2} = {i: gameState.players[1].position.x, j: gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);

@@ -18,9 +18,27 @@ async function signup(req, res) {
 
         try {
             const usersCollection = await createUserCollection();
-            const newUser = { username, password };
+            const newUser = {
+                username,
+                password,
+                gameState: {
+                    players: [
+                        {
+                            id: "ia",
+                            position: { x: 0, y: 8 },
+                            walls: [],
+                            isCurrentPlayer: false
+                        },
+                        {
+                            id: "p2",
+                            position: { x: 16, y: 8 },
+                            walls: [],
+                            isCurrentPlayer: true
+                        }
+                    ]
+                }
+            };
             await usersCollection.insertOne(newUser);
-
             console.log('User created:', newUser);
             const token = generateToken(username);
             res.writeHead(200, {'Content-Type': 'application/json'});
@@ -63,4 +81,27 @@ async function login(req, res) {
     });
 }
 
-module.exports = { signup, login };
+async function updateGameState(req, res) {
+    parseJSON(req, async (err, { gameState }) => {
+        if (err) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid JSON');
+            return;
+        }
+        try {
+            const usersCollection = await createUserCollection();
+            await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState } });
+            console.log('User gameState updated successfully');
+            console.log('User gameState:', gameState);
+            res.writeHead(200, { 'Content-Type': 'text/plain' });
+            res.end('Game state updated successfully');
+        } catch (error) {
+            console.error('Error updating game state:', error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal server error');
+        }
+    });
+}
+
+
+module.exports = { signup, login, updateGameState };

@@ -9,7 +9,6 @@ let player2Path = [];
 let currentPlayer = player2;
 let gameActive = true;
 
-
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
         const cell = document.createElement('div');
@@ -171,7 +170,6 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
-
     // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
     socket.emit('movePlayer', targetPosition);
 }

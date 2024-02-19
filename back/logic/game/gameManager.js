@@ -1,4 +1,6 @@
 const { computeMove } = require("../ai/ai.js")
+const { getGameState } = require("../authentification/authController.js")
+const createUserCollection = require('../../models/users');
 
 class GameManager {
     gridMap = [];
@@ -17,23 +19,28 @@ class GameManager {
     constructor() {
         console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
-        this.gameState = {
-            players: [
-                {
-                    id: "ia",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: false
-                },
-                {
-                    id: "p2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: true // Au départ, le user courant est le joueur 2
-                }
-            ]
-        };
         return this;
+    }
+
+    async initializeGameStateFromDB() {
+        try {
+            const usersCollection = await createUserCollection();
+            const userGameState = await usersCollection.findOne({ username: "lucie" });
+            if (userGameState && userGameState.gameState) {
+                console.log('GameState:', userGameState.gameState);
+                return userGameState.gameState;
+            } else {
+                console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'utilisation de getGameState:', error);
+            throw error;
+        }
+    }
+
+    async initialize() {
+        const userGameState = await this.initializeGameStateFromDB();
+        this.gameState = userGameState;
     }
 
     // Methods to manage the game
@@ -81,4 +88,5 @@ class GameManager {
 }
 
 const gameManagerInstance = new GameManager();
+
 module.exports = gameManagerInstance;
