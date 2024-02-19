@@ -192,7 +192,6 @@ function endGame(message) {
     gameActive = false;
     gameManager.endGame();
     fogOfWar.endGame();
-    gameActive = true;
 }
 
 module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn};

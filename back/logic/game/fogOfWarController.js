@@ -84,7 +84,7 @@ class FogOfWar{
             });
     }
 
-    async updateBoardVisibility() {
+    async   updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;
         let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
