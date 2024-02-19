@@ -35,6 +35,9 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     let pathLength = 0;
     cellsWithWeights.push({position: position, pathLength: pathLength, predecessor: null});
 
+    console.log("BENJAMIN x : " + position.x + ", y : " + position.y);
+  
+
     // On commence à travailler
     let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls);
 
@@ -42,41 +45,63 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
 
     let shortestPath = reconstructPath(position, shortestPathFinalPosition, cellsWithWeights);
     console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
+    console.log("Le chemin à suivre pour gagner est : ");
+    shortestPath.forEach(cellToGo => {
+        console.log("x : " + cellToGo.x + ", y : " + cellToGo.y);
+    });
     return shortestPath[0];
 }
 
 function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
-    while(position.x !== 16) {
-        updateWeightsFromACell(position, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
-        position = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
+    let currentPosition = {x: position.x, y: position.y};
+
+    while(currentPosition.x !== 16) {
+        setTimeout(function() {
+            console.log("CURRENT POSITION = x : " + currentPosition.x + ", y : " + currentPosition.y);
+        }, 0);
+        updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
+        currentPosition = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
     
     // Si on sort de la boucle while, ça veut dire qu'on a trouvé une cellule qui a un x qui vaut 16, donc une case qui nous fait gagner
-    let finalPositionCell = cellsWithWeights.find(cell => equalsPositions(cell.position, position));
+    let finalPositionCell = cellsWithWeights.find(cell => equalsPositions(cell.position, currentPosition));
     return finalPositionCell.position;
 }
 
 // Cette fonction sert, pour une cellule donnée, à mettre à jour le poids de ses voisins, voisins pour lesquels on a encore jamais calculé le poids de ses voisins à lui
-function updateWeightsFromACell(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
-    let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(position);
+function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
+    alreadyVisitedCells.push(currentPosition);
+    
+    let currentCell = cellsWithWeights.find(cell => equalsPositions(cell.position, currentPosition));
+    let currentPathLength = currentCell ? currentCell.pathLength : 0;
+
+    let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(currentPosition);
+    if (currentPosition.x === 10) {
+        console.log("ON EST À X = 10, ON AFFICHE LES VOISINS");
+        console.log("ADJACENT POSITION = x : " + currentPosition.x + ", y : " + currentPosition.y);
+        adjacentCellsPosition.forEach(adjacentCell => {
+            console.log("x : " + adjacentCell.x + ", y : " + adjacentCell.y);
+        })
+        console.log("FIN DE L'AFFICHAGE DES VOISINS");
+    }
     adjacentCellsPosition.forEach(adjacentPosition => {
-        if(!alreadyVisitedCells.some(cell => equalsPositions(cell, adjacentPosition))) { // On vérifie que la cellule pour laquelle on update le pathLength n'est pas une cellule sur laquelle on a déjà travaillé
-            let existingCell = null;
-            if(cellsWithWeights.length !== 0) {
-                console.log
-                existingCell = cellsWithWeights.find(cell => equalsPositions(cell.position, adjacentPosition));
-            }
+        
+        if (!alreadyVisitedCells.some(cell => equalsPositions(cell, adjacentPosition))) {
+            let existingCell = cellsWithWeights.find(cell => equalsPositions(cell.position, adjacentPosition));
+
+            // Le nouveau pathLength est le pathLength de la cellule actuelle + 1 (coût de déplacement)
+            let newPathLength = currentPathLength + 1;
+
             if (existingCell) {
-                if (existingCell.pathLength > pathLength) {
-                    existingCell.pathLength = pathLength;
-                    existingCell.predecessor = position;
+                if (existingCell.pathLength > newPathLength) {
+                    existingCell.pathLength = newPathLength;
+                    existingCell.predecessor = currentPosition;
                 }
             } else {
-                cellsWithWeights.push({ position: adjacentPosition, pathLength: pathLength, predecessor: position });
+                cellsWithWeights.push({ position: adjacentPosition, pathLength: newPathLength, predecessor: currentPosition });
             }
         }
     });
-    alreadyVisitedCells.push(position);
 }
 
 function getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights) {

@@ -127,7 +127,7 @@ function getAdjacentCellsPositionsWithWalls(cellPosition,walls) {
     const adjacentCellsPositionsWithWalls = [];
     const adjacentCellsPositions = getAdjacentCellsPositions(cellPosition);
     for(const adjacentCellPosition of adjacentCellsPositions) {
-        if(!checkBarriersBetween(currentPlayer.position, adjacentCellPosition, walls)) {
+        if(!checkBarriersBetween(cellPosition, adjacentCellPosition, walls)) {
             adjacentCellsPositionsWithWalls.push(adjacentCellPosition);
         }
     }
