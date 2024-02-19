@@ -26,6 +26,7 @@ const setupSocket = (server) => {
 
             response = turn();
             if (response){
+                console.log(response);
                 socket.emit("endGame", response);
                 return;
             }
@@ -41,10 +42,13 @@ const setupSocket = (server) => {
 
         socket.on('toggleWall', (wall, isVertical) => {
             var response = toggleWall(wall, isVertical);
-            if(response) {
+
+            if(response === 1) {
                 socket.emit('lockWall', wall);
                 fogOfWar.updateBoardVisibility();
                 socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+            } else if (response) {
+                socket.emit("endGame", response);
             } else {
                 socket.emit('ImpossibleWallPosition');
             }

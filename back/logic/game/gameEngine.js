@@ -37,16 +37,18 @@ function toggleWall(wall, isVertical) {
     }
 
     if(canPlayerReachArrival(walls)) {
-        updateWalls(wall, isVertical);
+        var response = updateWalls(wall, isVertical);
+        if (response) {
+            return response;
+        }
         return 1;
     }
-    return 0;
 }
 
 function updateWalls(wall, isVertical) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    turn();
+    return turn();
 }
 
 function checkBarriersBetween(startPosition, targetPosition, walls) {
