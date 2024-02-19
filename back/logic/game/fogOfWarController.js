@@ -29,6 +29,7 @@ class FogOfWar{
             }
             console.log('FogOfWar default');
         }
+
         this.updateBoardVisibility();
         //console.log(this.visibilityMap);
     }

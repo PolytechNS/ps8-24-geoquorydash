@@ -47,6 +47,8 @@ function createPlayer(className, bgColor) {
 }
 
 function handleCellAction(cell, i, j, actionType) {
+    if (cell.classList.contains('locked')) return;
+
     let cell2, cell3;
     let isVertical = i % 2 === 0 && j % 2 !== 0;
     let isHorizontal = j % 2 === 0 && i % 2 !== 0;
@@ -79,14 +81,13 @@ function handleCellAction(cell, i, j, actionType) {
             displayPossibleToggleBarrier(cell, cell2, cell3, isVertical);
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
-        } else if (actionType === 'lockBarrier') {
+        } else if (actionType === 'lockBarrier' && cell.classList.contains('previewMode')) {
             socketToggleWall(cell, cell2, cell3, isVertical);
         }
     }
 }
 
 function askPossibleMove() {
-    // console.log("EMIT possibleMoveRequest")
     socket.emit('possibleMoveRequest');
 }
 
@@ -112,8 +113,6 @@ function displayPossibleMove(possibleMove) {
     });
 }
 
-
-
 function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     toggleBarrier(targetCell, targetCell2, targetCell3, isVertical);
 }
@@ -126,6 +125,9 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
         targetCell.removeChild(taretCellChild);
         targetCell2.removeChild(taretCell2Child);
         targetCell3.removeChild(taretCell3Child);
+        targetCell.classList.remove('previewMode');
+        targetCell2.classList.remove('previewMode');
+        targetCell3.classList.remove('previewMode');
     }
 
 }
@@ -142,18 +144,9 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    console.log("EMIT toggleWall")
     socket.emit('toggleWall', wall, isVertical);
 }
 function lockBarrier(wall) {
-/*    if(!canPlayerReachArrival(BotPlayer)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
-        return;
-    } else if(!canPlayerReachArrival(player2)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
-        return;
-    }*/
-    //hidePossibleMove();
     var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
     var targetCell2 = document.getElementById(`cell-${wall[1].x}-${wall[1].y}`)
     var targetCell3 = document.getElementById(`cell-${wall[2].x}-${wall[2].y}`)
@@ -161,6 +154,9 @@ function lockBarrier(wall) {
     targetCell.classList.add('locked');
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
+    targetCell.classList.remove('previewMode');
+    targetCell2.classList.remove('previewMode');
+    targetCell3.classList.remove('previewMode');
 }
 
 function socketMovePlayer(i, j) {
@@ -187,6 +183,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
         }
         barrier.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
+        cell.classList.add('previewMode');
         if (cell2) {
             const barrier2 = document.createElement('div');
             barrier2.className = 'barrier';
@@ -204,6 +201,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier2.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
+            cell2.classList.add('previewMode');
         }
         if (cell3) {
             const barrier3 = document.createElement('div');
@@ -222,6 +220,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier3.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
+            cell3.classList.add('previewMode');
         }
     }
 }

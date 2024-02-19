@@ -1,6 +1,6 @@
 import {askPossibleMove} from "./gameIA.js";
 
-function hideOldPossibleMoves(currentPlayer) {
+function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
         playerCells[i].style.backgroundColor = '';
@@ -178,6 +178,7 @@ function adjustVisibilityForWallsHorizontal(barrierCellId, currentPlayer) {
         }
     }
 }
+
 function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
     let { i, j } = getIndicesFromId(barrierCellId);
     let adjacentBarrierCells = getAdjacentBarrierCellsIndicesVertical(i, j);
@@ -200,6 +201,5 @@ function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
         }
     }
 }
-
 
 export {  updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical };
