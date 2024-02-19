@@ -35,20 +35,13 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     let pathLength = 0;
     cellsWithWeights.push({position: position, pathLength: pathLength, predecessor: null});
 
-    console.log("BENJAMIN x : " + position.x + ", y : " + position.y);
-  
-
     // On commence à travailler
     let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls);
 
-    console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
+    //console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
 
     let shortestPath = reconstructPath(position, shortestPathFinalPosition, cellsWithWeights);
-    console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
-    console.log("Le chemin à suivre pour gagner est : ");
-    shortestPath.forEach(cellToGo => {
-        console.log("x : " + cellToGo.x + ", y : " + cellToGo.y);
-    });
+    //console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
     return shortestPath[0];
 }
 
@@ -56,9 +49,6 @@ function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWe
     let currentPosition = {x: position.x, y: position.y};
 
     while(currentPosition.x !== 16) {
-        setTimeout(function() {
-            console.log("CURRENT POSITION = x : " + currentPosition.x + ", y : " + currentPosition.y);
-        }, 0);
         updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
         currentPosition = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
@@ -76,14 +66,6 @@ function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithW
     let currentPathLength = currentCell ? currentCell.pathLength : 0;
 
     let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(currentPosition);
-    if (currentPosition.x === 10) {
-        console.log("ON EST À X = 10, ON AFFICHE LES VOISINS");
-        console.log("ADJACENT POSITION = x : " + currentPosition.x + ", y : " + currentPosition.y);
-        adjacentCellsPosition.forEach(adjacentCell => {
-            console.log("x : " + adjacentCell.x + ", y : " + adjacentCell.y);
-        })
-        console.log("FIN DE L'AFFICHAGE DES VOISINS");
-    }
     adjacentCellsPosition.forEach(adjacentPosition => {
         
         if (!alreadyVisitedCells.some(cell => equalsPositions(cell, adjacentPosition))) {
