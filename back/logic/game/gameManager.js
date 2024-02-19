@@ -1,4 +1,4 @@
-const { computeMove } = require("../ai/ai.js")
+const { computeMoveForAI } = require("../ai/ai.js")
 const { getGameState } = require("../authentification/authController.js")
 const createUserCollection = require('../../models/users');
 
@@ -45,7 +45,7 @@ class GameManager {
 
     // Methods to manage the game
     computeMoveForAI(getPossibleMove){
-        return computeMove(this.gameState, getPossibleMove);
+        return computeMoveForAI(this.gameState, getPossibleMove);
     }
 
 
@@ -88,5 +88,4 @@ class GameManager {
 }
 
 const gameManagerInstance = new GameManager();
-
 module.exports = gameManagerInstance;

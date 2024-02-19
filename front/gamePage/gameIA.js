@@ -1,13 +1,9 @@
-import { updateBoardDisplay } from "./fogOfWar.js";
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
 const BotPlayer = createPlayer('BotPlayer', 'blue');
 const player2 = createPlayer('player2', 'red');
-let player1Path = [];
-let player2Path = [];
 let currentPlayer = player2;
-let gameActive = true;
 
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
@@ -84,7 +80,7 @@ function handleCellAction(cell, i, j, actionType) {
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
         } else if (actionType === 'lockBarrier') {
-            lockBarrier(cell, cell2, cell3, isVertical);
+            socketToggleWall(cell, cell2, cell3, isVertical);
         }
     }
 }
@@ -134,16 +130,7 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
 
 }
 
-function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-/*    if(!canPlayerReachArrival(BotPlayer)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
-        return;
-    } else if(!canPlayerReachArrival(player2)) {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
-        return;
-    }*/
-    //hidePossibleMove();
-
+function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     let wall;
     wall = [];
 
@@ -155,13 +142,25 @@ function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
+    console.log("EMIT toggleWall")
+    socket.emit('toggleWall', wall, isVertical);
+}
+function lockBarrier(wall) {
+/*    if(!canPlayerReachArrival(BotPlayer)) {
+        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
+        return;
+    } else if(!canPlayerReachArrival(player2)) {
+        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
+        return;
+    }*/
+    //hidePossibleMove();
+    var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
+    var targetCell2 = document.getElementById(`cell-${wall[1].x}-${wall[1].y}`)
+    var targetCell3 = document.getElementById(`cell-${wall[2].x}-${wall[2].y}`)
+
     targetCell.classList.add('locked');
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
-
-    console.log("EMIT toggleWall")
-    socket.emit('toggleWall', wall, isVertical);
-
 
 /*    updatePathLength();
     turn();
@@ -231,7 +230,15 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
     }
 }
 
-
+function ImpossibleWallPlacementPopUp() {
+    var message = "Impossible de poser le mur a l'emplacement souhaité !";
+    const messageElement = document.getElementById('message');
+    messageElement.innerText = message;
+    messageElement.classList.add('visible');
+    setTimeout(function() {
+        messageElement.classList.remove('visible');
+    }, 2000);
+}
 /*
 function updatePathLength() {
     const player1PathLengthElement = document.getElementById('player1PathLength');
@@ -330,16 +337,7 @@ function endGame(player) {
         }
     }
 }*/
-/*
-function retrieveImpossibleMovePopUp(message) {
-    const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);
-}
-*/
+
 /*
 function hidePossibleMove() {
     if (!gameActive) return;
@@ -362,4 +360,4 @@ function hidePossibleMove() {
 */
 
 
-export { askPossibleMove, displayPossibleMove, endGame };
+export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };

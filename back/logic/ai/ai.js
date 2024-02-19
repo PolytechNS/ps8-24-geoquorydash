@@ -9,4 +9,4 @@ function computeMoveForAI(gameState, getPossibleMove) {
     return possibleMoves[moveIndex];
 }
 
-module.exports = { computeMove: computeMoveForAI };
+module.exports = { computeMoveForAI };
