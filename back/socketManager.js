@@ -45,8 +45,8 @@ const setupSocket = (server) => {
 
         socket.on('toggleWall', (wall, isVertical) => {
             console.log("ON toggleWall");
+
             var response = toggleWall(wall, isVertical);
-            console.log(response);
             if(response) {
                 // console.log("EMIT lockWall");
                 socket.emit('lockWall', wall);

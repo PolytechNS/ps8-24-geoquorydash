@@ -1,4 +1,4 @@
-const { computeMove } = require("../ai/ai.js")
+const { computeMoveForAI } = require("../ai/ai.js")
 
 class GameManager {
     gridMap = [];
@@ -38,7 +38,7 @@ class GameManager {
 
     // Methods to manage the game
     computeMoveForAI(getPossibleMove){
-        return computeMove(this.gameState, getPossibleMove);
+        return computeMoveForAI(this.gameState, getPossibleMove);
     }
 
 
