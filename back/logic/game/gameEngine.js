@@ -1,5 +1,6 @@
 const gameManager = require('./gameManager');
 const fogOfWar = require('./fogOfWarController');
+const socketIo = require('socket.io');
 const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
 let player1 = gameManager.getPlayerById('ia');
 let player2 = gameManager.getPlayerById('p2');
@@ -24,7 +25,7 @@ function movePlayer(targetPosition) {
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getPossibleMove());
-    movePlayer(iaMove);
+    return movePlayer(iaMove);
 }
 
 function toggleWall(wall, isVertical) {
@@ -36,16 +37,18 @@ function toggleWall(wall, isVertical) {
     }
 
     if(canPlayerReachArrival(walls)) {
-        updateWalls(wall, isVertical);
+        var response = updateWalls(wall, isVertical);
+        if (response) {
+            return response;
+        }
         return 1;
     }
-    return 0;
 }
 
 function updateWalls(wall, isVertical) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    turn();
+    return turn();
 }
 
 function checkBarriersBetween(startPosition, targetPosition, walls) {
@@ -137,7 +140,6 @@ function canPlayerReachArrival(walls) {
 }
 
 function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player, walls) {
-    console.log(alreadyVisitedCell);
     if(arrayOfPositionContainsPosition(alreadyVisitedCell, currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
         return false;
     }
@@ -166,7 +168,8 @@ function turn() {
     otherPlayer = currentPlayer;
     currentPlayer = gameManager.getCurrentPlayer();
 
-    moveAI(); // On fait bouger l'IA
+    var response = moveAI(); // On fait bouger l'IA
+    if (response) return response;
 
     // On change le joueur courant car on change de tour
     for (let player of gameManager.getGameState().players) {
