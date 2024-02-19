@@ -1,4 +1,4 @@
-import { AuthService } from '../Services/AuthService.js';
+import { AuthService } from '../Services/authService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const signupForm = document.getElementById('signupForm');
@@ -11,9 +11,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log('Signup success:', data);
                 localStorage.setItem('token', data.token);
                 window.location.href = '../loginPage/login.html';
+                alert('Inscription effectuée');
             })
             .catch(error => {
                 console.error('Signup error:', error);
+                alert('Insription impossible, veuillez reessayer.');
             });
     });
 });

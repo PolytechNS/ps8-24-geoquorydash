@@ -1,4 +1,4 @@
-import { AuthService } from '../Services/AuthService.js';
+import { AuthService } from '../Services/authService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -9,14 +9,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         AuthService.login(username, password)
             .then(data => {
-                alert('Connecté');
                 console.log('Login success:', data);
                 localStorage.setItem('token', data.token);
-                window.location.href = '../home.html';
+                alert('Connexion effectuée');
+                const modal = window.parent.document.querySelector('.modal');
+                modal.style.display = 'none';
             })
             .catch(error => {
                 console.error('Login error:', error);
-                alert('Nom d\'utilisateur ou mot de passe incorrect');
+                alert('Identifiant inexistant ou mot de passe incorrect, veuillez reessayer ou vous inscrire.');
             });
     });
 });

@@ -13,7 +13,7 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
-            cell.addEventListener('click', () => movePlayer(cell));
+            //cell.addEventListener('click', () => movePlayer(cell));
         } else {
             cell.classList.add('barrier-cell');
             cell.addEventListener('mouseenter', (event) => {
@@ -157,7 +157,6 @@ function hidePossibleMove() {
     const neighborsList = getGeographicNeighbors(playerCell);
     for(const neighbor of neighborsList) {
         neighbor.style.backgroundColor = 'transparent';
-        //console.log("Dans la fonction : " + neighbor.id);
     }
 
     let neighborPlayer = null;
@@ -424,7 +423,6 @@ function getNeighborsWithBarriers(cell) {
 
     for(const neighborCell of geographicNeighbors) {
         if(!checkBarriersBetween(cell.id, neighborCell.id)) {
-            //console.log("Voisin après barrière : " + neighborCell.id);
             neighbors.push(neighborCell);
         }
     }
