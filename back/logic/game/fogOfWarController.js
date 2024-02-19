@@ -1,4 +1,5 @@
-const gameManager = require('./gameManager'); // Instance unique de GameManager
+const gameManager = require('./gameManager');
+const createUserCollection = require("../../models/users"); // Instance unique de GameManager
 
 class FogOfWar{
     visibilityMap = [];
@@ -6,6 +7,50 @@ class FogOfWar{
     oldPlayer2AdjacentsCells = [];
 
     constructor() {
+        this.initializeFogOfWar();
+    }
+
+    async initializeFogOfWar() {
+        await gameManager.initialize();
+        const fog = await this.initializeFogFromDB();
+        if (fog) {
+            this.visibilityMap = fog;
+            console.log('GameState DB');
+        } else {
+            for (let i = 0; i < (9*9); i++) {
+                this.visibilityMap[i] = [];
+                if (i < 36) {
+                    this.visibilityMap[i] = 1; // Visibility +1
+                } else if (i <= 44) {
+                    this.visibilityMap[i] = 0; // Visibility 0
+                } else {
+                    this.visibilityMap[i] = -1; // Visibility -1
+                }
+            }
+            console.log('FogOfWar default');
+        }
+        this.updateBoardVisibility();
+        //console.log(this.visibilityMap);
+    }
+
+    async initializeFogFromDB() {
+        try {
+            const usersCollection = await createUserCollection();
+            const userFog = await usersCollection.findOne({ username: "lucie" });
+            if (userFog && userFog.visibilityMap) {
+                console.log('FogOfWar initialized from DB:');
+                return userFog.visibilityMap;
+            } else {
+                console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
+            throw error;
+        }
+    }
+
+    async endGame(){
+        this.visibilityMap = [];
         for (let i = 0; i < (9*9); i++) {
             this.visibilityMap[i] = [];
             if (i < 36) {
@@ -15,15 +60,27 @@ class FogOfWar{
             } else {
                 this.visibilityMap[i] = -1; // Visibility -1
             }
+            console.log(this.visibilityMap[i]);
         }
-
-        this.initialize();
-    }
-
-    async initialize() {
-        await gameManager.initialize();
-        this.updateBoardVisibility();
-        //console.log(this.visibilityMap);
+        fetch('/api/auth/updateGameState', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ visibilityMap: this.visibilityMap })
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to update FogOfWar');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('FogOfWar updated successfully:', data);
+            })
+            .catch(error => {
+                console.error('Error updating FogOfWar:', error);
+            });
     }
 
     async updateBoardVisibility() {

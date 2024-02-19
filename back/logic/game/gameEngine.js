@@ -20,19 +20,12 @@ initializeGame().then(() => {
 console.log(player1, player2, currentPlayer, otherPlayer, gameActive);
 
 function movePlayer(targetPosition) {
-    if (!gameActive) return;
-
-    // const possibleMove = getPossibleMove();
     currentPlayer.position = targetPosition;
-    console.log(currentPlayer.position);
-
     if (currentPlayer === player1 && targetPosition.x === 16) {
-        console.log('Le joueur 2 a gagné!');
-        endGame('Le joueur 2 a gagné!');
+        endGame('Le joueur 1 a gagné!');
         return currentPlayer;
     } else if (currentPlayer === player2 && targetPosition.x === 0) {
-        console.log('Le joueur 1 a gagné!');
-        endGame('Le joueur 1 a gagné!');
+        endGame('Le joueur 2 a gagné!');
         return currentPlayer;
     }
 }
@@ -224,6 +217,8 @@ function turn() {
 function endGame(message) {
     gameActive = false;
     gameManager.endGame();
+    fogOfWar.endGame();
+    gameActive = true;
     // Envoi un message au front avec une socket pour gérer les affichages
 }
 

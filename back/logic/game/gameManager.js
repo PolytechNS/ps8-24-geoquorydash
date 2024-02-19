@@ -99,6 +99,7 @@ class GameManager {
             .catch(error => {
                 console.error('Error updating gameState:', error);
             });
+        const gameManagerInstance = new GameManager();
     }
 
     // Methods to manage the game

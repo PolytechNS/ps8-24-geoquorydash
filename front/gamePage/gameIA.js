@@ -161,10 +161,6 @@ function lockBarrier(wall) {
     targetCell.classList.add('locked');
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
-
-/*    updatePathLength();
-    turn();
-    askPossibleMove();*/
 }
 
 function socketMovePlayer(i, j) {
@@ -239,125 +235,12 @@ function ImpossibleWallPlacementPopUp() {
         messageElement.classList.remove('visible');
     }, 2000);
 }
-/*
-function updatePathLength() {
-    const player1PathLengthElement = document.getElementById('player1PathLength');
-    const player2PathLengthElement = document.getElementById('player2PathLength');
 
-    player1PathLengthElement.innerText = `Le chemin du joueur 1 : ${player1Path.length}`;
-    player2PathLengthElement.innerText = `Le chemin du joueur 2 : ${player2Path.length}`;
-}
-*/
-/*
-function calculateShortestPath(startCell, targetRow) {
-    const queue = [{ cell: startCell, path: [] }];
-    const visited = new Set();
-
-    while (queue.length > 0) {
-        const { cell, path } = queue.shift();
-        const [x, y] = cell.id.split('-').slice(1).map(Number);
-
-        if (x === targetRow) {
-            return path;
-        }
-
-        const neighbors = getNeighborsWithBarriers(cell);
-        for (const neighbor of neighbors) {
-            const neighborId = neighbor.id;
-            const isBarrier = neighbor.querySelector('.barrier');
-
-            if (!visited.has(neighborId) && !(isBarrier && !path.includes(neighborId))) {
-                visited.add(neighborId);
-                if (neighbor.classList.contains('player-cell')) {
-                    queue.push({ cell: neighbor, path: [...path, neighborId] });
-                } else {
-                    queue.push({ cell: neighbor, path });
-                }
-            }
-        }
-    }
-
-    return [];
-}*/
-/*
-function updateBoard(gameState) {
-    const player1 = gameState.players.find(player => player.id === 'ia');
-    const player1Cell = document.getElementById(`cell-${player1.position.x}-${player1.position.y}`);
-    player1Cell.appendChild(BotPlayer);
-
-
-    const player2 = gameState.players.find(player => player.id === 'p2');
-    const player2Cell = document.getElementById(`cell-${player1.position.x}-${player1.position.y}`);
-    player2Cell.appendChild(player2);
-}
-*/
 function endGame(player) {
     const messageElement = document.getElementById('message');
     messageElement.innerText = "Le joueur " + player.id + " a gagne !";
     messageElement.classList.add('visible');
     board.classList.add('hidden');
 }
-/*function displayPossibleMove() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-    const neighborsList = getNeighborsWithBarriers(playerCell);
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const [x, y] = playerCell.id.split('-').slice(1).map(Number);
-        const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
-        let forwardCell = null;
-        if(x === nx) {
-            if(y < ny) {
-                forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
-            } else {
-                forwardCell = document.getElementById(`cell-${x}-${y - 4}`);
-            }
-        } else {
-            if(x < nx) {
-                forwardCell = document.getElementById(`cell-${x + 4}-${y}`);
-            } else {
-                forwardCell = document.getElementById(`cell-${x - 4}-${y}`);
-            }
-        }
-        if(!checkBarriersBetween(neighborPlayer.id, forwardCell.id)) {
-            forwardCell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        }
-
-        for(const neighbor of neighborsList) {
-            if(playerIsNeighbor()) {
-               if(neighbor.id !== playerIsNeighbor().id) {
-                    neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                }
-            }
-        }
-    } else {
-        for(const neighbor of neighborsList) {
-            neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        }
-    }
-}*/
-
-/*
-function hidePossibleMove() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-
-    const neighborsList = getGeographicNeighbors(playerCell);
-    for(const neighbor of neighborsList) {
-        neighbor.style.backgroundColor = 'transparent';
-    }
-
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
-        for(const neighbor2 of neighborsOfPlayer2) {
-            neighbor2.style.backgroundColor = 'transparent';
-        }
-    }
-}
-*/
-
 
 export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };

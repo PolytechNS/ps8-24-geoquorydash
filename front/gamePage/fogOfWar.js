@@ -14,7 +14,7 @@ function updateBoardDisplay(gameState, visibilityMap) {
         headers: {
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ gameState })
+        body: JSON.stringify({ gameState, visibilityMap })
     })
     .then(response => {
         if (!response.ok) {
@@ -52,89 +52,6 @@ function updateBoardDisplay(gameState, visibilityMap) {
 
     askPossibleMove();
 }
-
-/*function getCurrentPlayerClass(player) {
-    if (player.classList.contains('BotPlayer')) {
-        return 'BotPlayer';
-    } else if (player.classList.contains('player2')) {
-        return 'player2';
-    }
-
-    // Default return if no player is identified
-    return null;
-}*/
-
-// Function to initialize the visibility of the board
-/*function initializeVisibility() {
-    console.log(playerCells.length);
-    for (let i = 0; i < playerCells.length; i++) {
-        visibilityMap[i] = [];
-        if (i < 36) {
-            visibilityMap[i] = 1; // Visibility +1
-        } else if (i <= 44) {
-            visibilityMap[i] = 0; // Visibility 0
-        } else {
-            visibilityMap[i] = -1; // Visibility -1
-        }
-    }
-}*/
-
-
-
-/*
-function updateBoardVisibility(board) {
-    // Get the player cells
-    let Player1Cell = board.getElementsByClassName('BotPlayer')[0].parentElement.id;
-    let Player2Cell = board.getElementsByClassName('player2')[0].parentElement.id;
-
-
-    // Get the indices of the players cell
-    let { i:iP1, j:jP1 } = getIndicesFromId(Player1Cell);
-    let { i: iP2, j: jP2 } = getIndicesFromId(Player2Cell);
-
-    // Get the indices of the adjacent cells
-    let adjacentPlayer1Cells = getAdjacentPlayerCellsIndices(iP1, jP1);
-    let adjacentPlayer2Cells = getAdjacentPlayerCellsIndices(iP2, jP2);
-
-    // Update the visibility map based on the current adjacent cells
-    for (let i = 0; i < adjacentPlayer1Cells.length; i++) {
-        let index = adjacentPlayer1Cells[i];
-        visibilityMap[index] += 1;
-    }
-    for (let i = 0; i < adjacentPlayer2Cells.length; i++) {
-        let index = adjacentPlayer2Cells[i];
-        visibilityMap[index] -= 1;
-    }
-
-    // Update the visibility map based on the old adjacent cells
-    for (let i = 0; i < oldPlayer1AdjacentsCells.length; i++) {
-        let index = oldPlayer1AdjacentsCells[i];
-        visibilityMap[index] -= 1;
-    }
-
-    for (let i = 0; i < oldPlayer2AdjacentsCells.length; i++) {
-        let index = oldPlayer2AdjacentsCells[i];
-        visibilityMap[index] += 1;
-    }
-
-    // Update the old adjacent cells
-    oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
-    oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
-
-}
-*/
-
-/*// Function to update the board display based on visibility
-
-function getIndicesFromId(cellId) {
-    // Split the id by '-' and extract the numeric parts
-    let parts = cellId.split('-');
-    let i = parseInt(parts[1], 10);
-    let j = parseInt(parts[2], 10);
-
-    return { i, j };
-}*/
-
 
 function getAdjacentPlayerCellsIndices(i, j) {
     let adjacentIndices = [];

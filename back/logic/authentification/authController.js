@@ -36,8 +36,19 @@ async function signup(req, res) {
                             isCurrentPlayer: true
                         }
                     ]
-                }
+                },
+                visibilityMap: []
             };
+            for (let i = 0; i < (9*9); i++) {
+                newUser.visibilityMap[i] = [];
+                if (i < 36) {
+                    newUser.visibilityMap[i] = 1; // Visibility +1
+                } else if (i <= 44) {
+                    newUser.visibilityMap[i] = 0; // Visibility 0
+                } else {
+                    newUser.visibilityMap[i] = -1; // Visibility -1
+                }
+            }
             await usersCollection.insertOne(newUser);
             console.log('User created:', newUser);
             const token = generateToken(username);
@@ -82,7 +93,7 @@ async function login(req, res) {
 }
 
 async function updateGameState(req, res) {
-    parseJSON(req, async (err, { gameState }) => {
+    parseJSON(req, async (err, { gameState, visibilityMap  }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid JSON');
@@ -90,9 +101,15 @@ async function updateGameState(req, res) {
         }
         try {
             const usersCollection = await createUserCollection();
-            await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState } });
+            if (gameState) {
+                await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState } });
+                console.log('User gameState:', gameState);
+            }
+            if (visibilityMap) {
+                await usersCollection.updateOne({ username: "lucie" }, { $set: { visibilityMap } });
+                console.log('User visibilityMap:', visibilityMap);
+            }
             console.log('User gameState updated successfully');
-            console.log('User gameState:', gameState);
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('Game state updated successfully');
         } catch (error) {
