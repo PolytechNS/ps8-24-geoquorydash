@@ -1,4 +1,7 @@
-const { computeMoveForAI } = require("../ai/ai.js")
+const { computeMove, computeMoveForAI } = require("../ai/ai.js")
+const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
+//const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
+// const fogOfWarInstance = require("./fogOfWarController.js");
 
 class GameManager {
     gridMap = [];
@@ -12,6 +15,12 @@ class GameManager {
             isCurrentPlayer: false
             }
         ]
+    };
+
+    gameStateTeacher = {
+        opponentWalls: [[]], // contient une position et un isVertical
+        ownWalls: [[]], // pareil
+        board: [[]]
     };
 
     constructor() {
@@ -35,11 +44,129 @@ class GameManager {
         return this;
     }
 
-    // Methods to manage the game
-    computeMoveForAI(getPossibleMove){
-        return computeMoveForAI(this.gameState, getPossibleMove);
+    // convertGameStateToGameStateTeacher() {
+    //     let IAplayer = this.gameState.players.find(player => player.id === "ia");
+    //     let IAplayerWalls = IAplayer.walls;
+    //     this.gameStateTeacher.ownWalls = [];
+    //     this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacher.ownWalls);
+
+    //     let otherPlayer = this.gameState.players.find(player => player.id === "p2");
+    //     let otherPlayerWalls = otherPlayer.walls;
+    //     this.gameStateTeacher.opponentWalls = [];
+    //     this.addWallsToAPlayer(otherPlayerWalls, this.gameStateTeacher.opponentWalls);
+
+    //     this.gameStateTeacher.board = [[]];
+    //     this.gameStateTeacher.board = this.rearrangeVisibilityMapToBoard(fogOfWarInstance.visibilityMap);
+    //     let convertedIAplayerPosition = this.convertMyPositionToTeacherPosition(IAplayer.position);
+    //     this.gameStateTeacher.board[parseInt(convertedIAplayerPosition[0]) - 1][parseInt(convertedIAplayerPosition[1]) - 1] = 1;
+    //     let convertedOtherPlayerPosition = this.convertMyPositionToTeacherPosition(otherPlayer.position);
+    //     this.gameStateTeacher.board[parseInt(convertedOtherPlayerPosition[0]) - 1][parseInt(convertedOtherPlayerPosition[1]) - 1] = 2;
+    // }
+
+    convertGameStateTeacherToGameState() {
+        let IAplayer = this.gameState.players.find(player => player.id === "ia");
+        IAplayer.walls = [];
+        IAplayer.walls = reconstructWallsListWithTopLeftCorners(this.gameStateTeacher.ownWalls);
+
+        let otherPlayer = this.gameState.players.find(player => player.id === "p2");
+        otherPlayer.walls = [];
+        otherPlayer.walls = reconstructWallsListWithTopLeftCorners(this.gameStateTeacher.opponentWalls);
+
+        for(let i = 0; i < 9; i++) {
+            for(let j = 0; j < 9; j++) {
+                if(this.gameStateTeacher.board[i][j] === 1) {           // Dans ce cas, il s'agit de la case sur laquelle mon bot se trouve
+                    teacherPosition = `${i}${j}`;
+                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    IAplayer.position = myPosition;
+                } else if(this.gameStateTeacher.board[i][j] === 2) {    // Dans ce cas, il s'agit de la case sur laquelle mon opposant se trouve
+                    teacherPosition = `${i}${j}`;
+                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    otherPlayer.position = myPosition;
+                }
+            }
+        }
     }
 
+    reconstructWallsListWithTopLeftCorners(walls) {
+        wallsList = [];
+        walls.forEach(wall => {
+            let oneWall = [];
+            topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
+            if(wall[1] === 1) {     // Dans ce cas là, le mur est vertical
+                oneWall.push({x: topLeftCornerPosition.x, y: topLeftCornerPosition.y + 1});
+                oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
+                oneWall.push({x: topLeftCornerPosition.x + 2, y: topLeftCornerPosition.y + 1});
+            } else {                // Dans ce cas là, le mur est horizontal
+                oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y});
+                oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
+                oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 2});
+            }
+            wallsList.push(oneWall);
+        });
+        return wallsList;
+    }
+
+    rearrangeVisibilityMapToBoard(array) {
+        let result = [];
+        for (let i = 0; i < 9; i++) {
+            let intermediateArray = [];
+            let start = 81 - 9 * (i + 1);
+            let end = start + 9;
+            for(let j = start; j < end; j++) {
+                if(array[start] >= 0) {
+                    intermediateArray.push(0);
+                } else {
+                    intermediateArray.push(-1);
+                }
+            }
+            result.push(intermediateArray);
+        }
+        return result;
+    }
+
+    addWallsToAPlayer(playerWalls, gameStateTeacherPlayerWalls) {
+        playerWalls.forEach(wall => {
+            let isVertical = 1;
+            if(wall[0].x === wall[1].x) {
+                // Dans ce cas là, le mur est horizontal
+                isVertical = 0;
+                let topLeftSquarePosition = {x: wall[0].x - 1, y: wall[0].y};
+                let topLeftSquareTeacherPosition = this.convertMyPositionToTeacherPosition(topLeftSquarePosition);
+                gameStateTeacherPlayerWalls.push([topLeftSquareTeacherPosition, isVertical]);
+            } else {
+                // isVertical reste à 1
+                let topLeftSquarePosition = {x: wall[0].x, y: wall[0].y - 1};
+                let topLeftSquareTeacherPosition = this.convertMyPositionToTeacherPosition(topLeftSquarePosition);
+                gameStateTeacherPlayerWalls.push([topLeftSquareTeacherPosition, isVertical]);
+            }
+        });
+    }
+
+    convertMyPositionToTeacherPosition(myPosition) {
+        let teacherPosition = {x: (myPosition.y / 2) + 1, y: 10 - ((myPosition.x / 2) + 1)};
+        return `${teacherPosition.x}${teacherPosition.y}`;
+    }
+
+    convertTeacherPositionToMyPosition(teacherPosition) {
+        let xTeacherPosition = parseInt(teacherPosition[0]);
+        let yTeacherPosition = parseInt(teacherPosition[1]);
+        let myPosition = {x: 2*(9 - yTeacherPosition), y: 2*(xTeacherPosition - 1)};
+        return myPosition;
+    }
+
+    async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
+        myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
+        let nextPositionToGo = await computeMoveForAI(getAdjacentCellsPositionsWithWalls);
+        let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
+        return stringNextPositionToGo;
+    }
+
+    // Methods to manage the game
+    computeMoveForAI(getAdjacentCellsPositionsWithWalls){
+        let iaPlayer = this.gameState.players.find(player => player.id === "ia");
+        let iaPosition = iaPlayer.position;
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
+    }
 
     validateMove(move) {
         let pos;
