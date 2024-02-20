@@ -24,7 +24,6 @@ class GameManager {
     };
 
     constructor() {
-        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         this.gameState = {
             players: [

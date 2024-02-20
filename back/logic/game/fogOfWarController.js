@@ -1,6 +1,5 @@
 const gameManager = require('./gameManager'); // Instance unique de GameManager
 
-
 class FogOfWar{
     visibilityMap = [];
     oldPlayer1AdjacentsCells = [];
@@ -19,7 +18,6 @@ class FogOfWar{
         }
 
         this.updateBoardVisibility();
-        //console.log(this.visibilityMap);
     }
 
     updateBoardVisibility() {
