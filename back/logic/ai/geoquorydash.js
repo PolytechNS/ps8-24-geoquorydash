@@ -1,20 +1,28 @@
+const gameManager = require('../game/gameManager');
+
 let iaPlayer = null; // A initialiser plus tard, mais en gros ce joueur sera l'ia
 let firstToPlay = false;
 
+
+move = {
+    action: null,
+    value: null
+};
+
 async function setup(AIplay) { // AIplay vaut 1 si l'ia joue en premier, et 2 sinon
-    let position = null;
+    let stringPosition = null;
     if(AIplay === 1) { // L'ia joue en premier
         firstToPlay = true;
-        position = {x: 0, y: 8}
+        stringPosition = "51";
     } else {
-        position = {x: 0, y: 8}
+        stringPosition = "59";
     }
-    stringPosition = `${position.x}${position.y}`
     return stringPosition;
 }
 
-async function nextMove(gameState) {
-
+async function nextMove(gameStateTeacher) {
+    let stringNextPositionToGo = await gameManager.computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls);
+    return {action: "move", value: stringNextPositionToGo};
 }
 
 async function correction(rightMove) {
@@ -48,7 +56,14 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
 function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
     let currentPosition = {x: position.x, y: position.y};
 
-    while(currentPosition.x !== 16) {
+    let AIwinningPosition = null;
+    if(firstToPlay) {
+        AIwinningPosition = 0;
+    } else {
+        AIwinningPosition = 16;
+    }
+
+    while(currentPosition.x !== AIwinningPosition) {
         updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
         currentPosition = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
@@ -122,27 +137,5 @@ exports.setup = setup;
 exports.nextMove = nextMove;
 exports.correction = correction;
 exports.updateBoard = updateBoard;
-
-
-/*gameState = {
-    opponentWalls: [
-        {
-            position: null,
-            isVerticalOrHorizontal: null    // 0 si horizontal, 1 sinon
-        }
-    ],
-    ownWalls: [
-        {
-            position: null,
-            isVerticalOrHorizontal: null    // 0 si horizontal, 1 sinon
-        }
-    ],
-    board: [[]]
-};*/
-
-move = {
-    action: null,
-    value: null
-};
 
 module.exports = { dijkstraAlgorithm };

@@ -211,4 +211,4 @@ function endGame(message) {
     // Envoi un message au front avec une socket pour gérer les affichages
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, getAdjacentCellsPositionsWithWalls};
