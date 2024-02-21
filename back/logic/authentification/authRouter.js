@@ -1,4 +1,5 @@
 const authController = require('./authController');
+const gameEngine = require('../game/gameEngine');
 
 function handleAuthRoutes(req, res) {
     // You might want to parse the URL and method more carefully in a production app
@@ -9,6 +10,8 @@ function handleAuthRoutes(req, res) {
         authController.login(req, res);
     } else if (url.pathname === '/api/auth/updateGameState' && req.method === 'POST') {
         authController.updateGameState(req, res);
+    } else if (url.pathname === '/api/auth/newGame' && req.method === 'POST') {
+        gameEngine.newGame(req, res);
     } else {
         // Not Found
         res.writeHead(404, { 'Content-Type': 'text/plain' });

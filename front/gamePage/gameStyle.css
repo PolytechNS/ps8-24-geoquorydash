@@ -97,3 +97,11 @@ body {
     justify-content: center;
     color: white;
 }
+
+#newGame {
+    margin-top: 10px;
+    display: inline-block;
+}
+#newGame img {
+    width: 50px;
+}

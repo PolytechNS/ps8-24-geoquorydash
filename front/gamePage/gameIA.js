@@ -237,9 +237,30 @@ function ImpossibleWallPlacementPopUp() {
 
 function endGame(player) {
     const messageElement = document.getElementById('message');
-    messageElement.innerText = "Le joueur " + player.id + " a gagne !";
+    messageElement.getElementById('messageTexte').innerText = "Le joueur " + player.id + " a gagne !";
     messageElement.classList.add('visible');
     board.classList.add('hidden');
 }
+
+document.addEventListener("DOMContentLoaded", function() {
+    const buttonGame = document.getElementById('newGame');
+    buttonGame.addEventListener("click", function (event) {
+        event.preventDefault();
+        fetch('/api/auth/newGame', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ gameState: null, visibilityMap: null})
+        }).then(data => {
+                console.log('New game success');
+                alert('Nouvelle partie !');
+                location.reload();
+            })
+            .catch(error => {
+                console.error('New game error:', error);
+            });
+    });
+});
 
 export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };
