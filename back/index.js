@@ -4,11 +4,13 @@ const http = require('http')
 const fileQuery = require('./queryManagers/front.js')
 const apiQuery = require('./queryManagers/api.js')
 const {PORT} = require('./utils/constants')
+const setupSocket = require('./socketManager');
+const { run, uri } = require('./bdd');
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
 ** will be called whenever a new request arrives to the server.
  */
-http.createServer(function (request, response) {
+const server = http.createServer(function (request, response) {
     // First, let's check the URL to see if it's a REST request or a file request.
     // We will remove all cases of "../" in the url for security purposes.
     let filePath = request.url.split("/").filter(function(elem) {
@@ -29,7 +31,13 @@ http.createServer(function (request, response) {
         response.end(`Something in your request (${request.url}) is strange...`);
     }
 // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
-}).listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-    console.log(`You can access it at http://localhost:${PORT}`);
 });
+
+setupSocket(server);
+
+server.listen(PORT, function() {
+    console.log(`Server is listening on port ${PORT}`);
+    console.log(`http://localhost:${PORT}`);
+});
+
+run().catch(console.dir);

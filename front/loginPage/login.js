@@ -1,4 +1,4 @@
-import { AuthService } from '../Services/AuthService.js';
+import { AuthService } from '../Services/authService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const loginForm = document.getElementById('loginForm');
@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Login error:', error);
+                alert('Identifiant inexistant ou mot de passe incorrect, veuillez reessayer ou vous inscrire.');
             });
     });
 });
