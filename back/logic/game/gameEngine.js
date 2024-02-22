@@ -1,5 +1,6 @@
 const gameManager = require('./gameManager');
 const fogOfWar = require('./fogOfWarController');
+const socketIo = require('socket.io');
 const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require("../../models/users");
@@ -26,11 +27,12 @@ function movePlayer(targetPosition) {
     if (!gameActive) return;
 
     currentPlayer.position = targetPosition;
+
     if (currentPlayer === player1 && targetPosition.x === 16) {
-        endGame('Le joueur 1 a gagné!');
+        endGame('Le joueur 2 a gagné!');
         return currentPlayer;
     } else if (currentPlayer === player2 && targetPosition.x === 0) {
-        endGame('Le joueur 2 a gagné!');
+        endGame('Le joueur 1 a gagné!');
         return currentPlayer;
     }
 }
@@ -50,7 +52,10 @@ function toggleWall(wall, isVertical) {
     }
 
     if(canPlayerReachArrival(walls)) {
-        updateWalls(wall, isVertical);
+        var response = updateWalls(wall, isVertical);
+        if (response) {
+            return response;
+        }
         return 1;
     }
     return 0;
@@ -59,7 +64,7 @@ function toggleWall(wall, isVertical) {
 function updateWalls(wall, isVertical) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    turn();
+    return turn();
 }
 
 function checkBarriersBetween(startPosition, targetPosition, walls) {
@@ -140,7 +145,6 @@ function getAdjacentCellsPositionsWithWalls(cellPosition,walls) {
 }
 
 function canPlayerReachArrival(walls) {
-    var currentPosition = currentPlayer.position;
     let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
     let canReachPlayer1 = checkPathToReachTheEnd(player1.position, alreadyVisitedCell, "player1", walls);
@@ -152,7 +156,6 @@ function canPlayerReachArrival(walls) {
 }
 
 function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player, walls) {
-    console.log(alreadyVisitedCell);
     if(arrayOfPositionContainsPosition(alreadyVisitedCell, currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
         return false;
     }
@@ -181,7 +184,8 @@ function turn() {
     otherPlayer = currentPlayer;
     currentPlayer = gameManager.getCurrentPlayer();
 
-    moveAI(); // On fait bouger l'IA
+    var response = moveAI(); // On fait bouger l'IA
+    if (response) return response;
 
     // On change le joueur courant car on change de tour
     for (let player of gameManager.getGameState().players) {
@@ -247,4 +251,4 @@ async function newGame(req, res) {
     });
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, newGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, getAdjacentCellsPositionsWithWalls, newGame};
