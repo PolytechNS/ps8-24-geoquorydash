@@ -16,12 +16,13 @@ async function initializeGame() {
     otherPlayer = player1;
 }
 
-initializeGame().then(() => {
+/*initializeGame().then(() => {
     console.log('Initialisation terminée.');
+    console.log(player1, player2, currentPlayer, otherPlayer, gameActive);
+
 }).catch((error) => {
     console.error('Erreur lors de l\'initialisation du jeu :', error);
-});
-console.log(player1, player2, currentPlayer, otherPlayer, gameActive);
+});*/
 
 function movePlayer(targetPosition) {
     if (!gameActive) return;
@@ -82,7 +83,7 @@ function checkBarriersBetween(startPosition, targetPosition, walls) {
 function getPossibleMove() {
     if (!gameActive) return;
     let possibleMove = [];
-
+    console.log(currentPlayer);
     const adjacentCellsPositionsWithWalls = getAdjacentCellsPositionsWithWalls(currentPlayer.position);
     if(isOtherPlayerOnAdjacentCells(adjacentCellsPositionsWithWalls)) {
         let forwardPosition = null;
@@ -251,4 +252,4 @@ async function newGame(req, res) {
     });
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, getAdjacentCellsPositionsWithWalls, newGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, newGame};
