@@ -15,7 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Signup error:', error);
-                alert('Insription impossible, veuillez reessayer.');
+                // Utilisez le message d'erreur pour déterminer la nature de l'erreur
+                if (error.message === 'Username already exists') {
+                    alert('Ce nom d’utilisateur existe déjà. Veuillez en choisir un autre.');
+                } else {
+                    alert('Inscription impossible, veuillez réessayer.');
+                }
             });
     });
 });

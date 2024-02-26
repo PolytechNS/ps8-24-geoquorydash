@@ -5,11 +5,10 @@ const createUserCollection = require('../../models/users');
 
 async function signup(req, res) {
     console.log('Signup');
-    parseJSON(req, async (err, {username, password}) => {
-        console.log('Signup started');
+    parseJSON(req, async (err, { username, password }) => {
         if (err) {
             console.log('Invalid JSON:', err);
-            res.writeHead(400, {'Content-Type': 'text/plain'});
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid JSON');
             return;
         }
@@ -18,45 +17,28 @@ async function signup(req, res) {
 
         try {
             const usersCollection = await createUserCollection();
+            // Vérifier si l'utilisateur existe déjà
+            const existingUser = await usersCollection.findOne({ username: username });
+            if (existingUser) {
+                console.log('User already exists:', username);
+                res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
+                res.end('User already exists');
+                return;
+            }
+
+            const token = generateToken(username);
             const newUser = {
                 username,
                 password,
-                gameState: {
-                    players: [
-                        {
-                            id: "ia",
-                            position: { x: 0, y: 8 },
-                            walls: [],
-                            isCurrentPlayer: false
-                        },
-                        {
-                            id: "p2",
-                            position: { x: 16, y: 8 },
-                            walls: [],
-                            isCurrentPlayer: true
-                        }
-                    ]
-                },
-                visibilityMap: []
+                token
             };
-            for (let i = 0; i < (9*9); i++) {
-                newUser.visibilityMap[i] = [];
-                if (i < 36) {
-                    newUser.visibilityMap[i] = 1; // Visibility +1
-                } else if (i <= 44) {
-                    newUser.visibilityMap[i] = 0; // Visibility 0
-                } else {
-                    newUser.visibilityMap[i] = -1; // Visibility -1
-                }
-            }
             await usersCollection.insertOne(newUser);
             console.log('User created:', newUser);
-            const token = generateToken(username);
-            res.writeHead(200, {'Content-Type': 'application/json'});
-            res.end(JSON.stringify({token}));
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ token }));
         } catch (err) {
             console.log('Error creating user:', err);
-            res.writeHead(500, {'Content-Type': 'text/plain'});
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
             res.end('Internal server error');
         }
     });
@@ -103,13 +85,13 @@ async function updateGameState(req, res) {
             const usersCollection = await createUserCollection();
             if (gameState) {
                 await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState } });
-                console.log('User gameState:', gameState);
+                //console.log('User gameState:', gameState);
             }
             if (visibilityMap) {
                 await usersCollection.updateOne({ username: "lucie" }, { $set: { visibilityMap } });
-                console.log('User visibilityMap:', visibilityMap);
+                //console.log('User visibilityMap:', visibilityMap);
             }
-            console.log('User gameState updated successfully');
+            //console.log('User gameState updated successfully');
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('Game state updated successfully');
         } catch (error) {
