@@ -19,6 +19,7 @@ async function signup(req, res) {
             const usersCollection = await createUserCollection();
             // Vérifier si l'utilisateur existe déjà
             const existingUser = await usersCollection.findOne({ username: username });
+            console.log(existingUser);
             if (existingUser) {
                 console.log('User already exists:', username);
                 res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
@@ -31,10 +32,8 @@ async function signup(req, res) {
                 password,
             };
             await usersCollection.insertOne(newUser);
-            const token = generateToken(username);
             console.log('User created:', newUser);
             res.writeHead(200, { 'Content-Type': 'application/json' });
-            res.end(JSON.stringify({ token }));
         } catch (err) {
             console.log('Error creating user:', err);
             res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -52,13 +51,12 @@ async function login(req, res) {
             return;
         }
         console.log('Login called');
-        console.log(username, password);
 
         try {
             const usersCollection = await createUserCollection();
             const user = await usersCollection.findOne({ username, password });
             if (user) {
-                const token = generateToken(username);
+                const token = generateToken(user._id);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ token }));
             } else {

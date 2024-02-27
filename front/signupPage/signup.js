@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         AuthService.signUp(username, password)
             .then(data => {
                 console.log('Signup success:', data);
-                localStorage.setItem('token', data.token);
                 window.location.href = '../loginPage/login.html';
                 alert('Inscription effectuée');
             })
