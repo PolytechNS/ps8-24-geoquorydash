@@ -1,4 +1,5 @@
-const gameManager = require('./gameManager'); // Instance unique de GameManager
+const gameManager = require('./gameManager');
+const createUserCollection = require("../../models/users"); // Instance unique de GameManager
 
 class FogOfWar{
     visibilityMap = [];
@@ -16,15 +17,68 @@ class FogOfWar{
                 this.visibilityMap[i] = -1; // Visibility -1
             }
         }
-
+        console.log('FogOfWar default');
         this.updateBoardVisibility();
     }
 
-    updateBoardVisibility() {
+    async initializeFogOfWar() {
+        await gameManager.initializeGameState();
+        const fog = await this.initializeFogFromDB();
+        if (fog) {
+            this.visibilityMap = fog;
+            console.log('FogOfWar DB');
+        } else {
+            for (let i = 0; i < (9*9); i++) {
+                this.visibilityMap[i] = [];
+                if (i < 36) {
+                    this.visibilityMap[i] = 1; // Visibility +1
+                } else if (i <= 44) {
+                    this.visibilityMap[i] = 0; // Visibility 0
+                } else {
+                    this.visibilityMap[i] = -1; // Visibility -1
+                }
+            }
+            console.log('FogOfWar default');
+        }
+        this.updateBoardVisibility();
+    }
+
+    async initializeFogFromDB() {
+        try {
+            const usersCollection = await createUserCollection();
+            const userFog = await usersCollection.findOne({ username: "lucie" });
+            if (userFog && userFog.visibilityMap) {
+                console.log('FogOfWar initialized from DB:');
+                return userFog.visibilityMap;
+            } else {
+                console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
+            throw error;
+        }
+    }
+
+    initializeDefaultFogOfWar() {
+        for (let i = 0; i < (9*9); i++) {
+            this.visibilityMap[i] = [];
+            if (i < 36) {
+                this.visibilityMap[i] = 1; // Visibility +1
+            } else if (i <= 44) {
+                this.visibilityMap[i] = 0; // Visibility 0
+            } else {
+                this.visibilityMap[i] = -1; // Visibility -1
+            }
+        }
+        console.log('FogOfWar default');
+        this.updateBoardVisibility();
+    }
+
+    async   updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;
-        let { i:iP1, j:jP1 } = { i: gameState.players[0].position.x, j: gameState.players[0].position.y}
-        let { i: iP2, j: jP2 } = { i: gameState.players[1].position.x, j: gameState.players[1].position.y}
+        let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
+        let {i: iP2, j: jP2} = {i: gameState.players[1].position.x, j: gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);

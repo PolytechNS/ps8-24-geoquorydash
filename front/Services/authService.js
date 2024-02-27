@@ -1,5 +1,4 @@
-// AuthService.js
-import { API_ENDPOINT } from '../js/config.js'; // Assurez-vous que le chemin est correct
+import { API_ENDPOINT } from '../js/config.js';
 
 export const AuthService = {
     login(username, password) {

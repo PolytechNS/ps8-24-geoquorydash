@@ -1,6 +1,7 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
-//const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
+const createUserCollection = require('../../models/users');
+// const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
 class GameManager {
@@ -24,6 +25,7 @@ class GameManager {
     };
 
     constructor() {
+        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         this.gameState = {
             players: [
@@ -42,6 +44,52 @@ class GameManager {
             ]
         };
         return this;
+    }
+
+    async initializeGameStateFromDB() {
+        try {
+            const usersCollection = await createUserCollection();
+            const userGameState = await usersCollection.findOne({ username: "lucie" });
+            if (userGameState && userGameState.gameState) {
+                console.log('GameState initialized from DB:');
+                return userGameState.gameState;
+            } else {
+                console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
+            }
+        } catch (error) {
+            console.error('Erreur lors de l\'utilisation de getGameState:', error);
+            throw error;
+        }
+    }
+
+    async initializeGameState() {
+        const userGameState = await this.initializeGameStateFromDB();
+        if (userGameState) {
+            this.gameState = userGameState;
+            console.log('GameState DB');
+        } else {
+            console.log('GameState default');
+        }
+    }
+
+    initializeDefaultGameState() {
+        this.gameState = {
+            players: [
+                {
+                    id: "ia",
+                    position: { x: 0, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: false
+                },
+                {
+                    id: "p2",
+                    position: { x: 16, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: true
+                }
+            ]
+        };
+        console.log('GameState default');
     }
 
     // convertGameStateToGameStateTeacher() {

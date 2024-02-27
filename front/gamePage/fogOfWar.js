@@ -7,7 +7,28 @@ function hideOldPossibleMoves() {
     }
 }
 
+
 function updateBoardDisplay(gameState, visibilityMap) {
+    fetch('/api/auth/updateGameState', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ gameState, visibilityMap })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Failed to update gameState');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Game state updated successfully:', data);
+    })
+    .catch(error => {
+        console.error('Error updating gameState:', error);
+    });
+
     let playerCells = document.getElementsByClassName('player-cell');
     let currentPlayer = gameState.players.find(player => player.isCurrentPlayer === true);
     let currentPlayerPosition = currentPlayer.position;
@@ -30,6 +51,39 @@ function updateBoardDisplay(gameState, visibilityMap) {
     otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
 
     askPossibleMove();
+}
+
+function getAdjacentPlayerCellsIndices(i, j) {
+    let adjacentIndices = [];
+
+    let playerCellRow = i / 2;
+    let playerCellCol = j / 2;
+    let baseIndex = playerCellRow * 9 + playerCellCol; // Convert 2D position to 1D
+
+    // Check player cell itself
+    adjacentIndices.push(baseIndex);
+
+    // Check left player cell
+    if (j > 1) {
+        adjacentIndices.push(baseIndex - 1);
+    }
+
+    // Check right player cell
+    if (j < 15) {
+        adjacentIndices.push(baseIndex + 1);
+    }
+
+    // Check top player cell
+    if (i > 1) {
+        adjacentIndices.push(baseIndex - 9);
+    }
+
+    // Check bottom player cell
+    if (i < 15) {
+        adjacentIndices.push(baseIndex + 9);
+    }
+
+    return adjacentIndices;
 }
 
 function getAdjacentBarrierCellsIndicesHorizontal(i,j) {

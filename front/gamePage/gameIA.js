@@ -161,6 +161,7 @@ function lockBarrier(wall) {
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
+    // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
     socket.emit('movePlayer', targetPosition);
 }
 
@@ -235,10 +236,8 @@ function ImpossibleWallPlacementPopUp() {
 }
 
 function endGame(player) {
-    const messageElement = document.getElementById('message');
-    messageElement.innerText = "Le joueur " + player.id + " a gagne !";
-    messageElement.classList.add('visible');
-    board.classList.add('hidden');
+    alert("Le joueur " + player.id + " a gagne !");
 }
+
 
 export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };
