@@ -65,43 +65,12 @@ body {
     border: none;
 }
 
-#message {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2vw;
-    background-color: white;
-    padding: 2vh;
-    border: 0.2vh solid black;
-    z-index: 1;
-    display: none;
-}
-
-#message.visible {
-    display: block;
-}
-
 .hidden {
     display: none;
-}
-
-.infoContainer {
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 #playerTurn {
     font-size: 2vw;
     justify-content: center;
     color: white;
-}
-
-#newGame {
-    margin-top: 10px;
-    display: inline-block;
-}
-#newGame img {
-    width: 50px;
 }

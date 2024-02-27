@@ -17,6 +17,7 @@ socket.on('possibleMoveList', function(possibleMove) {
 
 socket.on('endGame', function(player) {
     endGame(player);
+    socket.emit('startNewGame');
 });
 
 socket.on('lockWall', function(wall) {
@@ -26,5 +27,17 @@ socket.on('lockWall', function(wall) {
 socket.on('ImpossibleWallPosition', function() {
     ImpossibleWallPlacementPopUp();
 });
+
+window.onload = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const newGame = urlParams.get('newGame');
+    const resumeGame = urlParams.get('resumeGame');
+
+    if (newGame === 'true') {
+        socket.emit('startNewGame');
+    } else if (resumeGame === 'true') {
+        socket.emit('resumeSavedGame');
+    }
+};
 
 export default socket;

@@ -11,7 +11,7 @@ class FogOfWar{
     }
 
     async initializeFogOfWar() {
-        await gameManager.initialize();
+        await gameManager.initializeGameState();
         const fog = await this.initializeFogFromDB();
         if (fog) {
             this.visibilityMap = fog;
@@ -29,9 +29,7 @@ class FogOfWar{
             }
             //console.log('FogOfWar default');
         }
-
         this.updateBoardVisibility();
-        //console.log(this.visibilityMap);
     }
 
     async initializeFogFromDB() {
@@ -50,8 +48,7 @@ class FogOfWar{
         }
     }
 
-    async endGame(){
-        this.visibilityMap = [];
+    initializeDefaultFogOfWar() {
         for (let i = 0; i < (9*9); i++) {
             this.visibilityMap[i] = [];
             if (i < 36) {
@@ -61,27 +58,9 @@ class FogOfWar{
             } else {
                 this.visibilityMap[i] = -1; // Visibility -1
             }
-            //console.log(this.visibilityMap[i]);
         }
-        fetch('/api/auth/updateGameState', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ visibilityMap: this.visibilityMap })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to update FogOfWar');
-                }
-                return response.json();
-            })
-            .then(data => {
-                //console.log('FogOfWar updated successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error updating FogOfWar:', error);
-            });
+        console.log('FogOfWar default');
+        this.updateBoardVisibility();
     }
 
     async   updateBoardVisibility() {
