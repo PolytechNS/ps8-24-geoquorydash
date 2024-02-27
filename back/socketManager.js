@@ -9,7 +9,6 @@ const setupSocket = (server) => {
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
         await initializeGame();
-        console.log('Apres Initialisation.');
         socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
         fogOfWar.updateBoardVisibility();
 
@@ -27,7 +26,6 @@ const setupSocket = (server) => {
 
             response = turn();
             if (response) {
-                console.log(response);
                 socket.emit("endGame", response);
                 return;
             }

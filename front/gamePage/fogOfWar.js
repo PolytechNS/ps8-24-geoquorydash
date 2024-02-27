@@ -23,7 +23,7 @@ function updateBoardDisplay(gameState, visibilityMap) {
         return response.json();
     })
     .then(data => {
-        console.log('Game state updated successfully:', data);
+        //console.log('Game state updated successfully:', data);
     })
     .catch(error => {
         console.error('Error updating gameState:', error);

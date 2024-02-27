@@ -15,7 +15,7 @@ class FogOfWar{
         const fog = await this.initializeFogFromDB();
         if (fog) {
             this.visibilityMap = fog;
-            console.log('GameState DB');
+            //console.log('GameState DB');
         } else {
             for (let i = 0; i < (9*9); i++) {
                 this.visibilityMap[i] = [];
@@ -27,7 +27,7 @@ class FogOfWar{
                     this.visibilityMap[i] = -1; // Visibility -1
                 }
             }
-            console.log('FogOfWar default');
+            //console.log('FogOfWar default');
         }
 
         this.updateBoardVisibility();
@@ -39,10 +39,10 @@ class FogOfWar{
             const usersCollection = await createUserCollection();
             const userFog = await usersCollection.findOne({ username: "lucie" });
             if (userFog && userFog.visibilityMap) {
-                console.log('FogOfWar initialized from DB:');
+                //console.log('FogOfWar initialized from DB:');
                 return userFog.visibilityMap;
             } else {
-                console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
+                //console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
             }
         } catch (error) {
             console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
@@ -61,7 +61,7 @@ class FogOfWar{
             } else {
                 this.visibilityMap[i] = -1; // Visibility -1
             }
-            console.log(this.visibilityMap[i]);
+            //console.log(this.visibilityMap[i]);
         }
         fetch('/api/auth/updateGameState', {
             method: 'POST',
@@ -77,7 +77,7 @@ class FogOfWar{
                 return response.json();
             })
             .then(data => {
-                console.log('FogOfWar updated successfully:', data);
+                //console.log('FogOfWar updated successfully:', data);
             })
             .catch(error => {
                 console.error('Error updating FogOfWar:', error);

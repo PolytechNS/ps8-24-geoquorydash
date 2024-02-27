@@ -83,7 +83,6 @@ function checkBarriersBetween(startPosition, targetPosition, walls) {
 function getPossibleMove() {
     if (!gameActive) return;
     let possibleMove = [];
-    console.log(currentPlayer);
     const adjacentCellsPositionsWithWalls = getAdjacentCellsPositionsWithWalls(currentPlayer.position);
     if(isOtherPlayerOnAdjacentCells(adjacentCellsPositionsWithWalls)) {
         let forwardPosition = null;
@@ -240,8 +239,8 @@ async function newGame(req, res) {
                 }
             }
             await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState: gameManager.gameState, visibilityMap: fogOfWar.visibilityMap } });
-            console.log('User gameState:', gameManager.gameState);
-            console.log('User visibilityMap:', fogOfWar.visibilityMap);
+            // console.log('User gameState:', gameManager.gameState);
+            // console.log('User visibilityMap:', fogOfWar.visibilityMap);
             res.writeHead(200, { 'Content-Type': 'text/plain' });
             res.end('Game state updated successfully');
         } catch (error) {

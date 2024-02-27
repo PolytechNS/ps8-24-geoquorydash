@@ -51,7 +51,7 @@ class GameManager {
             const usersCollection = await createUserCollection();
             const userGameState = await usersCollection.findOne({ username: "lucie" });
             if (userGameState && userGameState.gameState) {
-                console.log('GameState initialized from DB:');
+                // console.log('GameState initialized from DB:');
                 return userGameState.gameState;
             } else {
                 console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
@@ -66,7 +66,7 @@ class GameManager {
         const userGameState = await this.initializeGameStateFromDB();
         if (userGameState) {
             this.gameState = userGameState;
-            console.log('GameState DB');
+            // console.log('GameState DB');
         } else {
             this.gameState = {
                 players: [
@@ -84,7 +84,7 @@ class GameManager {
                     }
                 ]
             };
-            console.log('GameState default');
+            // console.log('GameState default');
         }
     }
 
@@ -119,7 +119,7 @@ class GameManager {
                 return response.json();
             })
             .then(data => {
-                console.log('Game state updated successfully:', data);
+               // console.log('Game state updated successfully:', data);
             })
             .catch(error => {
                 console.error('Error updating gameState:', error);
@@ -158,12 +158,12 @@ class GameManager {
         for(let i = 0; i < 9; i++) {
             for(let j = 0; j < 9; j++) {
                 if(this.gameStateTeacher.board[i][j] === 1) {           // Dans ce cas, il s'agit de la case sur laquelle mon bot se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     IAplayer.position = myPosition;
                 } else if(this.gameStateTeacher.board[i][j] === 2) {    // Dans ce cas, il s'agit de la case sur laquelle mon opposant se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     otherPlayer.position = myPosition;
                 }
             }
@@ -171,10 +171,10 @@ class GameManager {
     }
 
     reconstructWallsListWithTopLeftCorners(walls) {
-        wallsList = [];
+        var wallsList = [];
         walls.forEach(wall => {
             let oneWall = [];
-            topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
+            var topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
             if(wall[1] === 1) {     // Dans ce cas là, le mur est vertical
                 oneWall.push({x: topLeftCornerPosition.x, y: topLeftCornerPosition.y + 1});
                 oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
@@ -238,7 +238,7 @@ class GameManager {
     }
 
     async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
-        myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
+        var myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
         let nextPositionToGo = await computeMoveForAI(getAdjacentCellsPositionsWithWalls);
         let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
         return stringNextPositionToGo;
