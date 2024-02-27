@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jeux de plateau</title>
+  <link rel="stylesheet" href="gameStyle.css">
+</head>
+<body>
+
+  <div class="container">
+    <div class="board" id="board"></div>
+    <div id="playerTurn">C'est au tour du joueur 1</div>
+  </div>
+
+  <script type="module" src="./gameIA.js"></script>
+  <script type="module" src="./fogOfWar.js"></script>
+
+  <script src="../sockets/socket.io.js"></script>
+  <script type="module" src="../sockets/socketConnection.js"></script>
+</body>
+</html>
