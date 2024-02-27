@@ -18,8 +18,8 @@ class GameManager {
     };
 
     gameStateTeacher = {
-        opponentWalls: [[]], // contient une position et un isVertical
-        ownWalls: [[]], // pareil
+        opponentWalls: [[]],    // Contient un tableau de tableau, eux même contenant une position et un isVertical
+        ownWalls: [[]],         // Pareil
         board: [[]]
     };
 
@@ -154,9 +154,10 @@ class GameManager {
         return myPosition;
     }
 
+    // Cette méthode n'est pas appelée 
     async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
         myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
-        let nextPositionToGo = await computeMoveForAI(getAdjacentCellsPositionsWithWalls);
+        let nextPositionToGo = await this.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
         let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
         return stringNextPositionToGo;
     }
@@ -165,7 +166,7 @@ class GameManager {
     computeMoveForAI(getAdjacentCellsPositionsWithWalls){
         let iaPlayer = this.gameState.players.find(player => player.id === "ia");
         let iaPosition = iaPlayer.position;
-        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls)[0];
     }
 
     validateMove(move) {
