@@ -26,13 +26,12 @@ async function signup(req, res) {
                 return;
             }
 
-            const token = generateToken(username);
             const newUser = {
                 username,
                 password,
-                token
             };
             await usersCollection.insertOne(newUser);
+            const token = generateToken(username);
             console.log('User created:', newUser);
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ token }));
