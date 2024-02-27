@@ -10,8 +10,6 @@ function handleAuthRoutes(req, res) {
         authController.login(req, res);
     } else if (url.pathname === '/api/auth/updateGameState' && req.method === 'POST') {
         authController.updateGameState(req, res);
-    } else if (url.pathname === '/api/auth/newGame' && req.method === 'POST') {
-        gameEngine.newGame(req, res);
     } else {
         // Not Found
         res.writeHead(404, { 'Content-Type': 'text/plain' });

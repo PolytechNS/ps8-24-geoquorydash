@@ -8,6 +8,7 @@ const createUserCollection = require("../../models/users");
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
 async function initializeGame() {
+    gameActive = true;
     gameManager.initializeDefaultGameState();
     fogOfWar.initializeDefaultFogOfWar();
     player1 = gameManager.getPlayerById('ia');
@@ -17,6 +18,7 @@ async function initializeGame() {
 }
 
 async function resumeGameFromDB() {
+    gameActive = true;
     await gameManager.initializeGameState();
     await fogOfWar.initializeFogOfWar();
     player1 = gameManager.getPlayerById('ia');
@@ -199,58 +201,6 @@ function turn() {
 
 function endGame(message) {
     gameActive = false;
-    gameManager.endGame();
-    fogOfWar.endGame();
 }
 
-async function newGame(req, res) {
-    parseJSON(req, async (err, { gameState, visibilityMap  }) => {
-        if (err) {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.end('Invalid JSON');
-            return;
-        }
-        try {
-            gameActive = true;
-            const usersCollection = await createUserCollection();
-            gameManager.gameState = {
-                players: [
-                    {
-                        id: "ia",
-                        position: { x: 0, y: 8 },
-                        walls: [],
-                        isCurrentPlayer: false
-                    },
-                    {
-                        id: "p2",
-                        position: { x: 16, y: 8 },
-                        walls: [],
-                        isCurrentPlayer: true
-                    }
-                ]
-            };
-            fogOfWar.visibilityMap = [];
-            for (let i = 0; i < (9*9); i++) {
-                fogOfWar.visibilityMap[i] = [];
-                if (i < 36) {
-                    fogOfWar.visibilityMap[i] = 1; // Visibility +1
-                } else if (i <= 44) {
-                    fogOfWar.visibilityMap[i] = 0; // Visibility 0
-                } else {
-                    fogOfWar.visibilityMap[i] = -1; // Visibility -1
-                }
-            }
-            await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState: gameManager.gameState, visibilityMap: fogOfWar.visibilityMap } });
-            console.log('User gameState:', gameManager.gameState);
-            console.log('User visibilityMap:', fogOfWar.visibilityMap);
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end('Game state updated successfully');
-        } catch (error) {
-            console.error('Error updating game state:', error);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal server error');
-        }
-    });
-}
-
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, resumeGameFromDB, newGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, resumeGameFromDB};

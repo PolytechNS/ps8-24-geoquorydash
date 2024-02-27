@@ -74,40 +74,6 @@ class FogOfWar{
         this.updateBoardVisibility();
     }
 
-    async endGame(){
-        this.visibilityMap = [];
-        for (let i = 0; i < (9*9); i++) {
-            this.visibilityMap[i] = [];
-            if (i < 36) {
-                this.visibilityMap[i] = 1; // Visibility +1
-            } else if (i <= 44) {
-                this.visibilityMap[i] = 0; // Visibility 0
-            } else {
-                this.visibilityMap[i] = -1; // Visibility -1
-            }
-            console.log(this.visibilityMap[i]);
-        }
-        fetch('/api/auth/updateGameState', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ visibilityMap: this.visibilityMap })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to update FogOfWar');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('FogOfWar updated successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error updating FogOfWar:', error);
-            });
-    }
-
     async   updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;

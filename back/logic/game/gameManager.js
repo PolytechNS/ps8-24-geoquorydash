@@ -92,45 +92,6 @@ class GameManager {
         console.log('GameState default');
     }
 
-    async endGame(){
-        this.gameState = {
-            players: [
-                {
-                    id: "ia",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: false
-                },
-                {
-                    id: "p2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: true
-                }
-            ]
-        };
-        fetch('/api/auth/updateGameState', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ gameState: this.gameState })
-        })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Failed to update gameState');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Game state updated successfully:', data);
-            })
-            .catch(error => {
-                console.error('Error updating gameState:', error);
-            });
-        const gameManagerInstance = new GameManager();
-    }
-
     // convertGameStateToGameStateTeacher() {
     //     let IAplayer = this.gameState.players.find(player => player.id === "ia");
     //     let IAplayerWalls = IAplayer.walls;
