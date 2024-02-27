@@ -8,21 +8,22 @@ const createUserCollection = require("../../models/users");
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
 async function initializeGame() {
-    await gameManager.initialize();
-    await fogOfWar.initializeFogOfWar();
+    gameManager.initializeDefaultGameState();
+    fogOfWar.initializeDefaultFogOfWar();
     player1 = gameManager.getPlayerById('ia');
     player2 = gameManager.getPlayerById('p2');
     currentPlayer = gameManager.getCurrentPlayer();
     otherPlayer = player1;
 }
 
-/*initializeGame().then(() => {
-    console.log('Initialisation terminée.');
-    console.log(player1, player2, currentPlayer, otherPlayer, gameActive);
-
-}).catch((error) => {
-    console.error('Erreur lors de l\'initialisation du jeu :', error);
-});*/
+async function resumeGameFromDB() {
+    await gameManager.initializeGameState();
+    await fogOfWar.initializeFogOfWar();
+    player1 = gameManager.getPlayerById('ia');
+    player2 = gameManager.getPlayerById('p2');
+    currentPlayer = gameManager.getCurrentPlayer();
+    otherPlayer = player1;
+}
 
 function movePlayer(targetPosition) {
     if (!gameActive) return;
@@ -252,4 +253,4 @@ async function newGame(req, res) {
     });
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, newGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, resumeGameFromDB, newGame};

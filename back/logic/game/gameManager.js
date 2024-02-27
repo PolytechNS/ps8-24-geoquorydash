@@ -62,30 +62,34 @@ class GameManager {
         }
     }
 
-    async initialize() {
+    async initializeGameState() {
         const userGameState = await this.initializeGameStateFromDB();
         if (userGameState) {
             this.gameState = userGameState;
             console.log('GameState DB');
         } else {
-            this.gameState = {
-                players: [
-                    {
-                        id: "ia",
-                        position: { x: 0, y: 8 },
-                        walls: [],
-                        isCurrentPlayer: false
-                    },
-                    {
-                        id: "p2",
-                        position: { x: 16, y: 8 },
-                        walls: [],
-                        isCurrentPlayer: true
-                    }
-                ]
-            };
             console.log('GameState default');
         }
+    }
+
+    initializeDefaultGameState() {
+        this.gameState = {
+            players: [
+                {
+                    id: "ia",
+                    position: { x: 0, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: false
+                },
+                {
+                    id: "p2",
+                    position: { x: 16, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: true
+                }
+            ]
+        };
+        console.log('GameState default');
     }
 
     async endGame(){

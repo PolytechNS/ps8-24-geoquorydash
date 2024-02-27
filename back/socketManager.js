@@ -1,17 +1,27 @@
 const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
-const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
+const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, resumeGameFromDB} = require("./logic/game/gameEngine");
 
 const setupSocket = (server) => {
     const io = socketIo(server);
 
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
-        await initializeGame();
-        console.log('Apres Initialisation.');
-        socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
-        fogOfWar.updateBoardVisibility();
+
+        socket.on('startNewGame', async () => {
+            await initializeGame();
+            console.log('Après Initialisation pour nouvelle partie.');
+            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
+            await fogOfWar.updateBoardVisibility();
+        });
+
+        socket.on('resumeSavedGame', async () => {
+            await resumeGameFromDB();
+            console.log('Après Initialisation pour reprise de partie.');
+            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
+            await fogOfWar.updateBoardVisibility();
+        });
 
         socket.on('disconnect', () => {
             console.log('Client disconnected');

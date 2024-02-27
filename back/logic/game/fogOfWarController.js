@@ -7,15 +7,26 @@ class FogOfWar{
     oldPlayer2AdjacentsCells = [];
 
     constructor() {
-        this.initializeFogOfWar();
+        for (let i = 0; i < (9*9); i++) {
+            this.visibilityMap[i] = [];
+            if (i < 36) {
+                this.visibilityMap[i] = 1; // Visibility +1
+            } else if (i <= 44) {
+                this.visibilityMap[i] = 0; // Visibility 0
+            } else {
+                this.visibilityMap[i] = -1; // Visibility -1
+            }
+        }
+        console.log('FogOfWar default');
+        this.updateBoardVisibility();
     }
 
     async initializeFogOfWar() {
-        await gameManager.initialize();
+        await gameManager.initializeGameState();
         const fog = await this.initializeFogFromDB();
         if (fog) {
             this.visibilityMap = fog;
-            console.log('GameState DB');
+            console.log('FogOfWar DB');
         } else {
             for (let i = 0; i < (9*9); i++) {
                 this.visibilityMap[i] = [];
@@ -29,9 +40,7 @@ class FogOfWar{
             }
             console.log('FogOfWar default');
         }
-
         this.updateBoardVisibility();
-        //console.log(this.visibilityMap);
     }
 
     async initializeFogFromDB() {
@@ -48,6 +57,21 @@ class FogOfWar{
             console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
             throw error;
         }
+    }
+
+    initializeDefaultFogOfWar() {
+        for (let i = 0; i < (9*9); i++) {
+            this.visibilityMap[i] = [];
+            if (i < 36) {
+                this.visibilityMap[i] = 1; // Visibility +1
+            } else if (i <= 44) {
+                this.visibilityMap[i] = 0; // Visibility 0
+            } else {
+                this.visibilityMap[i] = -1; // Visibility -1
+            }
+        }
+        console.log('FogOfWar default');
+        this.updateBoardVisibility();
     }
 
     async endGame(){
