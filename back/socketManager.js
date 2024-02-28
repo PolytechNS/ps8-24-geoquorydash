@@ -13,6 +13,7 @@ const setupSocket = (server) => {
         console.log('ON Connection');
 
         socket.on('startNewGame', async (token) => {
+            console.log('ON startNewGame');
             // Vérifier le token
             var userID;
             try {
@@ -23,6 +24,7 @@ const setupSocket = (server) => {
                 socket.emit('endGame', 'Invalid token');
                 return;
             }
+
             // Validation de l'ID utilisateur
             if (!ObjectId.isValid(userID)) {
                 console.log('Invalid userID:', userID);
@@ -32,10 +34,8 @@ const setupSocket = (server) => {
 
             const userObjectID = new ObjectId(userID);
 
-            await initializeGame();
-            console.log('Après Initialisation pour nouvelle partie.');
-            await fogOfWar.updateBoardVisibility();
-
+            initializeGame();
+            fogOfWar.updateBoardVisibility();
             const player = gameManager.gameState.players.find(player => player.id === 'p2');
             await createGameInDatabase(player, fogOfWar.visibilityMap, userObjectID);
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);

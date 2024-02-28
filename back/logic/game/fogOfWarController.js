@@ -7,7 +7,7 @@ class FogOfWar{
     oldPlayer2AdjacentsCells = [];
 
     constructor() {
-        this.initializeFogOfWar();
+        // this.initializeFogOfWar();
     }
 
     async initializeFogOfWar() {
@@ -50,7 +50,6 @@ class FogOfWar{
 
     initializeDefaultFogOfWar() {
         for (let i = 0; i < (9*9); i++) {
-            this.visibilityMap[i] = [];
             if (i < 36) {
                 this.visibilityMap[i] = 1; // Visibility +1
             } else if (i <= 44) {
@@ -59,11 +58,12 @@ class FogOfWar{
                 this.visibilityMap[i] = -1; // Visibility -1
             }
         }
+        this.oldPlayer1AdjacentsCells = [];
+        this.oldPlayer2AdjacentsCells = [];
         console.log('FogOfWar default');
-        this.updateBoardVisibility();
     }
 
-    async   updateBoardVisibility() {
+    updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;
         let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
@@ -97,7 +97,6 @@ class FogOfWar{
         // Update the old adjacent cells
         this.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
         this.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
-
     }
 
     getAdjacentPlayerCellsIndices(i, j) {

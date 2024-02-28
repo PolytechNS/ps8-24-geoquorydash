@@ -7,7 +7,7 @@ const createUserCollection = require("../../models/users/users");
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
-async function initializeGame() {
+function initializeGame() {
     gameActive = true;
     gameManager.initializeDefaultGameState();
     fogOfWar.initializeDefaultFogOfWar();

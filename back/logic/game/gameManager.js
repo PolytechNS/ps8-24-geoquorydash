@@ -25,7 +25,7 @@ class GameManager {
     };
 
     constructor() {
-        console.log('GameManager constructor');
+/*        console.log('GameManager constructor');
         this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
         this.gameState = {
             players: [
@@ -43,7 +43,7 @@ class GameManager {
                 }
             ]
         };
-        return this;
+        return this;*/
     }
 
     async initializeGameStateFromDB() {
@@ -89,7 +89,7 @@ class GameManager {
                 }
             ]
         };
-        console.log('GameState default');
+        console.log(this.gameState);
     }
 
     // convertGameStateToGameStateTeacher() {
