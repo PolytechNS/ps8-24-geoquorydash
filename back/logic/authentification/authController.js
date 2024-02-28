@@ -1,7 +1,7 @@
 // controllers/authController.js
-const { generateToken } = require('./authentication');
+const { generateToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users');
+const createUserCollection = require('../../models/users/users');
 
 async function signup(req, res) {
     console.log('Signup');

@@ -1,4 +1,4 @@
-// authentication.js
+// tokenManager.js
 const jwt = require('jsonwebtoken');
 const JWT_SECRET_KEY = 'secret_key';
 

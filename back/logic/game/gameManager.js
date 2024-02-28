@@ -1,6 +1,6 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
-const createUserCollection = require('../../models/users');
+const createUserCollection = require('../../models/users/users');
 // const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
@@ -97,12 +97,10 @@ class GameManager {
     //     let IAplayerWalls = IAplayer.walls;
     //     this.gameStateTeacher.ownWalls = [];
     //     this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacher.ownWalls);
-
     //     let otherPlayer = this.gameState.players.find(player => player.id === "p2");
     //     let otherPlayerWalls = otherPlayer.walls;
     //     this.gameStateTeacher.opponentWalls = [];
     //     this.addWallsToAPlayer(otherPlayerWalls, this.gameStateTeacher.opponentWalls);
-
     //     this.gameStateTeacher.board = [[]];
     //     this.gameStateTeacher.board = this.rearrangeVisibilityMapToBoard(fogOfWarInstance.visibilityMap);
     //     let convertedIAplayerPosition = this.convertMyPositionToTeacherPosition(IAplayer.position);

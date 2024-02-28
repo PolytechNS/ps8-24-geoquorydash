@@ -34,9 +34,9 @@ window.onload = function() {
     const resumeGame = urlParams.get('resumeGame');
 
     if (newGame === 'true') {
-        socket.emit('startNewGame');
+        socket.emit('startNewGame', localStorage.getItem('token'));
     } else if (resumeGame === 'true') {
-        socket.emit('resumeSavedGame');
+        socket.emit('resumeSavedGame', localStorage.getItem('token'));
     }
 };
 

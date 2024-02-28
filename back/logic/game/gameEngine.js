@@ -3,7 +3,7 @@ const fogOfWar = require('./fogOfWarController');
 const socketIo = require('socket.io');
 const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require("../../models/users");
+const createUserCollection = require("../../models/users/users");
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 

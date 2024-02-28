@@ -1,5 +1,5 @@
 const gameManager = require('./gameManager');
-const createUserCollection = require("../../models/users"); // Instance unique de GameManager
+const createUserCollection = require("../../models/users/users"); // Instance unique de GameManager
 
 class FogOfWar{
     visibilityMap = [];

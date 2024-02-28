@@ -2,6 +2,9 @@ const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, resumeGameFromDB} = require("./logic/game/gameEngine");
+const { verifyToken } = require('./logic/authentification/tokenManager');
+const { ObjectId } = require('mongodb');
+const { createGameInDatabase } = require('./models/game/gameDataBaseManager');
 
 const setupSocket = (server) => {
     const io = socketIo(server);
@@ -9,18 +12,41 @@ const setupSocket = (server) => {
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
 
-        socket.on('startNewGame', async () => {
+        socket.on('startNewGame', async (token) => {
+            // Vérifier le token
+            var userID;
+            try {
+                const tokenData = verifyToken(token);
+                userID = tokenData.userID;
+            } catch (err) {
+                console.log('Invalid token:', err);
+                socket.emit('endGame', 'Invalid token');
+                return;
+            }
+            // Validation de l'ID utilisateur
+            if (!ObjectId.isValid(userID)) {
+                console.log('Invalid userID:', userID);
+                socket.emit('endGame', 'Invalid userID');
+                return;
+            }
+
+            const userObjectID = new ObjectId(userID);
+
             await initializeGame();
             console.log('Après Initialisation pour nouvelle partie.');
-            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
             await fogOfWar.updateBoardVisibility();
+
+            const player = gameManager.gameState.players.find(player => player.id === 'p2');
+            await createGameInDatabase(player, fogOfWar.visibilityMap, userObjectID);
+            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
+
         });
 
         socket.on('resumeSavedGame', async () => {
             await resumeGameFromDB();
             console.log('Après Initialisation pour reprise de partie.');
-            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
             await fogOfWar.updateBoardVisibility();
+            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
         });
 
         socket.on('disconnect', () => {
