@@ -22,41 +22,55 @@ async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 
     return stringPosition;
 }
 
-async function nextMove(gameStateTeacher) {
-    let myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
+async function nextMove(/*gameStateTeacher,*/ getAdjacentCellsPositionsWithWalls) {
+    //let myGameState = convertGameStateTeacherToGameState(gameStateTeacher);
+    //gameState = myGameState;
+
+    let IAplayer = getIAPlayer();
+    let shortestPathForIA = dijkstraAlgorithm(IAplayer.position, getAdjacentCellsPositionsWithWalls);
+    let shortestPathLengthForIA = shortestPathForIA.length;
+
+    // Dans le cas où le joueur choisi d'avancer et non de poser un mur, ce sera forcément cette position
+    let nextPositionToGo = shortestPathForIA[0];
+    let stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
+
+    // On vérifie que l'on peut encore poser des murs, et si on ne peut pas, on avance
+    if(!canPlayerStillInstallWall(IAplayer.id)) {
+        IAplayer.position = nextPositionToGo;
+        return {action: "move", value: stringNextPositionToGo};
+    }
+
+    // Si on se retrouve là, c'est que le joueur peut encore poser des murs
 
     if(canSeeTheOtherPlayer()) {
+
         // On fait un dijkstra pour l'autre joueur pour savoir s'il atteint la victoire plus rapidement que nous ou pas
         let otherPlayer = getOtherPlayer();
-        let otherPosition = otherPlayer.position;
-        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPosition, getAdjacentCellsPositionsWithWalls);
+        let otherPlayerPosition = otherPlayer.position;
+        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayerPosition, getAdjacentCellsPositionsWithWalls);
         let shortestPathLengthForOtherPlayer = shortestPathForOtherPlayer.length;
-
-        let iaPlayer = getIAPlayer();
-        let iaPosition = iaPlayer.position;
-        let shortestPathForIA = dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
-        let shortestPathLengthForIA = shortestPathForIA.length;
 
         if(shortestPathLengthForIA < shortestPathLengthForOtherPlayer) {
             // On va tenter de maximiser la longueur du chemin de l'adversaire, en tentant de poser un mur entre chacune des cases du chemin renvoyé
             // par son dijkstra, et on pose le mur qui allonge le plus son chemin
             let wallToInstall = chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestPathForOtherPlayer, shortestPathForIA);
 
-            if(wallToInstall) { // On vérifie qu'un mur peut bien être posé sur le plus court chemin de l'adversaire pour le ralentir
+            // On vérifie qu'un mur peut bien être posé sur le plus court chemin de l'adversaire pour le ralentir
+            if(wallToInstall) {
+                // Si oui, on le pose
+                IAplayer.walls.push(wallToInstall);
+
                 let wallToInstallForTeacher = convertOurWallToTopLeftCornerWall(wallToInstall);
                 return {action: "wall", value: wallToInstallForTeacher};
-            } else {
-                let nextPositionToGo = dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls)[0];
-                let stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
-                return {action: "move", value: stringNextPositionToGo};
             }
-        } else {
-            let nextPositionToGo = dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls)[0];
-            let stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
-            return {action: "move", value: stringNextPositionToGo};
         }
+
+        IAplayer.position = nextPositionToGo;
+        return {action: "move", value: stringNextPositionToGo};
+
     } else {
         let wallToInstallToSeeOtherPlayer = chooseWallToInstallToSeeOtherPlayer();
+        IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
         let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
 
 
@@ -71,6 +85,9 @@ async function correction(rightMove) {
 async function updateBoard(gameState) {
 
 }
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     // Initialisation des variables
@@ -189,18 +206,27 @@ function canSeeTheOtherPlayer() {
 }
 
 function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestPathForOtherPlayer) {
-    // Il faudra vérifier que les murs sont possibles à poser
 
     let maxDistanceToReachArrival = 0;
     let possibleWallToInstall = []; 
     let wallToInstall = null;
+    let otherPlayer = getOtherPlayer();
+    let IAplayer = getIAPlayer();
     // Si plusieurs murs sont possibles pour allonger de même longueur le chemin de l'adversaire, on choisi celui qui nous ralenti le moins nous
 
-    for(let i = 0; i < shortestPathForOtherPlayer.length - 1; i++) {
+    for(let i = -1; i < shortestPathForOtherPlayer.length - 1; i++) {
 
-        let wall = [];
-        let currentCellPosition = shortestPathForOtherPlayer[i];
-        let nextCellPosition = shortestPathForOtherPlayer[i + 1];
+        let currentCellPosition = null;
+        let nextCellPosition = null;
+
+        if(i === -1) {
+            // On fait ce cas là pour comparer aussi le mur que l'on pourrait poser entre le joueur et la première case de son shortestPath
+            currentCellPosition = otherPlayer.position;
+            nextCellPosition = shortestPathForOtherPlayer[0];
+        } else {
+            currentCellPosition = shortestPathForOtherPlayer[i];
+            nextCellPosition = shortestPathForOtherPlayer[i + 1];
+        }
 
         let isVertical = true;
         if(currentCellPosition.y === nextCellPosition.y) {  // Dans ce cas là, le mur doit être horizontal. Sinon, il reste vertical
@@ -211,23 +237,26 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
         let interY = currentCellPosition.y + (nextCellPosition.y - currentCellPosition.y) / 2;
         // La position {interX, interY} représente la position entre les deux cases. Deux murs sont alors possible pour bloquer cette position
 
-        wall = getWallThatCanBeInstalled(interX, interY, isVertical);
-        if(wall) { // Si wall n'est pas null, c'est à dire qu'un mur peut être posé via la position {interX, interY}
-            let IAplayer = getIAPlayer();
-            IAplayer.walls.push(wall);  // On l'ajoute temporairement à la liste des murs de notre IA pour être pris en compte par le dijkstra à venir
+        let wallsThatCanBeInstalled = getWallsThatCanBeInstalled(interX, interY, isVertical);
 
-            let otherPlayer = getOtherPlayer();
-            let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, getAdjacentCellsPositionsWithWalls);
-            let newShortestPathLengthForOtherPlayer = newShortestPathForOtherPlayer.length;
+        // REPRENDRE ICI, ET FAIRE LE CHEMIN POUR CHACUN DES MURS POSSIBLES POUR SAVOIR LEQUEL EST LE PLUS AVANTAGEUX
 
-            if(newShortestPathLengthForOtherPlayer > maxDistanceToReachArrival) {
-                possibleWallToInstall = [wall];
-                maxDistanceToReachArrival = newShortestPathLengthForOtherPlayer;
-            } else if(newShortestPathLengthForOtherPlayer === maxDistanceToReachArrival) {
-                possibleWallToInstall.push(wall);
-            }
+        if(wallsThatCanBeInstalled) { // Si wallsThatCanBeInstalled n'est pas null, CàD qu'un mur peut être posé via la position {interX, interY}
+            wallsThatCanBeInstalled.forEach(wall => {
+                IAplayer.walls.push(wall);  // On l'ajoute temporairement à la liste des murs de notre IA pour être pris en compte par le dijkstra à venir
 
-            IAplayer.walls.pop();       // On retire le mur temporaire que l'on a ajouté plus tôt
+                let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, getAdjacentCellsPositionsWithWalls);
+                let newShortestPathLengthForOtherPlayer = newShortestPathForOtherPlayer.length;
+
+                if(newShortestPathLengthForOtherPlayer > maxDistanceToReachArrival) {
+                    possibleWallToInstall = [wall];
+                    maxDistanceToReachArrival = newShortestPathLengthForOtherPlayer;
+                } else if(newShortestPathLengthForOtherPlayer === maxDistanceToReachArrival) {
+                    possibleWallToInstall.push(wall);
+                }
+
+                IAplayer.walls.pop();       // On retire le mur temporaire que l'on a ajouté plus tôt
+            });
         }
     }
 
@@ -235,14 +264,13 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
         console.log("Aucun mur ne peut être posé tout au long du plus court chemin de l'adversaire, on ne peut pas le ralentir dans cette configuration");
         return null;
     } else if(possibleWallToInstall.length === 1) {
-        return possibleWallToInstall[0];
+        wallToInstall = possibleWallToInstall[0];
     } else {
         // Dans ce cas là, plusieurs murs sont capables de ralentir autant les uns que les autres mon adversaire
         // On va alors choisir, parmi ces-derniers, celui qui nous ralenti le moins nous
         let minDistanceTorReachArrival = 9999;
         
         possibleWallToInstall.forEach(possibleWall => {
-            let IAplayer = getIAPlayer();
             IAplayer.walls.push(possibleWall);
 
             let newShortestPathForIA = dijkstraAlgorithm(IAplayer.position, getAdjacentCellsPositionsWithWalls);
@@ -259,12 +287,13 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
     return wallToInstall;
 }
 
-function getWallThatCanBeInstalled(interX, interY, isVertical) {
+function getWallsThatCanBeInstalled(interX, interY, isVertical) {
+    let wallsThatCanBeInstalled = [];
     let wall = [];
     wall.push({x : interX, y : interY});
 
-    // Dans ce cas là, on est dans un cas limite où un seul mur peut être posé
-    if(interX === 0 || interX === 16 || interY === 0 || interY === 16) {
+    // Dans ce cas là, on est dans un cas limite où un seul mur peut être posé car on touche un bord
+    if(interX === 0 || interX === 16 || interY === 0 || interY === 16) {        
         if(interX === 0) {                              // Dans ce cas là, le mur est forcément vertical
             wall.push({x : interX + 1, y : interY});
             wall.push({x : interX + 2, y : interY});
@@ -279,77 +308,180 @@ function getWallThatCanBeInstalled(interX, interY, isVertical) {
             wall.push({x : interX, y : interY - 2});
         }
         if(canWallBeInstalledOnBoard(wall)) {
-            return wall;
+            wallsThatCanBeInstalled.push(wall);
+            return wallsThatCanBeInstalled;
         } else {
+            // console.log("Dans ce cas limite, aucun mur ne peut être posé");
             return null;
         }
     }
-    
+
     // Dans ce cas là, le mur peut être vertcal ou horizontal, et deux murs sont possibles
+    let wall2 = [];
+    wall2.push({x : interX, y : interY});
+
     if(isVertical) {
+        // Mur possible n°1
         wall.push({x : interX + 1, y : interY});
         wall.push({x : interX + 2, y : interY});
         if(canWallBeInstalledOnBoard(wall)) {
-            return wall;
-        } else {
-            wall.pop();
-            wall.pop();
-            wall.push({x : interX - 1, y : interY});
-            wall.push({x : interX - 2, y : interY});
-            if(canWallBeInstalledOnBoard(wall)) {
-                return wall;
-            } else {
-                return null;
-            }
+            wallsThatCanBeInstalled.push(wall);
         }
+
+        // Mur possible n°2
+        wall2.push({x : interX - 1, y : interY});
+        wall2.push({x : interX - 2, y : interY});
+        if(canWallBeInstalledOnBoard(wall2)) {
+            wallsThatCanBeInstalled.push(wall2);
+        }
+
     } else {
+        // Mur possible n°1
         wall.push({x : interX, y : interY + 1});
         wall.push({x : interX, y : interY + 2});
         if(canWallBeInstalledOnBoard(wall)) {
-            return wall;
-        } else {
-            wall.pop();
-            wall.pop();
-            wall.push({x : interX, y : interY - 1});
-            wall.push({x : interX, y : interY - 2});
-            if(canWallBeInstalledOnBoard(wall)) {
-                return wall;
-            } else {
-                return null;
-            }
+            wallsThatCanBeInstalled.push(wall);
+        }
+        wall2.push({x : interX, y : interY - 1});
+        wall2.push({x : interX, y : interY - 2});
+        if(canWallBeInstalledOnBoard(wall2)) {
+            wallsThatCanBeInstalled.push(wall2);
         }
     }
+
+    if(wallsThatCanBeInstalled.length === 0) {
+        return null;
+    }
+
+    return wallsThatCanBeInstalled;
 }
 
 function chooseWallToInstallToSeeOtherPlayer() {
     let interestingWalls = getInterestingWallsToSeeOtherPlayer();
-    interestingWalls.forEach(interestingWall => {
-        if(canWallBeInstalledOnBoard(interestingWall)) {
-            return interestingWall;
+    for(let i = 0; i < interestingWalls.length; i++) {
+        if(canWallBeInstalledOnBoard(interestingWalls[i])) {
+            console.log("Le mur que l'on va installer est {x: " + interestingWalls[i][0].x + ", y: " + interestingWalls[i][0].y + "} etc…");
+            return interestingWalls[i];
         }
-    });
+    }
     console.log("Auncun mur intéréssant ne peut être posé");
     return null;
 }
 
 function getInterestingWallsToSeeOtherPlayer() {
-    let wall1 = [{x : 2, y : 9}, {x : 3, y : 9}, {x : 4, y : 9}]; // Le mur vertical en bas à droite de la position de départ du joueur
-    let wall2 = [{x : 2, y : 3}, {x : 3, y : 3}, {x : 4, y : 3}];
-    let wall3 = [{x : 2, y : 15}, {x : 3, y : 15}, {x : 4, y : 15}];
+    let wall1 = null;
+    let wall2 = null;
+    let wall3 = null;
+    if(firstToPlay) {
+        wall1 = [{x : 2, y : 9}, {x : 3, y : 9}, {x : 4, y : 9}]; // Le mur vertical en bas à droite de la position de départ du joueur
+        wall2 = [{x : 2, y : 3}, {x : 3, y : 3}, {x : 4, y : 3}];
+        wall3 = [{x : 2, y : 15}, {x : 3, y : 15}, {x : 4, y : 15}];
+    } else {
+        wall1 = [{x : 12, y : 7}, {x : 13, y : 7}, {x : 14, y : 7}]; // Le mur vertical en bas à droite de la position de départ du joueur
+        wall2 = [{x : 12, y : 1}, {x : 13, y : 1}, {x : 14, y : 1}];
+        wall3 = [{x : 12, y : 13}, {x : 13, y : 13}, {x : 14, y : 13}];
+    }
     let interestingWalls = [wall1, wall2, wall3];
     return interestingWalls;
 }
 
 function canWallBeInstalledOnBoard(wallToInstall) {
-    let boardWalls = getBoardWalls();
-    boardWalls.forEach(boardWall => {
-        if(!(equalsPositions(boardWall[1], wallToInstall[1])        // Les deux murs se chevaucheraient au milieu
-        || equalsPositions(boardWall[2], wallToInstall[0])          // Le début de notre mur chevaucherait la fin du mur déjà posé
-        || equalsPositions(boardWall[0], wallToInstall[2]))) {      // La fin de notre mur chevaucherait le début du mur déjà posé
-            return true;
+    // Étape 1 : si le mur contient une position hors du plateau de jeu, false
+    wallToInstall.forEach(element => {
+        if(element.x < 0 || element.x > 16 || element.y < 0 || element.y > 16) {    // Le mur dépasse les limites du terrain
+            return false;
         }
     });
+
+    // Étape 2 : si aucun mur n'est posé sur le plateau, true
+    let boardWallsInWallsList = getBoardWallsInWallsList();
+    console.log("Actuellement, il y a " + boardWallsInWallsList.length + " murs sur le terrain");
+    if(boardWallsInWallsList.length === 0) { // Il n'y a pour l'instant aucun mur sur le terrain, tous les murs peuvent être posés
+        console.log("On rentre dans le cas où le nombre de murs est de 0");
+        return true;
+    }
+
+    // Étape 3 : si le mur chevauche un des autres murs déjà posé sur le plateau, false
+    for(let i = 0; i < boardWallsInWallsList.length; i++) {
+        if(equalsPositions(boardWallsInWallsList[i][1], wallToInstall[1])           // Les deux murs se chevaucheraient au milieu
+        || equalsPositions(boardWallsInWallsList[i][2], wallToInstall[0])           // Le début de notre mur chevaucherait la fin du mur déjà posé
+        || equalsPositions(boardWallsInWallsList[i][0], wallToInstall[2])) {        // La fin de notre mur chevaucherait le début du mur déjà posé
+            return false;
+        }
+    }
+
+    // Étape 4 : si le mur bloque un joueur pour atteindre l'arrivée, false
+    let boardWallsInPositionsList = getBoardWallsInPositionsList()          // On récupère la liste des positions occupées par un mur
+    wallToInstall.forEach(element => {                                      // On y ajoute les positions du mur que l'on veut poser
+        boardWallsInPositionsList.push(element);
+    });
+    if(!canPlayerReachArrival(boardWallsInPositionsList)) {                 // On regarde si ce mur bloque l'un des joueurs
+        return false;                                                       // S'il ne bloque persone, le mur peut être installé
+    }
+
+    return true;
+}
+
+function canPlayerReachArrival(boardWallsInPositionsList) {
+    let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
+    let canReach = false;
+
+    let IAplayer = getIAPlayer();
+    let canReachIAplayer = checkPathToReachTheEnd(IAplayer.position, alreadyVisitedCell, IAplayer.id, boardWallsInPositionsList);
+
+    alreadyVisitedCell = [];    // On réinitialise la liste des cellules déjà visitées pour le joueur adverse
+
+    let otherPlayer = getOtherPlayer();
+    let canReachOtherPlayer = checkPathToReachTheEnd(otherPlayer.position, alreadyVisitedCell, otherPlayer.id, boardWallsInPositionsList);
+
+    canReach = canReachIAplayer && canReachOtherPlayer;
+
+    return canReach;
+}
+
+function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, playerID, boardWallsInPositionsList) {
+    if(arrayOfPositionContainsPosition(alreadyVisitedCell, currentPosition)) { // Dans ce cas là, la cellule a déjà été visitée
+        return false;
+    }
+
+    if(playerID === "ia") {
+        if((firstToPlay && currentPosition.x === 0) || (!firstToPlay && currentPosition.x === 16)) {
+            return true;
+        }
+    } else if(playerID === "p2") {
+        if((!firstToPlay && currentPosition.x === 0) || (firstToPlay && currentPosition.x === 16)) {
+            return true;
+        }
+    }
+
+    alreadyVisitedCell.push(currentPosition);
+    const adjacentCellsPositions = getAdjacentCellsPositionsWithWalls(currentPosition, boardWallsInPositionsList);
+    for (const adjacentCellPosition of adjacentCellsPositions) {
+        if (checkPathToReachTheEnd(adjacentCellPosition, alreadyVisitedCell, playerID, boardWallsInPositionsList)) {
+            return true;
+        }
+    }
     return false;
+}
+
+function canPlayerStillInstallWall(playerID) {
+    let IAplayer = getIAPlayer();
+    let otherPlayer = getOtherPlayer();
+    
+    if(playerID === IAplayer.id) {
+        if(IAplayer.walls.length < 10) {
+            return true;
+        } else {
+            return false;
+        }
+    } else if(playerID === otherPlayer.id) {
+        if(otherPlayer.walls.length < 10) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    return null;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -391,9 +523,9 @@ function initializeGameState() {
 
 // La structure de gameState du prof
 let gameStateTeacher = {
-    opponentWalls: [[]], // contient une position et un isVertical
-    ownWalls: [[]], // pareil
-    board: [[]]
+    opponentWalls: [],        // Contient des tableaux, eux mêmes contenant une position et un isVertical
+    ownWalls: [],             // Pareil
+    board: []
 };
 
 // Cette fonction permet d'initialiser la structure gameStateTeacher en initialisant le plateau de jeu
@@ -406,11 +538,21 @@ function initializeGameStateTeacher() {
     let intermediateBoard;
     for(let i = 0; i < 9; i++) {
         intermediateBoard = [];
-        for(let j = 0; j < 9; j++) {
-            if(i < 5) {
-                intermediateBoard.push(0);
-            } else {
-                intermediateBoard.push(-1);
+        if(firstToPlay) {
+            for(let j = 0; j < 9; j++) {
+                if(i < 5) {
+                    intermediateBoard.push(0);
+                } else {
+                    intermediateBoard.push(-1);
+                }
+            }
+        } else {
+            for(let j = 0; j < 9; j++) {
+                if(i > 3) {
+                    intermediateBoard.push(0);
+                } else {
+                    intermediateBoard.push(-1);
+                }
             }
         }
         finalBoard.push(intermediateBoard);
@@ -474,6 +616,8 @@ function convertTopLeftCornerWallToOurWall(topLeftCornerPosition, isVertical) {
         wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
         wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 2});
     }
+
+    return wall;
 }
 
 function convertOurWallToTopLeftCornerWall(wall) {
@@ -488,7 +632,7 @@ function convertOurWallToTopLeftCornerWall(wall) {
         // isVertical reste à 1
         topLeftSquarePosition = {x: wall[0].x, y: wall[0].y - 1};
     }
-    let topLeftSquareTeacherPosition = this.convertMyPositionToTeacherPosition(topLeftSquarePosition);
+    let topLeftSquareTeacherPosition = convertMyPositionToTeacherPosition(topLeftSquarePosition);
     return [topLeftSquareTeacherPosition, isVertical];
 }
 
@@ -521,11 +665,11 @@ function getAdjacentCellsPositions(cellPosition) {
 }
 
 // Cette méthode retourne la liste des positions voisines, en prenant en compte les murs aux alentours, d'une position donnée
-function getAdjacentCellsPositionsWithWalls(cellPosition,walls) {
+function getAdjacentCellsPositionsWithWalls(cellPosition, boardWallsInPositionsList) {
     const adjacentCellsPositionsWithWalls = [];
     const adjacentCellsPositions = getAdjacentCellsPositions(cellPosition);
     for(const adjacentCellPosition of adjacentCellsPositions) {
-        if(!checkBarriersBetween(cellPosition, adjacentCellPosition, walls)) {
+        if(!checkBarriersBetween(cellPosition, adjacentCellPosition, boardWallsInPositionsList)) {
             adjacentCellsPositionsWithWalls.push(adjacentCellPosition);
         }
     }
@@ -533,7 +677,7 @@ function getAdjacentCellsPositionsWithWalls(cellPosition,walls) {
 }
 
 // Cette méthode vérifie si deux positions sont séparées par un mur ou non
-function checkBarriersBetween(startPosition, targetPosition, walls) {
+function checkBarriersBetween(startPosition, targetPosition, boardWallsInPositionsList) {
     const [x1, y1] = [startPosition.x, startPosition.y];
     const [x2, y2] = [targetPosition.x, targetPosition.y];
 
@@ -541,8 +685,8 @@ function checkBarriersBetween(startPosition, targetPosition, walls) {
     const interY = y1 + (y2 - y1) / 2;
     let possibleWallPosition = {x: interX, y: interY};
 
-    const boardWalls = walls ? walls : getBoardWalls();
-    return arrayOfPositionContainsPosition(boardWalls, possibleWallPosition);
+    //const boardWallsInPositionsList = walls ? walls : getBoardWallsInPositionsList();
+    return arrayOfPositionContainsPosition(boardWallsInPositionsList, possibleWallPosition);
 }
 
 // Cette méthode vérifie si pour un tableau donné de positions, ce tableau contient une position donnée
@@ -560,8 +704,8 @@ function arePositionsEquals (position1, position2) {
     return position1.x === position2.x && position1.y === position2.y;
 }
 
-// Cette méthode renvoi un tableau contenant 
-function getBoardWalls() {
+// Cette méthode renvoi un tableau contenant toutes les positions sur lesquelles se trouve un mur, et non pas un tableau de murs (tableau de tableaux)
+function getBoardWallsInPositionsList() {
     let boardWalls = [];
     gameState.players.forEach(player => {
         player.walls.forEach(wall => {
@@ -573,9 +717,19 @@ function getBoardWalls() {
     return boardWalls;
 }
 
-exports.setup = setup;
-exports.nextMove = nextMove;
+function getBoardWallsInWallsList() {
+    let boardWalls = [];
+    gameState.players.forEach(player => {
+        player.walls.forEach(wall => {
+            boardWalls.push(wall);
+        });
+    });
+    return boardWalls;
+}
+
+//exports.setup = setup;
+//exports.nextMove = nextMove;
 exports.correction = correction;
 exports.updateBoard = updateBoard;
 
-module.exports = { dijkstraAlgorithm };
+module.exports = { dijkstraAlgorithm, nextMove, setup };

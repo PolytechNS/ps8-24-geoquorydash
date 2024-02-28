@@ -1,5 +1,7 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
+const { nextMove } = require("../ai/geoquorydash.js");
+const { setup } = require("../ai/geoquorydash.js");
 //const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
@@ -41,6 +43,11 @@ class GameManager {
                 }
             ]
         };
+
+        setup(2);
+        console.log("Setup fait");
+
+
         return this;
     }
 
@@ -155,18 +162,22 @@ class GameManager {
     }
 
     // Cette méthode n'est pas appelée 
-    async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
+    /*async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
         myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
         let nextPositionToGo = await this.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
         let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
         return stringNextPositionToGo;
-    }
+    }*/
 
     // Methods to manage the game
     computeMoveForAI(getAdjacentCellsPositionsWithWalls){
         let iaPlayer = this.gameState.players.find(player => player.id === "ia");
         let iaPosition = iaPlayer.position;
         return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls)[0];
+    }
+
+    async computeNextMoveForAI(getAdjacentCellsPositionsWithWalls) {
+        return await nextMove(getAdjacentCellsPositionsWithWalls);
     }
 
     validateMove(move) {

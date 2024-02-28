@@ -22,6 +22,26 @@ function movePlayer(targetPosition) {
     }
 }
 
+/*async function moveAI() {
+    currentPlayer = gameManager.getCurrentPlayer();
+    //const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
+    const iaMove = await gameManager.computeNextMoveForAI(getAdjacentCellsPositionsWithWalls);
+    console.log("Move de l'ia : " + iaMove);
+    if(iaMove.action === "move") {
+        let teacherPositionToMove = iaMove.value;
+        let positionToMove = convertTeacherPositionToMyPosition(teacherPositionToMove);
+        movePlayer(positionToMove);
+    } else {
+        let teacherWall = iaMove.value;
+        console.log("Move : " + iaMove.action + ", value : " + iaMove.value);
+        console.log("Position du mur vue du prof : " + teacherWall[0] + " et la verticalité du mur est " + teacherWall[1]);
+        let topLeftCornerPosition = convertTeacherPositionToMyPosition(teacherWall[0]);
+        let wallToInstall = convertTopLeftCornerWallToOurWall(topLeftCornerPosition, teacherWall[1]);
+        console.log("Mur converti : {x: " + wallToInstall[0].x + ", y: " + wallToInstall[0].y + "} etc…");
+        toggleWall(wallToInstall, teacherWall[1]);
+    }
+}*/
+
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
@@ -156,6 +176,28 @@ function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, player, wal
         }
     }
     return false;
+}
+
+function convertTeacherPositionToMyPosition(teacherPosition) {
+    let xTeacherPosition = parseInt(teacherPosition[0]);
+    let yTeacherPosition = parseInt(teacherPosition[1]);
+    let myPosition = {x: 2*(9 - yTeacherPosition), y: 2*(xTeacherPosition - 1)};
+    return myPosition;
+}
+
+function convertTopLeftCornerWallToOurWall(topLeftCornerPosition, isVertical) {
+    let wall = [];
+    if(isVertical) {
+        wall.push({x: topLeftCornerPosition.x, y: topLeftCornerPosition.y + 1});
+        wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
+        wall.push({x: topLeftCornerPosition.x + 2, y: topLeftCornerPosition.y + 1});
+    } else {
+        wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y});
+        wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
+        wall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 2});
+    }
+
+    return wall;
 }
 
 function turn() {
