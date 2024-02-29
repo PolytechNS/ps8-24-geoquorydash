@@ -6,8 +6,11 @@ socket.on('connect', function() {
     console.log('Connected to /api/game!');
 });
 
-socket.on('updateBoard', function(gameState, visibilityMap) {
+socket.on('updateBoard', function(gameState, visibilityMap, gameStateID) {
     console.log("ON updateBoard, J'affiche le nouveau plateau de jeu");
+    if (gameStateID) {
+        localStorage.setItem('gameStateID', gameStateID);
+    }
     updateBoardDisplay(gameState, visibilityMap);
 });
 
@@ -17,7 +20,7 @@ socket.on('possibleMoveList', function(possibleMove) {
 
 socket.on('endGame', function(player) {
     endGame(player);
-    socket.emit('startNewGame');
+    socket.emit('startNewGame', localStorage.getItem('token'));
 });
 
 socket.on('lockWall', function(wall) {
@@ -39,5 +42,15 @@ window.onload = function() {
         socket.emit('resumeSavedGame', localStorage.getItem('token'));
     }
 };
+
+socket.on('tokenInvalid', function() {
+    localStorage.removeItem('token');
+    alert('Your token is invalid. Please log in again.')
+    window.location.href = '/home.html';
+});
+
+socket.on('databaseConnectionError', function() {
+    alert('Connection problem detected. Your game may not be saved. Please try again later.');
+});
 
 export default socket;

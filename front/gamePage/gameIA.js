@@ -144,7 +144,7 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    socket.emit('toggleWall', wall, isVertical);
+    socket.emit('toggleWall', wall, isVertical, localStorage.getItem('gameStateID'), localStorage.getItem('token'));
 }
 function lockBarrier(wall) {
     var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
@@ -162,7 +162,7 @@ function lockBarrier(wall) {
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
     // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
-    socket.emit('movePlayer', targetPosition);
+    socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'));
 }
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
@@ -239,5 +239,8 @@ function endGame(player) {
     alert("Le joueur " + player.id + " a gagne !");
 }
 
+window.onbeforeunload = function() {
+    localStorage.removeItem('gameStateID');
+};
 
 export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };

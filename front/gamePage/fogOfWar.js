@@ -9,26 +9,6 @@ function hideOldPossibleMoves() {
 
 
 function updateBoardDisplay(gameState, visibilityMap) {
-    fetch('/api/auth/updateGameState', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ gameState, visibilityMap })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to update gameState');
-        }
-        return response.json();
-    })
-    .then(data => {
-        //console.log('Game state updated successfully:', data);
-    })
-    .catch(error => {
-        console.error('Error updating gameState:', error);
-    });
-
     let playerCells = document.getElementsByClassName('player-cell');
     let currentPlayer = gameState.players.find(player => player.isCurrentPlayer === true);
     let currentPlayerPosition = currentPlayer.position;

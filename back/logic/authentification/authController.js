@@ -1,7 +1,8 @@
 // controllers/authController.js
-const { generateToken } = require('./tokenManager');
+const { generateToken, verifyToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
+const { ObjectId } = require('mongodb');
 
 async function signup(req, res) {
     console.log('Signup');
@@ -99,5 +100,22 @@ async function updateGameState(req, res) {
     });
 }
 
+function verifyAndValidateUserID(token) {
+    try {
+        const tokenData = verifyToken(token);
+        var userID = tokenData.userID;
+    } catch (err) {
+        console.log('Invalid token:', err);
+        return null;
+    }
 
-module.exports = { signup, login, updateGameState };
+    // Validation de l'ID utilisateur
+    if (!ObjectId.isValid(userID)) {
+        console.log('Invalid userID:', userID);
+        return null;
+    }
+
+    return userID;
+}
+
+module.exports = { signup, login, updateGameState, verifyAndValidateUserID};
