@@ -20,4 +20,12 @@ body {
     gap: 10vw;
 }
 
+#newGameButton{
+    color: white;
+}
+
+#resumeGameButton{
+    color: white;
+}
+
 
