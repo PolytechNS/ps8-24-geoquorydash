@@ -27,13 +27,13 @@ async function changeAIPlayerPositionInDatabase(database, gameStateId, targetPos
 
 async function addWallToUserPlayerInDatabase(database, gameStateId, wall, userID) {
     const { playerCollection, query } = preparePlayerQueryAndCollection(database, gameStateId, userID);
-    const result = await playerCollection.updateOne(query, { $inc: { walls: wall } });
+    const result = await playerCollection.updateOne(query, { $push: { walls: wall } });
     return result;
 }
 
 async function addWallToAIPlayerInDatabase(database, gameStateId, wall) {
     const { playerCollection, query } = preparePlayerQueryAndCollection(database, gameStateId);
-    const result = await playerCollection.updateOne(query, { $inc: { walls: wall } });
+    const result = await playerCollection.updateOne(query, { $push: { walls: wall } });
     return result;
 
 }
@@ -48,4 +48,4 @@ function preparePlayerQueryAndCollection(database, gameStateId, userId) {
 }
 
 
-module.exports = { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase};
+module.exports = { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};

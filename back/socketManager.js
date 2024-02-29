@@ -3,7 +3,7 @@ const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, resumeGameFromDB} = require("./logic/game/gameEngine");
 const { ObjectId } = require('mongodb');
-const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase } = require('./models/game/gameDataBaseManager');
+const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase } = require('./models/game/gameDataBaseManager');
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 
@@ -135,12 +135,38 @@ const setupSocket = (server) => {
         });
 
 
-        socket.on('toggleWall', (wall, isVertical) => {
+        socket.on('toggleWall', async (wall, isVertical, gameStateID, token) => {
             var response = toggleWall(wall, isVertical);
 
             if (response === 1) {
+                try {
+                    await toggleWallInDatabase(gameStateID, wall, token);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
                 socket.emit('lockWall', wall);
                 fogOfWar.updateBoardVisibility();
+                try{
+                    await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMap);
+                }catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
                 socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
             } else if (response) {
                 socket.emit("endGame", response);

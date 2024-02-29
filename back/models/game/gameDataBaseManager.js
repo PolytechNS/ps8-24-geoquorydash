@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 const { uri } = require('../../bdd.js');
 const { createGameStateInDatabase } = require('./gameState');
 const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase } = require('./visibilityMap');
-const { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase } = require('./player');
+const { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase } = require('./player');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
@@ -58,6 +58,29 @@ async function moveAIPlayerInDatabase(gameStateID, targetPosition) {
     }
 }
 
+async function toggleWallInDatabase(gameStateID, wall, token) {
+    if (token){
+        var userID = verifyAndValidateUserID(token);
+        if (!userID) {
+            console.error("Invalid token");
+            throw new InvalidTokenError("Invalid token");
+        }
+    }
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        if (userID) {
+            await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
+        } else {
+            await addWallToAIPlayerInDatabase(database, gameStateID, wall);
+        }
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
 async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) {
     if (token){
         if (!verifyAndValidateUserID(token)) {
@@ -77,4 +100,4 @@ async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) 
 
 }
 
-module.exports = { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase};
+module.exports = { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase};
