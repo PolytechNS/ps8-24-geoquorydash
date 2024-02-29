@@ -72,34 +72,6 @@ async function login(req, res) {
     });
 }
 
-async function updateGameState(req, res) {
-    parseJSON(req, async (err, { gameState, visibilityMap  }) => {
-        if (err) {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.end('Invalid JSON');
-            return;
-        }
-        try {
-            const usersCollection = await createUserCollection();
-            if (gameState) {
-                await usersCollection.updateOne({ username: "lucie" }, { $set: { gameState } });
-                //console.log('User gameState:', gameState);
-            }
-            if (visibilityMap) {
-                await usersCollection.updateOne({ username: "lucie" }, { $set: { visibilityMap } });
-                //console.log('User visibilityMap:', visibilityMap);
-            }
-            //console.log('User gameState updated successfully');
-            res.writeHead(200, { 'Content-Type': 'text/plain' });
-            res.end('Game state updated successfully');
-        } catch (error) {
-            console.error('Error updating game state:', error);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal server error');
-        }
-    });
-}
-
 function verifyAndValidateUserID(token) {
     try {
         const tokenData = verifyToken(token);
@@ -118,4 +90,4 @@ function verifyAndValidateUserID(token) {
     return userID;
 }
 
-module.exports = { signup, login, updateGameState, verifyAndValidateUserID};
+module.exports = { signup, login, verifyAndValidateUserID};

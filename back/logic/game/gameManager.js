@@ -24,27 +24,7 @@ class GameManager {
         board: [[]]
     };
 
-    constructor() {
-/*        console.log('GameManager constructor');
-        this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
-        this.gameState = {
-            players: [
-                {
-                    id: "ia",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: false
-                },
-                {
-                    id: "p2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: true // Au départ, le user courant est le joueur 2
-                }
-            ]
-        };
-        return this;*/
-    }
+    constructor() {}
 
     async initializeGameStateFromDB() {
         try {

@@ -6,9 +6,7 @@ class FogOfWar{
     oldPlayer1AdjacentsCells = [];
     oldPlayer2AdjacentsCells = [];
 
-    constructor() {
-        // this.initializeFogOfWar();
-    }
+    constructor() {}
 
     async initializeFogOfWar() {
         await gameManager.initializeGameState();
