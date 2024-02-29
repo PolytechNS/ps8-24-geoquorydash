@@ -34,12 +34,9 @@ socket.on('ImpossibleWallPosition', function() {
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const newGame = urlParams.get('newGame');
-    const resumeGame = urlParams.get('resumeGame');
 
     if (newGame === 'true') {
         socket.emit('startNewGame', localStorage.getItem('token'));
-    } else if (resumeGame === 'true') {
-        socket.emit('resumeSavedGame', localStorage.getItem('token'));
     }
 };
 

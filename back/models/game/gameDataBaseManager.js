@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 const { uri } = require('../../bdd.js');
 const { createGameStateInDatabase } = require('./gameState');
 const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase } = require('./visibilityMap');
-const { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase } = require('./player');
+const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase } = require('./player');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
@@ -24,6 +24,24 @@ async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw error;
+    }
+}
+
+async function retrieveGamesFromDatabaseForAUser(token) {
+    const userID = verifyAndValidateUserID(token);
+    if (!userID) {
+        console.error("Invalid token");
+        throw new InvalidTokenError("Invalid token");
+    }
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        return await retrieveAllGamesIDWithUserID(database, userID);
+
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
     }
 }
 
@@ -100,4 +118,4 @@ async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) 
 
 }
 
-module.exports = { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase};
+module.exports = { createGameInDatabase, retrieveGamesFromDatabaseForAUser, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase};

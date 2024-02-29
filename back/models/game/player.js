@@ -47,5 +47,35 @@ function preparePlayerQueryAndCollection(database, gameStateId, userId) {
     return { playerCollection, query };
 }
 
+async function retrieveAllGamesIDWithUserID(database, userId){
+    const playerCollection = database.collection('players');
+    try {
+        // Assurez-vous de convertir userId en ObjectId si nécessaire
+        const userIdObj = new ObjectId(userId);
 
-module.exports = { createPlayerInDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};
+        const pipeline = [
+            {
+                $match: { userId: userIdObj }
+            },
+            {
+                $group: {
+                    _id: null, // Groupe tous les documents correspondants ensemble
+                    gameStates: { $addToSet: "$gameStateId" } // Collecte les gameStateId uniques
+                }
+            }
+        ];
+
+        const result = await playerCollection.aggregate(pipeline).toArray();
+
+        if (result.length > 0) {
+            return result[0].gameStates;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        console.error("Error retrieving game IDs:", error);
+        throw error; // Relance l'erreur pour la gestion d'erreur externe
+    }
+}
+
+module.exports = { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};

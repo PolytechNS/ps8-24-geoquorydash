@@ -1,7 +1,7 @@
 const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
-const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, resumeGameFromDB} = require("./logic/game/gameEngine");
+const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase } = require('./models/game/gameDataBaseManager');
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
@@ -38,14 +38,6 @@ const setupSocket = (server) => {
                 socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
             }
 
-        });
-
-
-        socket.on('resumeSavedGame', async () => {
-            await resumeGameFromDB();
-            console.log('Après Initialisation pour reprise de partie.');
-            await fogOfWar.updateBoardVisibility();
-            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
         });
 
 
