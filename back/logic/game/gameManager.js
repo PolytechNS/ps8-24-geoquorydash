@@ -1,6 +1,6 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
-const createUserCollection = require('../../models/users/users');
+const { retrieveGameStateFromDB } = require("../../models/game/gameDataBaseManager.js");
 // const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
@@ -26,31 +26,20 @@ class GameManager {
 
     constructor() {}
 
-    async initializeGameStateFromDB() {
+    async resumeGame(gameStateID, userObjectID) {
         try {
-            const usersCollection = await createUserCollection();
-            const userGameState = await usersCollection.findOne({ username: "lucie" });
-            if (userGameState && userGameState.gameState) {
-                // console.log('GameState initialized from DB:');
-                return userGameState.gameState;
-            } else {
-                console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
+            const gameState = await retrieveGameStateFromDB(gameStateID, userObjectID);
+            if (gameState) {
+                this.gameState = gameState;
+                return gameState;
             }
+            return null;
         } catch (error) {
-            console.error('Erreur lors de l\'utilisation de getGameState:', error);
-            throw error;
+            console.error("Error connecting to MongoDB:", error);
+            return null;
         }
     }
 
-    async initializeGameState() {
-        const userGameState = await this.initializeGameStateFromDB();
-        if (userGameState) {
-            this.gameState = userGameState;
-            // console.log('GameState DB');
-        } else {
-            console.log('GameState default');
-        }
-    }
 
     initializeDefaultGameState() {
         this.gameState = {

@@ -78,4 +78,27 @@ async function retrieveAllGamesIDWithUserID(database, userId){
     }
 }
 
-module.exports = { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};
+async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId, gameState, userID) {
+    const playerCollection = database.collection('players');
+    const query = {
+        gameStateId: new ObjectId(gameStateId),
+    };
+    const result = await playerCollection.find(query).toArray();
+    const players = [];
+    if (result.length > 0) {
+        result.forEach(player => {
+            const playerData = {
+                position: player.position,
+                id: player.userId.toString() === 'ai' ? 'ia' : 'p2', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
+                walls: player.walls,
+                isCurrentPlayer: player.isCurrentPlayer
+            };
+            players.push(playerData);
+        });
+    }
+    gameState.players = players;
+    console.log('retrievePlayersWithGamestateIDFromDatabase');
+    console.log(gameState);
+}
+
+module.exports = { createPlayerInDatabase, retrieveAllGamesIDWithUserID, retrievePlayersWithGamestateIDFromDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};

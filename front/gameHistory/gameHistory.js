@@ -11,9 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const gameStates = data.gameStates;
                 const listElement = document.createElement('ul');
                 gameStates.forEach(id => {
-                    const item = document.createElement('li');
-                    item.textContent = id;
-                    listElement.appendChild(item);
+                    const itemLi = document.createElement('li');
+                    const itemButton = document.createElement('button');
+                    itemLi.appendChild(itemButton);
+                    itemButton.textContent = `Game ${id}`;
+                    itemButton.addEventListener('click', () => {
+                        loadGame(id);
+                    });
+                    listElement.appendChild(itemLi);
                 });
 
                 document.body.appendChild(listElement);
@@ -27,5 +32,9 @@ document.addEventListener('DOMContentLoaded', function() {
         alert('Vous devez être connecté pour accéder à cette page');
         window.location.href = '/home.html';
     }
-
 });
+
+function loadGame(gameStateId) {
+    localStorage.setItem('gameStateID', gameStateId);
+    window.location.href = '/gamePage/gamePage.html?resumeGame=true';
+}

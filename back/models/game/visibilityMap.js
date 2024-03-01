@@ -12,4 +12,12 @@ async function changeVisibilityMapInDatabase(database, gameStateId, visibilityMa
     return result;
 }
 
-module.exports = { createVisibilityMapInDatabase, changeVisibilityMapInDatabase};
+async function retrieveVisibilityMapWithGameStateIDFromDatabase(database, gameStateID) {
+    const visibilityMapCollection = database.collection('visibilityMaps');
+    const visibilityMapObj = await visibilityMapCollection.findOne({
+        gameStateId: new ObjectId(gameStateID)
+    });
+    return visibilityMapObj.visibilityMap;
+}
+
+module.exports = { createVisibilityMapInDatabase, changeVisibilityMapInDatabase, retrieveVisibilityMapWithGameStateIDFromDatabase};

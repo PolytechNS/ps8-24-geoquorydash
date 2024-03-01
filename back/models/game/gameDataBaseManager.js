@@ -1,8 +1,11 @@
 const { MongoClient } = require('mongodb');
 const { uri } = require('../../bdd.js');
 const { createGameStateInDatabase } = require('./gameState');
-const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase } = require('./visibilityMap');
-const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase } = require('./player');
+const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase, retrieveVisibilityMapWithGameStateIDFromDatabase} = require('./visibilityMap');
+const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase,
+    changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase,
+    retrievePlayersWithGamestateIDFromDatabase
+} = require('./player');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
@@ -39,6 +42,36 @@ async function retrieveGamesFromDatabaseForAUser(token) {
         const database = client.db('myapp_db');
         return await retrieveAllGamesIDWithUserID(database, userID);
 
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
+async function retrieveGameStateFromDB(gameStateID, userID) {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const gameState = {
+            players: []
+        };
+        await retrievePlayersWithGamestateIDFromDatabase(database, gameStateID, gameState, userID);
+        return gameState;
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+
+}
+
+async function retrieveVisibilityMapFromDatabase(gameStateID) {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const visibilityMap = await retrieveVisibilityMapWithGameStateIDFromDatabase(database, gameStateID);
+        return visibilityMap;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw new DatabaseConnectionError("Error connecting to MongoDB");
@@ -118,4 +151,6 @@ async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) 
 
 }
 
-module.exports = { createGameInDatabase, retrieveGamesFromDatabaseForAUser, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase};
+module.exports = { createGameInDatabase, retrieveGamesFromDatabaseForAUser, retrieveGameStateFromDB,
+    moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
+    retrieveVisibilityMapFromDatabase};

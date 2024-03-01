@@ -1,5 +1,5 @@
 const gameManager = require('./gameManager');
-const createUserCollection = require("../../models/users/users"); // Instance unique de GameManager
+const { retrieveVisibilityMapFromDatabase } = require('../../models/game/gameDataBaseManager');
 
 class FogOfWar{
     visibilityMap = [];
@@ -7,44 +7,6 @@ class FogOfWar{
     oldPlayer2AdjacentsCells = [];
 
     constructor() {}
-
-    async initializeFogOfWar() {
-        await gameManager.initializeGameState();
-        const fog = await this.initializeFogFromDB();
-        if (fog) {
-            this.visibilityMap = fog;
-            //console.log('GameState DB');
-        } else {
-            for (let i = 0; i < (9*9); i++) {
-                this.visibilityMap[i] = [];
-                if (i < 36) {
-                    this.visibilityMap[i] = 1; // Visibility +1
-                } else if (i <= 44) {
-                    this.visibilityMap[i] = 0; // Visibility 0
-                } else {
-                    this.visibilityMap[i] = -1; // Visibility -1
-                }
-            }
-            //console.log('FogOfWar default');
-        }
-        this.updateBoardVisibility();
-    }
-
-    async initializeFogFromDB() {
-        try {
-            const usersCollection = await createUserCollection();
-            const userFog = await usersCollection.findOne({ username: "lucie" });
-            if (userFog && userFog.visibilityMap) {
-                //console.log('FogOfWar initialized from DB:');
-                return userFog.visibilityMap;
-            } else {
-                //console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
-            }
-        } catch (error) {
-            console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
-            throw error;
-        }
-    }
 
     initializeDefaultFogOfWar() {
         for (let i = 0; i < (9*9); i++) {
@@ -59,6 +21,20 @@ class FogOfWar{
         this.oldPlayer1AdjacentsCells = [];
         this.oldPlayer2AdjacentsCells = [];
         console.log('FogOfWar default');
+    }
+
+    async resumeVisibilityMap(gameStateID) {
+        try {
+            const visibilityMap = await retrieveVisibilityMapFromDatabase(gameStateID);
+            if (visibilityMap) {
+                this.visibilityMap = visibilityMap;
+                return visibilityMap;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            return null;
+        }
     }
 
     updateBoardVisibility() {

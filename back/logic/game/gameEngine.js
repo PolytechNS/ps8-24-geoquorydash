@@ -14,16 +14,6 @@ function initializeGame() {
     otherPlayer = player1;
 }
 
-async function resumeGameFromDB() {
-    gameActive = true;
-    await gameManager.initializeGameState();
-    await fogOfWar.initializeFogOfWar();
-    player1 = gameManager.getPlayerById('ia');
-    player2 = gameManager.getPlayerById('p2');
-    currentPlayer = gameManager.getCurrentPlayer();
-    otherPlayer = player1;
-}
-
 function movePlayer(targetPosition) {
     if (!gameActive) return;
 
@@ -199,4 +189,4 @@ function endGame(message) {
     gameActive = false;
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, resumeGameFromDB};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame};

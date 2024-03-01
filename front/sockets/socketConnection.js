@@ -34,9 +34,19 @@ socket.on('ImpossibleWallPosition', function() {
 window.onload = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const newGame = urlParams.get('newGame');
+    const resumeGame = urlParams.get('resumeGame');
 
     if (newGame === 'true') {
         socket.emit('startNewGame', localStorage.getItem('token'));
+    } else if (resumeGame === 'true') {
+        const gameStateID = localStorage.getItem('gameStateID');
+        const token = localStorage.getItem('token');
+        if (gameStateID && token) {
+            socket.emit('resumeGame', gameStateID, token);
+        } else {
+            alert('An error occured while trying to resume the game. Please try again later.');
+            window.location.href = '/home.html';
+        }
     }
 };
 

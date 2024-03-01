@@ -40,6 +40,29 @@ const setupSocket = (server) => {
 
         });
 
+        socket.on('resumeGame', async (gameStateID, token) => {
+            console.log('ON resumeGame');
+
+            const userObjectID = verifyAndValidateUserID(token);
+            if (!userObjectID) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+
+            const gameState = await gameManager.resumeGame(gameStateID, userObjectID);
+            if (!gameState) {
+                socket.emit('databaseConnectionError');
+                return;
+            }
+
+            const visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
+            if (!visibilityMap) {
+                socket.emit('databaseConnectionError');
+                return;
+            }
+            socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
+        });
+
 
         socket.on('disconnect', () => {
             console.log('Client disconnected');
