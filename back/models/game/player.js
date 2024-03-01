@@ -78,7 +78,7 @@ async function retrieveAllGamesIDWithUserID(database, userId){
     }
 }
 
-async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId, gameState, userID) {
+async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId, gameState) {
     const playerCollection = database.collection('players');
     const query = {
         gameStateId: new ObjectId(gameStateId),

@@ -26,9 +26,9 @@ class GameManager {
 
     constructor() {}
 
-    async resumeGame(gameStateID, userObjectID) {
+    async resumeGame(gameStateID) {
         try {
-            const gameState = await retrieveGameStateFromDB(gameStateID, userObjectID);
+            const gameState = await retrieveGameStateFromDB(gameStateID);
             if (gameState) {
                 this.gameState = gameState;
                 return gameState;

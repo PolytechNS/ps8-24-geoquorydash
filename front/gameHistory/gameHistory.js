@@ -36,5 +36,5 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function loadGame(gameStateId) {
     localStorage.setItem('gameStateID', gameStateId);
-    window.location.href = '/gamePage/gamePage.html?resumeGame=true';
+    window.location.href = '../gamePage/gamePage.html?resumeGame=true';
 }

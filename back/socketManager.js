@@ -43,13 +43,13 @@ const setupSocket = (server) => {
         socket.on('resumeGame', async (gameStateID, token) => {
             console.log('ON resumeGame');
 
-            const userObjectID = verifyAndValidateUserID(token);
-            if (!userObjectID) {
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
                 socket.emit('tokenInvalid');
                 return;
             }
 
-            const gameState = await gameManager.resumeGame(gameStateID, userObjectID);
+            const gameState = await gameManager.resumeGame(gameStateID);
             if (!gameState) {
                 socket.emit('databaseConnectionError');
                 return;
@@ -154,7 +154,7 @@ const setupSocket = (server) => {
 
             if (response === 1) {
                 try {
-                    await toggleWallInDatabase(gameStateID, wall, token);
+                    await toggleWallInDatabase(gameStateID, wall, isVertical, token);
                 } catch (error) {
                     if (error instanceof InvalidTokenError) {
                         socket.emit('tokenInvalid');

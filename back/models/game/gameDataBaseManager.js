@@ -48,7 +48,7 @@ async function retrieveGamesFromDatabaseForAUser(token) {
     }
 }
 
-async function retrieveGameStateFromDB(gameStateID, userID) {
+async function retrieveGameStateFromDB(gameStateID) {
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -56,7 +56,7 @@ async function retrieveGameStateFromDB(gameStateID, userID) {
         const gameState = {
             players: []
         };
-        await retrievePlayersWithGamestateIDFromDatabase(database, gameStateID, gameState, userID);
+        await retrievePlayersWithGamestateIDFromDatabase(database, gameStateID, gameState);
         return gameState;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -109,7 +109,7 @@ async function moveAIPlayerInDatabase(gameStateID, targetPosition) {
     }
 }
 
-async function toggleWallInDatabase(gameStateID, wall, token) {
+async function toggleWallInDatabase(gameStateID, wall, isVertical, token) {
     if (token){
         var userID = verifyAndValidateUserID(token);
         if (!userID) {
@@ -121,6 +121,9 @@ async function toggleWallInDatabase(gameStateID, wall, token) {
     try {
         await client.connect();
         const database = client.db('myapp_db');
+        wall.push({
+            isVertical: isVertical
+        });
         if (userID) {
             await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
         } else {
