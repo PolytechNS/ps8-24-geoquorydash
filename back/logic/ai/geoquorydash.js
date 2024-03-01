@@ -1,5 +1,3 @@
-const gameManager = require('../game/gameManager');
-
 let iaPlayer = null; // A initialiser plus tard, mais en gros ce joueur sera l'ia
 let firstToPlay = false;
 
@@ -12,22 +10,48 @@ move = {
 async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 2 sinon
     let stringPosition = null;
     if(AIplay === 1) { // Notre ia joue en premier
+        console.log("On commence à jouer en premier");
         firstToPlay = true;
         stringPosition = "51";
     } else {
+        console.log("On commence à jouer en deuxième");
         stringPosition = "59";
     }
     initializeGameState();
-    initializeGameStateTeacher();
+    // initializeGameStateTeacher();
+
+    let IAplayer = getIAPlayer();
+    let otherPlayer = getOtherPlayer();
+    console.log("La position de mon joueur est " + printPosition(IAplayer.position));
+    let otherPlayerPosition = otherPlayer.position;
+    if(otherPlayerPosition) {
+        console.log("La position du joueur adverse est " + printPosition(otherPlayer.position));
+    } else {
+        console.log("La position du joueur adverse est pour l'instant inconue");
+    }
+
+    console.log("Fin du setup\n");
     return stringPosition;
 }
 
-async function nextMove(/*gameStateTeacher,*/ getAdjacentCellsPositionsWithWalls) {
-    //let myGameState = convertGameStateTeacherToGameState(gameStateTeacher);
-    //gameState = myGameState;
+async function nextMove(gameStateTeacher) {
+    console.log("On va calculer notre prochain mouvement, mais avant ça, on sait que :");
+    convertGameStateTeacherToGameState(gameStateTeacher);
 
     let IAplayer = getIAPlayer();
-    let shortestPathForIA = dijkstraAlgorithm(IAplayer.position, getAdjacentCellsPositionsWithWalls);
+    let otherPlayer = getOtherPlayer();
+    console.log("Mon joueur possède actuellement " + IAplayer.walls.length + " murs");
+    console.log("Le joueur adverse possède actuellement " + otherPlayer.walls.length + " murs");
+    console.log("La position de mon joueur est " + printPosition(IAplayer.position));
+    let otherPlayerPosition = otherPlayer.position;
+    if(otherPlayerPosition) {
+        console.log("La position du joueur adverse est " + printPosition(otherPlayer.position) + "\n");
+    } else {
+        console.log("La position du joueur adverse est pour l'instant inconue\n");
+    }
+
+    // let IAplayer = getIAPlayer();
+    let shortestPathForIA = dijkstraAlgorithm(IAplayer);
     let shortestPathLengthForIA = shortestPathForIA.length;
 
     // Dans le cas où le joueur choisi d'avancer et non de poser un mur, ce sera forcément cette position
@@ -36,6 +60,7 @@ async function nextMove(/*gameStateTeacher,*/ getAdjacentCellsPositionsWithWalls
 
     // On vérifie que l'on peut encore poser des murs, et si on ne peut pas, on avance
     if(!canPlayerStillInstallWall(IAplayer.id)) {
+        console.log("Je ne peux plus poser de murs, donc je dois forcément avancer en " + printPosition(nextPositionToGo));
         IAplayer.position = nextPositionToGo;
         return {action: "move", value: stringNextPositionToGo};
     }
@@ -43,20 +68,32 @@ async function nextMove(/*gameStateTeacher,*/ getAdjacentCellsPositionsWithWalls
     // Si on se retrouve là, c'est que le joueur peut encore poser des murs
 
     if(canSeeTheOtherPlayer()) {
+        console.log("Je vois l'autre joueur, donc je vais comparer nos plus courts chemins");
 
-        // On fait un dijkstra pour l'autre joueur pour savoir s'il atteint la victoire plus rapidement que nous ou pas
-        let otherPlayer = getOtherPlayer();
-        let otherPlayerPosition = otherPlayer.position;
-        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayerPosition, getAdjacentCellsPositionsWithWalls);
+        // On fait un shortestPath pour l'autre joueur pour savoir s'il atteint la victoire plus rapidement que nous ou pas
+        // let otherPlayer = getOtherPlayer();
+        // let otherPlayerPosition = otherPlayer.position;
+        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer);
         let shortestPathLengthForOtherPlayer = shortestPathForOtherPlayer.length;
 
-        if(shortestPathLengthForIA < shortestPathLengthForOtherPlayer) {
+        console.log("Mon plus court chemin est de taille " + shortestPathLengthForIA);
+        console.log("Le plus court chemin de l'adversaire est " + shortestPathLengthForOtherPlayer);
+
+        if(shortestPathLengthForIA > shortestPathLengthForOtherPlayer) {
+            console.log("Le joueur adverse a un chemin plus court que le miens pour gagner");
             // On va tenter de maximiser la longueur du chemin de l'adversaire, en tentant de poser un mur entre chacune des cases du chemin renvoyé
-            // par son dijkstra, et on pose le mur qui allonge le plus son chemin
+            // par son shortestPath, et on pose le mur qui allonge le plus son chemin
             let wallToInstall = chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestPathForOtherPlayer, shortestPathForIA);
 
             // On vérifie qu'un mur peut bien être posé sur le plus court chemin de l'adversaire pour le ralentir
             if(wallToInstall) {
+                let stringForWallToInstall = "[";
+                wallToInstall.forEach(wall => {
+                    stringForWallToInstall += printPosition(wall);
+                    stringForWallToInstall += ","
+                })
+                stringForWallToInstall += "]";
+                console.log("Le meilleur mur pour ralentir mon adversaire est en position " + stringForWallToInstall);
                 // Si oui, on le pose
                 IAplayer.walls.push(wallToInstall);
 
@@ -65,11 +102,21 @@ async function nextMove(/*gameStateTeacher,*/ getAdjacentCellsPositionsWithWalls
             }
         }
 
+        console.log("J'ai un chemin plus court que celui de mon adversaire pour gagner");
+        console.log("J'avance donc sur la case " + printPosition(nextPositionToGo));
         IAplayer.position = nextPositionToGo;
         return {action: "move", value: stringNextPositionToGo};
 
     } else {
+        console.log("Je ne vois pas mon adversaire");
         let wallToInstallToSeeOtherPlayer = chooseWallToInstallToSeeOtherPlayer();
+        let stringForWallToInstallToSeeOtherPlayer = "[";
+                wallToInstallToSeeOtherPlayer.forEach(wall => {
+                    stringForWallToInstallToSeeOtherPlayer += printPosition(wall);
+                    stringForWallToInstallToSeeOtherPlayer += ","
+                })
+                stringForWallToInstallToSeeOtherPlayer += "]";
+        console.log("Le meilleur mur à poser pour voir mon adversaire est " + stringForWallToInstallToSeeOtherPlayer);
         IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
         let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
 
@@ -89,7 +136,7 @@ async function updateBoard(gameState) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
+function dijkstraAlgorithm(player) {
     // Initialisation des variables
     let alreadyVisitedCells = [];
     let cellsWithWeights = [];
@@ -97,30 +144,38 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     position la case concernée, pathLength la distance pour atteindre cette case depuis notre position de base, et predecessor la case qui précède
     la case dont on est en train de calculer le chemin */
     let pathLength = 0;
-    cellsWithWeights.push({position: position, pathLength: pathLength, predecessor: null});
+    cellsWithWeights.push({position: player.position, pathLength: pathLength, predecessor: null});
 
     // On commence à travailler
-    let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls);
+    let shortestPathFinalPosition = getShortestPathFinalPosition(player, alreadyVisitedCells, cellsWithWeights, pathLength);
 
     //console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
 
-    let shortestPath = reconstructPath(position, shortestPathFinalPosition, cellsWithWeights);
+    let shortestPath = reconstructPath(player.position, shortestPathFinalPosition, cellsWithWeights);
     //console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
     return shortestPath;
 }
 
-function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
-    let currentPosition = {x: position.x, y: position.y};
+function getShortestPathFinalPosition(player, alreadyVisitedCells, cellsWithWeights, pathLength) {
+    let currentPosition = {x: player.position.x, y: player.position.y};
 
-    let AIwinningPosition = null;
-    if(firstToPlay) {
-        AIwinningPosition = 0;
-    } else {
-        AIwinningPosition = 16;
+    let winningPosition = null;
+    if(player.id === "ia") {
+        if(firstToPlay) {
+            winningPosition = 0;
+        } else {
+            winningPosition = 16;
+        }
+    } else if(player.id === "p2") {
+        if(firstToPlay) {
+            winningPosition = 16;
+        } else {
+            winningPosition = 0;
+        }
     }
 
-    while(currentPosition.x !== AIwinningPosition) {
-        updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
+    while(currentPosition.x !== winningPosition) {
+        updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1);
         currentPosition = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
     
@@ -130,7 +185,7 @@ function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWe
 }
 
 // Cette fonction sert, pour une cellule donnée, à mettre à jour le poids de ses voisins, voisins pour lesquels on a encore jamais calculé le poids de ses voisins à lui
-function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
+function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength) {
     alreadyVisitedCells.push(currentPosition);
     
     let currentCell = cellsWithWeights.find(cell => equalsPositions(cell.position, currentPosition));
@@ -243,9 +298,9 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
 
         if(wallsThatCanBeInstalled) { // Si wallsThatCanBeInstalled n'est pas null, CàD qu'un mur peut être posé via la position {interX, interY}
             wallsThatCanBeInstalled.forEach(wall => {
-                IAplayer.walls.push(wall);  // On l'ajoute temporairement à la liste des murs de notre IA pour être pris en compte par le dijkstra à venir
+                IAplayer.walls.push(wall);  // On l'ajoute temporairement à la liste des murs pour être pris en compte par le shortestPath à venir
 
-                let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, getAdjacentCellsPositionsWithWalls);
+                let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer);
                 let newShortestPathLengthForOtherPlayer = newShortestPathForOtherPlayer.length;
 
                 if(newShortestPathLengthForOtherPlayer > maxDistanceToReachArrival) {
@@ -273,7 +328,7 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
         possibleWallToInstall.forEach(possibleWall => {
             IAplayer.walls.push(possibleWall);
 
-            let newShortestPathForIA = dijkstraAlgorithm(IAplayer.position, getAdjacentCellsPositionsWithWalls);
+            let newShortestPathForIA = dijkstraAlgorithm(IAplayer);
             let newShortestPathLengthForIA = newShortestPathForIA.length;
 
             if(newShortestPathLengthForIA < minDistanceTorReachArrival) {
@@ -360,7 +415,6 @@ function chooseWallToInstallToSeeOtherPlayer() {
     let interestingWalls = getInterestingWallsToSeeOtherPlayer();
     for(let i = 0; i < interestingWalls.length; i++) {
         if(canWallBeInstalledOnBoard(interestingWalls[i])) {
-            console.log("Le mur que l'on va installer est {x: " + interestingWalls[i][0].x + ", y: " + interestingWalls[i][0].y + "} etc…");
             return interestingWalls[i];
         }
     }
@@ -395,9 +449,9 @@ function canWallBeInstalledOnBoard(wallToInstall) {
 
     // Étape 2 : si aucun mur n'est posé sur le plateau, true
     let boardWallsInWallsList = getBoardWallsInWallsList();
-    console.log("Actuellement, il y a " + boardWallsInWallsList.length + " murs sur le terrain");
+    //console.log("Actuellement, il y a " + boardWallsInWallsList.length + " murs sur le terrain");
     if(boardWallsInWallsList.length === 0) { // Il n'y a pour l'instant aucun mur sur le terrain, tous les murs peuvent être posés
-        console.log("On rentre dans le cas où le nombre de murs est de 0");
+        //console.log("On rentre dans le cas où le nombre de murs est de 0");
         return true;
     }
 
@@ -484,6 +538,11 @@ function canPlayerStillInstallWall(playerID) {
     return null;
 }
 
+function printPosition(position) {
+    let stringToReturn = "{x: " + position.x + ", y: " + position.y + "}";
+    return stringToReturn;
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////// CETTE SECTION EST DÉDIÉE AUX FONCTIONS COPIÉES D'AUTRE FICHIERS POUR RENDRE CELUI-CI PARFAITEMENT INDÉPENDANT DES AUTRES //////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -492,8 +551,8 @@ function canPlayerStillInstallWall(playerID) {
 let gameState = {
     players: [
         {
-        position: null,
         id: null,
+        position: null,
         walls: [],
         isCurrentPlayer: false
         }
@@ -520,7 +579,7 @@ function initializeGameState() {
         ]
     });
 }
-
+/*
 // La structure de gameState du prof
 let gameStateTeacher = {
     opponentWalls: [],        // Contient des tableaux, eux mêmes contenant une position et un isVertical
@@ -560,28 +619,32 @@ function initializeGameStateTeacher() {
     finalBoard[0][4] = 1;               // On initialise notre position au bas du plateau
     // finalBoard[8][4] = 2;            // On ne peut pas savoir dès le début où se trouve le joueur adverse, représenté par un 2
     gameStateTeacher.board = finalBoard;
-}
+}*/
 
 // Cette méthode récupère le gameStateTeacher du prof et le convertit en un gameState de notre forme à nous
-function convertGameStateTeacherToGameState() {
+function convertGameStateTeacherToGameState(gameStateTeacher) {
     let IAplayer = getIAPlayer();
     IAplayer.walls = [];
-    IAplayer.walls = reconstructWallsListWithTopLeftCorners(gameStateTeacher.ownWalls);
+    if(gameStateTeacher.ownWalls.length > 0) {
+        IAplayer.walls = reconstructWallsListWithTopLeftCorners(gameStateTeacher.ownWalls);
+    }
 
     let otherPlayer = getOtherPlayer();
     otherPlayer.walls = [];
-    otherPlayer.walls = reconstructWallsListWithTopLeftCorners(gameStateTeacher.opponentWalls);
+    if(gameStateTeacher.opponentWalls.length > 0) {
+        otherPlayer.walls = reconstructWallsListWithTopLeftCorners(gameStateTeacher.opponentWalls);
+    }
 
     IAplayer.position = null;       // On réinitialise cette position dans le doute mais elle ne devrait jamais être null
     otherPlayer.position = null;    // On réinitialise cette position à null car le joueur adverse a pu disparaître entre temps
     for(let i = 0; i < 9; i++) {
         for(let j = 0; j < 9; j++) {
             if(gameStateTeacher.board[i][j] === 1) {           // Dans ce cas, il s'agit de la case sur laquelle mon bot se trouve
-                teacherPositionForIA = `${i}${j}`;
+                teacherPositionForIA = `${i + 1}${j + 1}`;
                 myPositionForIA = convertTeacherPositionToMyPosition(teacherPositionForIA);
                 IAplayer.position = myPositionForIA;
             } else if(gameStateTeacher.board[i][j] === 2) {    // Dans ce cas, il s'agit de la case sur laquelle mon opposant se trouve
-                teacherPositionForOtherPlayer = `${i}${j}`;
+                teacherPositionForOtherPlayer = `${i + 1}${j + 1}`;
                 myPositionForOtherPlayer = convertTeacherPositionToMyPosition(teacherPositionForOtherPlayer);
                 otherPlayer.position = myPositionForOtherPlayer;
             }
@@ -685,8 +748,9 @@ function checkBarriersBetween(startPosition, targetPosition, boardWallsInPositio
     const interY = y1 + (y2 - y1) / 2;
     let possibleWallPosition = {x: interX, y: interY};
 
-    //const boardWallsInPositionsList = walls ? walls : getBoardWallsInPositionsList();
-    return arrayOfPositionContainsPosition(boardWallsInPositionsList, possibleWallPosition);
+    const walls = boardWallsInPositionsList ? boardWallsInPositionsList : getBoardWallsInPositionsList();
+
+    return arrayOfPositionContainsPosition(walls, possibleWallPosition);
 }
 
 // Cette méthode vérifie si pour un tableau donné de positions, ce tableau contient une position donnée
@@ -733,3 +797,137 @@ exports.correction = correction;
 exports.updateBoard = updateBoard;
 
 module.exports = { dijkstraAlgorithm, nextMove, setup };
+
+function printBoard(board) {
+    for(let i = 8; i >= 0; i--) {
+        let stringToPrint = "| ";
+        for(let j = 0; j < 9; j++) {
+            stringToPrint += board[j][i];
+            if(board[j][i] !== -1) {
+                stringToPrint += " ";
+            }
+            stringToPrint += " ";
+        }
+        stringToPrint += "|";
+        console.log(stringToPrint);
+    }
+    console.log("\n");
+}
+
+async function main(){
+    let opponentWalls1 = [
+        ["19",0],
+        ["25",0],
+        ["34",0]
+    ];
+    let ownWalls1 = [
+        ["38",1],
+        ["16",0],
+        ["52",0],
+        ["59",0],
+        ["33",0],
+        ["23",1]
+    ];
+    let board1 = [
+        [0,0,0,0,2,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,1,0,0,0,0]
+    ];
+
+    let opponentWalls2 = [];
+    let ownWalls2 = [];
+    let board2 = [
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [1,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1]
+    ];
+
+    let opponentWalls3 = [
+        
+    ];
+    let ownWalls3 = [
+        ["15",1],
+        ["35",1],
+        ["17",1],
+        ["27",0],
+        ["78",0],
+        ["68",1],
+        ["12",0],
+        ["22",1],
+        ["45",1],
+        ["76",0]
+    ];
+    let board3 = [
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,1,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,2,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0]
+    ];
+
+    console.log("-----------------------------------------------------------------------");
+    await setup(1);
+    console.log("Le jeu a avancé et l'état du plateau de jeu est désormais :\n")
+    let gameStateTeacherStruct = {
+        opponentWalls: [],        // Contient des tableaux, eux mêmes contenant une position et un isVertical
+        ownWalls: [],             // Pareil
+        board: []
+    };
+    gameStateTeacherStruct.opponentWalls = opponentWalls3;
+    gameStateTeacherStruct.ownWalls = ownWalls3;
+    gameStateTeacherStruct.board = board3;
+    printBoard(gameStateTeacherStruct.board);
+    let start = Date.now();
+    await nextMove(gameStateTeacherStruct).then((move) => {
+        console.log("NEXT MOVE: ",move);
+        let timeTaken = Date.now() - start;
+        console.log("Total time taken : " + timeTaken + " milliseconds");
+    });
+    console.log("-----------------------------------------------------------------------");
+
+
+
+
+
+    // ------------------- FONCTIONS ----------------------------------
+
+    /*
+    function init_gameboard(){
+        let gameboard = [];
+                for (let i = 0; i < 9; i++) {
+                    let row = [];
+                    for (let j = 0; j < 9; j++) {row.push(parseInt("0"));}
+                    gameboard.push(row);
+                }
+        return gameboard.reverse();
+    }
+    function showGameboard(gameboard){
+        gameboard.forEach(row => {
+            let rowString = "";
+            row.forEach(cell => {
+                rowString += "|"+cell;
+            });
+            rowString += "|";
+            console.log(rowString);
+        });
+    }
+    */
+}
+
+main();
