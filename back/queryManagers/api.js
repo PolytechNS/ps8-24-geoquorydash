@@ -11,7 +11,7 @@ function manageRequest(request, response) {
     }
 
     if (request.url.startsWith('/api/auth')) {
-        authRouter(request, response);
+        authRouter(request, response).then();
     }
     if (request.url.startsWith('/api/game')) {
         gameRouter(request, response).then(() => {

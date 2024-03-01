@@ -5,7 +5,6 @@ const createUserCollection = require('../../models/users/users');
 const { ObjectId } = require('mongodb');
 
 async function signup(req, res) {
-    console.log('Signup');
     parseJSON(req, async (err, { username, password }) => {
         if (err) {
             console.log('Invalid JSON:', err);
@@ -13,18 +12,15 @@ async function signup(req, res) {
             res.end('Invalid JSON');
             return;
         }
-        console.log('Signup called');
-        console.log(username, password);
 
         try {
             const usersCollection = await createUserCollection();
             // Vérifier si l'utilisateur existe déjà
             const existingUser = await usersCollection.findOne({ username: username });
-            console.log(existingUser);
             if (existingUser) {
                 console.log('User already exists:', username);
-                res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
-                res.end('User already exists');
+                    res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
+                    res.end('User already exists');
                 return;
             }
 
@@ -33,8 +29,8 @@ async function signup(req, res) {
                 password,
             };
             await usersCollection.insertOne(newUser);
-            console.log('User created:', newUser);
             res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ message: 'User created successfully' })); // Envoyez une réponse JSON
         } catch (err) {
             console.log('Error creating user:', err);
             res.writeHead(500, { 'Content-Type': 'text/plain' });

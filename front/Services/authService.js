@@ -16,12 +16,12 @@ export const AuthService = {
             body: JSON.stringify({ username, password }),
         })
             .then(response => {
-                if (response.ok) {
-                    return response.json();
+                if (!response.ok) {
+                    throw new Error('An error occurred');
                 } else if (response.status === 409) {
                     throw new Error('Username already exists');
                 } else {
-                    throw new Error('An error occurred');
+                    return response.json();
                 }
             });
     }
