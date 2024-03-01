@@ -20,7 +20,6 @@ socket.on('possibleMoveList', function(possibleMove) {
 
 socket.on('endGame', function(player) {
     endGame(player);
-    socket.emit('startNewGame', localStorage.getItem('token'));
 });
 
 socket.on('lockWall', function(wall) {

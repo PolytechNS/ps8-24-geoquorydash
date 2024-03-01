@@ -31,7 +31,7 @@ function movePlayer(targetPosition) {
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
-    movePlayer(iaMove);
+    return movePlayer(iaMove);
 }
 
 function toggleWall(wall, isVertical) {

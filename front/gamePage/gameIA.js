@@ -237,6 +237,7 @@ function ImpossibleWallPlacementPopUp() {
 
 function endGame(player) {
     alert("Le joueur " + player.id + " a gagne !");
+    window.location.href = '/gameType/gameType.html';
 }
 
 window.onbeforeunload = function() {

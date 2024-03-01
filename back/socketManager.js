@@ -121,7 +121,7 @@ const setupSocket = (server) => {
             }
 
             if (response2) {
-                socket.emit("endGame", response);
+                socket.emit("endGame", response2);
                 return;
             }
             fogOfWar.updateBoardVisibility();
@@ -151,7 +151,7 @@ const setupSocket = (server) => {
 
         socket.on('toggleWall', async (wall, isVertical, gameStateID, token) => {
             var response = toggleWall(wall, isVertical);
-
+            console.log("response : ", response)
             if (response === 1) {
                 try {
                     await toggleWallInDatabase(gameStateID, wall, isVertical, token);
