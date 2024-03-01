@@ -1,11 +1,6 @@
-let iaPlayer = null; // A initialiser plus tard, mais en gros ce joueur sera l'ia
 let firstToPlay = false;
-
-
-move = {
-    action: null,
-    value: null
-};
+let formerPositionOfOtherPlayer = null;
+let formerNumberOfWallsOnBoard = 0;
 
 async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 2 sinon
     let stringPosition = null;
@@ -35,6 +30,7 @@ async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 
 }
 
 async function nextMove(gameStateTeacher) {
+    formerNumberOfWallsOnBoard = getBoardWallsInWallsList().length;
     console.log("On va calculer notre prochain mouvement, mais avant ça, on sait que :");
     convertGameStateTeacherToGameState(gameStateTeacher);
 
@@ -51,7 +47,7 @@ async function nextMove(gameStateTeacher) {
     }
 
     // let IAplayer = getIAPlayer();
-    let shortestPathForIA = dijkstraAlgorithm(IAplayer);
+    let shortestPathForIA = dijkstraAlgorithm(IAplayer.position, IAplayer);
     let shortestPathLengthForIA = shortestPathForIA.length;
 
     // Dans le cas où le joueur choisi d'avancer et non de poser un mur, ce sera forcément cette position
@@ -68,12 +64,13 @@ async function nextMove(gameStateTeacher) {
     // Si on se retrouve là, c'est que le joueur peut encore poser des murs
 
     if(canSeeTheOtherPlayer()) {
+        formerPositionOfOtherPlayer = otherPlayer.position;
         console.log("Je vois l'autre joueur, donc je vais comparer nos plus courts chemins");
 
         // On fait un shortestPath pour l'autre joueur pour savoir s'il atteint la victoire plus rapidement que nous ou pas
         // let otherPlayer = getOtherPlayer();
         // let otherPlayerPosition = otherPlayer.position;
-        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer);
+        let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, otherPlayer);
         let shortestPathLengthForOtherPlayer = shortestPathForOtherPlayer.length;
 
         console.log("Mon plus court chemin est de taille " + shortestPathLengthForIA);
@@ -98,6 +95,7 @@ async function nextMove(gameStateTeacher) {
                 IAplayer.walls.push(wallToInstall);
 
                 let wallToInstallForTeacher = convertOurWallToTopLeftCornerWall(wallToInstall);
+                formerNumberOfWallsOnBoard += 1;
                 return {action: "wall", value: wallToInstallForTeacher};
             }
         }
@@ -107,8 +105,26 @@ async function nextMove(gameStateTeacher) {
         IAplayer.position = nextPositionToGo;
         return {action: "move", value: stringNextPositionToGo};
 
+    } else if(canGuessOtherPlayerPosition()) {
+        console.log("Je ne vois pas mon adversaire mais je peux deviner sa position");
+        let supposedPositionForOtherPlayer = canGuessOtherPlayerPosition();
+        console.log("La position supposée de mon adversaire est " + printPosition(supposedPositionForOtherPlayer));
+        console.log("Je réapplique alors un nextMove en considérant que la position de mon adversaire est celle que j'ai devinée\n");
+        let stringSupposedPositionForOtherPlayer = convertMyPositionToTeacherPosition(supposedPositionForOtherPlayer);
+        let stringXposition = stringSupposedPositionForOtherPlayer[0];
+        let stringYposition = stringSupposedPositionForOtherPlayer[1];
+        for(let i = 0; i < 9; i++) {
+            for(let j = 0; j < 9; j++) {
+                if(gameStateTeacher.board[i][j] === 2) {
+                    gameStateTeacher.board[i][j] = 0;
+                } else if(i === stringXposition - 1 && j === stringYposition - 1) {
+                    gameStateTeacher.board[i][j] = 2;
+                }
+            }
+        }
+        return nextMove(gameStateTeacher);
     } else {
-        console.log("Je ne vois pas mon adversaire");
+        console.log("Je ne vois pas mon adversaire et je ne peux pas deviner sa position");
         let wallToInstallToSeeOtherPlayer = chooseWallToInstallToSeeOtherPlayer();
         let stringForWallToInstallToSeeOtherPlayer = "[";
                 wallToInstallToSeeOtherPlayer.forEach(wall => {
@@ -120,7 +136,7 @@ async function nextMove(gameStateTeacher) {
         IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
         let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
 
-
+        formerNumberOfWallsOnBoard += 1;
         return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
     }
 }
@@ -136,7 +152,7 @@ async function updateBoard(gameState) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function dijkstraAlgorithm(player) {
+function dijkstraAlgorithm(position, player) {
     // Initialisation des variables
     let alreadyVisitedCells = [];
     let cellsWithWeights = [];
@@ -144,20 +160,20 @@ function dijkstraAlgorithm(player) {
     position la case concernée, pathLength la distance pour atteindre cette case depuis notre position de base, et predecessor la case qui précède
     la case dont on est en train de calculer le chemin */
     let pathLength = 0;
-    cellsWithWeights.push({position: player.position, pathLength: pathLength, predecessor: null});
+    cellsWithWeights.push({position: position, pathLength: pathLength, predecessor: null});
 
     // On commence à travailler
-    let shortestPathFinalPosition = getShortestPathFinalPosition(player, alreadyVisitedCells, cellsWithWeights, pathLength);
+    let shortestPathFinalPosition = getShortestPathFinalPosition(position, player, alreadyVisitedCells, cellsWithWeights, pathLength);
 
     //console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
 
-    let shortestPath = reconstructPath(player.position, shortestPathFinalPosition, cellsWithWeights);
+    let shortestPath = reconstructPath(position, shortestPathFinalPosition, cellsWithWeights);
     //console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
     return shortestPath;
 }
 
-function getShortestPathFinalPosition(player, alreadyVisitedCells, cellsWithWeights, pathLength) {
-    let currentPosition = {x: player.position.x, y: player.position.y};
+function getShortestPathFinalPosition(position, player, alreadyVisitedCells, cellsWithWeights, pathLength) {
+    let currentPosition = {x: position.x, y: position.y};
 
     let winningPosition = null;
     if(player.id === "ia") {
@@ -260,6 +276,28 @@ function canSeeTheOtherPlayer() {
     return false;
 }
 
+// Cette méthode renvoi la position supposée du joueur adverse sans le voir réellement
+function canGuessOtherPlayerPosition() {
+    if(formerPositionOfOtherPlayer) {
+        let boardWalls = getBoardWallsInWallsList();
+        let numberOfWallsOnBoard = boardWalls.length;
+        if(numberOfWallsOnBoard > formerNumberOfWallsOnBoard) { // Dans ce cas là, le joueur a posé un mur, donc il n'a pas bougé
+            formerNumberOfWallsOnBoard = numberOfWallsOnBoard; // Ce sera le prochain ancien nombre de murs
+            return formerPositionOfOtherPlayer;
+        } else { // Dans ce cas là, le joueur n'a pas posé de mur donc il a forcément bougé
+            let otherPlayer = getOtherPlayer();
+            // On considère que si le joueur a bougé, il s'est déplacé le long du chemin le plus rapide le menant à la victoire
+            let supposedShortestPathForOtherPlayer = dijkstraAlgorithm(formerPositionOfOtherPlayer, otherPlayer);
+            formerPositionOfOtherPlayer = supposedShortestPathForOtherPlayer[0];
+            // La formerPositionOfOtherPlayer est la position actuelle supposée ou non du joueur, mais c'est aussi la prochaine ancienne position
+            // du joueur adverse, ce sera son ancienne position au prochain tour
+            return(supposedShortestPathForOtherPlayer[0]);
+        }
+    } else {
+        return null;
+    }
+}
+
 function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestPathForOtherPlayer) {
 
     let maxDistanceToReachArrival = 0;
@@ -300,7 +338,7 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
             wallsThatCanBeInstalled.forEach(wall => {
                 IAplayer.walls.push(wall);  // On l'ajoute temporairement à la liste des murs pour être pris en compte par le shortestPath à venir
 
-                let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer);
+                let newShortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, otherPlayer);
                 let newShortestPathLengthForOtherPlayer = newShortestPathForOtherPlayer.length;
 
                 if(newShortestPathLengthForOtherPlayer > maxDistanceToReachArrival) {
@@ -328,7 +366,7 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
         possibleWallToInstall.forEach(possibleWall => {
             IAplayer.walls.push(possibleWall);
 
-            let newShortestPathForIA = dijkstraAlgorithm(IAplayer);
+            let newShortestPathForIA = dijkstraAlgorithm(IAplayer.position, IAplayer);
             let newShortestPathLengthForIA = newShortestPathForIA.length;
 
             if(newShortestPathLengthForIA < minDistanceTorReachArrival) {
@@ -353,14 +391,19 @@ function getWallsThatCanBeInstalled(interX, interY, isVertical) {
             wall.push({x : interX + 1, y : interY});
             wall.push({x : interX + 2, y : interY});
         } else if(interX === 16) {                      // Dans ce cas là, le mur est forcément vertical
-            wall.push({x : interX - 1, y : interY});
+            // On fait en sorte que les murs contiennent les positions dans un ordre croissant
+            wall.pop();
             wall.push({x : interX - 2, y : interY});
+            wall.push({x : interX - 1, y : interY});
+            wall.push({x : interX, y : interY});
         } else if(interY === 0) {                       // Dans ce cas là, le mur est forcément horizontal
             wall.push({x : interX, y : interY + 1});
             wall.push({x : interX, y : interY + 2});
         } else if(interY === 16) {                      // Dans ce cas là, le mur est forcément horizontal
-            wall.push({x : interX, y : interY - 1});
+            wall.pop();
             wall.push({x : interX, y : interY - 2});
+            wall.push({x : interX, y : interY - 1});
+            wall.push({x : interX, y : interY});
         }
         if(canWallBeInstalledOnBoard(wall)) {
             wallsThatCanBeInstalled.push(wall);
@@ -384,8 +427,10 @@ function getWallsThatCanBeInstalled(interX, interY, isVertical) {
         }
 
         // Mur possible n°2
-        wall2.push({x : interX - 1, y : interY});
+        wall2.pop();
         wall2.push({x : interX - 2, y : interY});
+        wall2.push({x : interX - 1, y : interY});
+        wall2.push({x : interX, y : interY});
         if(canWallBeInstalledOnBoard(wall2)) {
             wallsThatCanBeInstalled.push(wall2);
         }
@@ -397,8 +442,10 @@ function getWallsThatCanBeInstalled(interX, interY, isVertical) {
         if(canWallBeInstalledOnBoard(wall)) {
             wallsThatCanBeInstalled.push(wall);
         }
-        wall2.push({x : interX, y : interY - 1});
+        wall2.pop();
         wall2.push({x : interX, y : interY - 2});
+        wall2.push({x : interX, y : interY - 1});
+        wall2.push({x : interX, y : interY});
         if(canWallBeInstalledOnBoard(wall2)) {
             wallsThatCanBeInstalled.push(wall2);
         }
@@ -841,14 +888,17 @@ async function main(){
     ];
 
     let opponentWalls2 = [];
-    let ownWalls2 = [];
+    let ownWalls2 = [
+        ["58",1],
+        ["48",0]
+    ];
     let board2 = [
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
-        [1,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
+        [1,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1]
@@ -889,10 +939,11 @@ async function main(){
         ownWalls: [],             // Pareil
         board: []
     };
-    gameStateTeacherStruct.opponentWalls = opponentWalls3;
-    gameStateTeacherStruct.ownWalls = ownWalls3;
-    gameStateTeacherStruct.board = board3;
+    gameStateTeacherStruct.opponentWalls = opponentWalls2;
+    gameStateTeacherStruct.ownWalls = ownWalls2;
+    gameStateTeacherStruct.board = board2;
     printBoard(gameStateTeacherStruct.board);
+    formerPositionOfOtherPlayer = {x: 2, y: 8};
     let start = Date.now();
     await nextMove(gameStateTeacherStruct).then((move) => {
         console.log("NEXT MOVE: ",move);
