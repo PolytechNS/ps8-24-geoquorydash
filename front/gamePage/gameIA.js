@@ -243,4 +243,4 @@ window.onbeforeunload = function() {
     localStorage.removeItem('gameStateID');
 };
 
-export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp };
+export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction };

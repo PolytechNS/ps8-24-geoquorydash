@@ -1,4 +1,4 @@
-import {askPossibleMove} from "./gameIA.js";
+import {askPossibleMove, handleCellAction, lockBarrier} from "./gameIA.js";
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -6,7 +6,6 @@ function hideOldPossibleMoves() {
         playerCells[i].style.backgroundColor = '';
     }
 }
-
 
 function updateBoardDisplay(gameState, visibilityMap) {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -30,7 +29,19 @@ function updateBoardDisplay(gameState, visibilityMap) {
     otherPlayerCell.appendChild(otherPlayer);
     otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
 
+    displayWalls(gameState);
+
     askPossibleMove();
+}
+
+function displayWalls(gameState) {
+    gameState.players.forEach(player => {
+        player.walls.forEach(wall => {
+            let cell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`);
+            handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier');
+            lockBarrier(wall);
+        });
+    })
 }
 
 function getAdjacentPlayerCellsIndices(i, j) {
