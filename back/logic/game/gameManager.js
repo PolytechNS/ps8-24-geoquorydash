@@ -1,6 +1,6 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
-const createUserCollection = require('../../models/users');
+const { retrieveGameStateFromDB } = require("../../models/game/gameDataBaseManager.js");
 // const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
@@ -24,53 +24,22 @@ class GameManager {
         board: [[]]
     };
 
-    constructor() {
-        console.log('GameManager constructor');
-        this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
-        this.gameState = {
-            players: [
-                {
-                    id: "ia",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: false
-                },
-                {
-                    id: "p2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: true // Au départ, le user courant est le joueur 2
-                }
-            ]
-        };
-        return this;
-    }
+    constructor() {}
 
-    async initializeGameStateFromDB() {
+    async resumeGame(gameStateID) {
         try {
-            const usersCollection = await createUserCollection();
-            const userGameState = await usersCollection.findOne({ username: "lucie" });
-            if (userGameState && userGameState.gameState) {
-                console.log('GameState initialized from DB:');
-                return userGameState.gameState;
-            } else {
-                console.error('Les données de l\'état du jeu sont manquantes ou incorrectes.');
+            const gameState = await retrieveGameStateFromDB(gameStateID);
+            if (gameState) {
+                this.gameState = gameState;
+                return gameState;
             }
+            return null;
         } catch (error) {
-            console.error('Erreur lors de l\'utilisation de getGameState:', error);
-            throw error;
+            console.error("Error connecting to MongoDB:", error);
+            return null;
         }
     }
 
-    async initializeGameState() {
-        const userGameState = await this.initializeGameStateFromDB();
-        if (userGameState) {
-            this.gameState = userGameState;
-            console.log('GameState DB');
-        } else {
-            console.log('GameState default');
-        }
-    }
 
     initializeDefaultGameState() {
         this.gameState = {
@@ -89,7 +58,6 @@ class GameManager {
                 }
             ]
         };
-        console.log('GameState default');
     }
 
     // convertGameStateToGameStateTeacher() {
@@ -97,12 +65,10 @@ class GameManager {
     //     let IAplayerWalls = IAplayer.walls;
     //     this.gameStateTeacher.ownWalls = [];
     //     this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacher.ownWalls);
-
     //     let otherPlayer = this.gameState.players.find(player => player.id === "p2");
     //     let otherPlayerWalls = otherPlayer.walls;
     //     this.gameStateTeacher.opponentWalls = [];
     //     this.addWallsToAPlayer(otherPlayerWalls, this.gameStateTeacher.opponentWalls);
-
     //     this.gameStateTeacher.board = [[]];
     //     this.gameStateTeacher.board = this.rearrangeVisibilityMapToBoard(fogOfWarInstance.visibilityMap);
     //     let convertedIAplayerPosition = this.convertMyPositionToTeacherPosition(IAplayer.position);
@@ -123,12 +89,12 @@ class GameManager {
         for(let i = 0; i < 9; i++) {
             for(let j = 0; j < 9; j++) {
                 if(this.gameStateTeacher.board[i][j] === 1) {           // Dans ce cas, il s'agit de la case sur laquelle mon bot se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     IAplayer.position = myPosition;
                 } else if(this.gameStateTeacher.board[i][j] === 2) {    // Dans ce cas, il s'agit de la case sur laquelle mon opposant se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     otherPlayer.position = myPosition;
                 }
             }
@@ -136,10 +102,10 @@ class GameManager {
     }
 
     reconstructWallsListWithTopLeftCorners(walls) {
-        wallsList = [];
+        var wallsList = [];
         walls.forEach(wall => {
             let oneWall = [];
-            topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
+            var topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
             if(wall[1] === 1) {     // Dans ce cas là, le mur est vertical
                 oneWall.push({x: topLeftCornerPosition.x, y: topLeftCornerPosition.y + 1});
                 oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
@@ -203,7 +169,7 @@ class GameManager {
     }
 
     async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
-        myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
+        var myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
         let nextPositionToGo = await computeMoveForAI(getAdjacentCellsPositionsWithWalls);
         let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
         return stringNextPositionToGo;

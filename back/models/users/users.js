@@ -1,5 +1,5 @@
 const { MongoClient } = require('mongodb');
-const { uri } = require('../bdd.js');
+const { uri } = require('../../bdd.js');
 
 async function createUserCollection() {
     const client = new MongoClient(uri);

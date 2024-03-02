@@ -226,9 +226,9 @@ function canPlayerReachArrival(player) {
     }
 
     if (canReach) {
-        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
+        // console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
     } else {
-        console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
+        // console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
     }
 
     return canReach;

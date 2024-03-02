@@ -1,67 +1,15 @@
 const gameManager = require('./gameManager');
-const createUserCollection = require("../../models/users"); // Instance unique de GameManager
+const { retrieveVisibilityMapFromDatabase } = require('../../models/game/gameDataBaseManager');
 
 class FogOfWar{
     visibilityMap = [];
     oldPlayer1AdjacentsCells = [];
     oldPlayer2AdjacentsCells = [];
 
-    constructor() {
-        for (let i = 0; i < (9*9); i++) {
-            this.visibilityMap[i] = [];
-            if (i < 36) {
-                this.visibilityMap[i] = 1; // Visibility +1
-            } else if (i <= 44) {
-                this.visibilityMap[i] = 0; // Visibility 0
-            } else {
-                this.visibilityMap[i] = -1; // Visibility -1
-            }
-        }
-        console.log('FogOfWar default');
-        this.updateBoardVisibility();
-    }
-
-    async initializeFogOfWar() {
-        await gameManager.initializeGameState();
-        const fog = await this.initializeFogFromDB();
-        if (fog) {
-            this.visibilityMap = fog;
-            console.log('FogOfWar DB');
-        } else {
-            for (let i = 0; i < (9*9); i++) {
-                this.visibilityMap[i] = [];
-                if (i < 36) {
-                    this.visibilityMap[i] = 1; // Visibility +1
-                } else if (i <= 44) {
-                    this.visibilityMap[i] = 0; // Visibility 0
-                } else {
-                    this.visibilityMap[i] = -1; // Visibility -1
-                }
-            }
-            console.log('FogOfWar default');
-        }
-        this.updateBoardVisibility();
-    }
-
-    async initializeFogFromDB() {
-        try {
-            const usersCollection = await createUserCollection();
-            const userFog = await usersCollection.findOne({ username: "lucie" });
-            if (userFog && userFog.visibilityMap) {
-                console.log('FogOfWar initialized from DB:');
-                return userFog.visibilityMap;
-            } else {
-                console.error('Les données de la visibilité du jeu sont manquantes ou incorrectes.');
-            }
-        } catch (error) {
-            console.error('Erreur lors de l\'utilisation de getFogOfWar:', error);
-            throw error;
-        }
-    }
+    constructor() {}
 
     initializeDefaultFogOfWar() {
         for (let i = 0; i < (9*9); i++) {
-            this.visibilityMap[i] = [];
             if (i < 36) {
                 this.visibilityMap[i] = 1; // Visibility +1
             } else if (i <= 44) {
@@ -70,11 +18,25 @@ class FogOfWar{
                 this.visibilityMap[i] = -1; // Visibility -1
             }
         }
-        console.log('FogOfWar default');
-        this.updateBoardVisibility();
+        this.oldPlayer1AdjacentsCells = [];
+        this.oldPlayer2AdjacentsCells = [];
     }
 
-    async   updateBoardVisibility() {
+    async resumeVisibilityMap(gameStateID) {
+        try {
+            const visibilityMap = await retrieveVisibilityMapFromDatabase(gameStateID);
+            if (visibilityMap) {
+                this.visibilityMap = visibilityMap;
+                return visibilityMap;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            return null;
+        }
+    }
+
+    updateBoardVisibility() {
         // Get the indices of the players cell
         let gameState = gameManager.gameState;
         let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
@@ -108,7 +70,6 @@ class FogOfWar{
         // Update the old adjacent cells
         this.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
         this.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
-
     }
 
     getAdjacentPlayerCellsIndices(i, j) {
