@@ -240,8 +240,8 @@ function endGame(player) {
     window.location.href = '/gameType/gameType.html';
 }
 
-window.onbeforeunload = function() {
+/*window.onbeforeunload = function() {
     localStorage.removeItem('gameStateID');
-};
+};*/
 
 export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction };
