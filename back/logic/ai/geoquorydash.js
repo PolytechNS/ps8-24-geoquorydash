@@ -60,9 +60,11 @@ async function nextMove(gameStateTeacher) {
     // On vérifie que l'on peut encore poser des murs, et si on ne peut pas, on avance
     if(!canPlayerStillInstallWall(IAplayer.id)) {
         console.log("Je ne peux plus poser de murs, donc je dois forcément avancer en " + printPosition(nextPositionToGo));
+        if(isOtherPlayerOnTargetCell(nextPositionToGo)) {
+            nextPositionToGo = manageOtherPlayerOnTargetCell();
+            stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
+        }
         IAplayer.position = nextPositionToGo;
-        updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
-        formerBoard = gameStateTeacher.board;
         return {action: "move", value: stringNextPositionToGo};
     }
 
@@ -106,10 +108,12 @@ async function nextMove(gameStateTeacher) {
         }
 
         console.log("J'ai un chemin plus court que celui de mon adversaire pour gagner");
+        if(isOtherPlayerOnTargetCell(nextPositionToGo)) {
+            nextPositionToGo = manageOtherPlayerOnTargetCell();
+            stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
+        }
         console.log("J'avance donc sur la case " + printPosition(nextPositionToGo));
         IAplayer.position = nextPositionToGo;
-        updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
-        formerBoard = gameStateTeacher.board;
         return {action: "move", value: stringNextPositionToGo};
 
     } else if(supposedPositionForOtherPlayer = canGuessOtherPlayerPosition(gameStateTeacher)) {
@@ -146,20 +150,23 @@ async function nextMove(gameStateTeacher) {
             formerNumberOfWallsOnBoard += 1;
             return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
         } else {
+            if(isOtherPlayerOnTargetCell(nextPositionToGo)) {
+                nextPositionToGo = manageOtherPlayerOnTargetCell();
+                stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
+            }
             IAplayer.position = nextPositionToGo;
-            updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
-            formerBoard = gameStateTeacher.board;
             return {action: "move", value: stringNextPositionToGo};
         }
     }
 }
 
 async function correction(rightMove) {
-
+    return true;
 }
 
-async function updateBoard(gameState) {
-
+async function updateBoard(gameStateTeacher) {
+    formerBoard = gameStateTeacher;
+    return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1009,7 +1016,7 @@ function getBoardWallsInWallsList() {
     return boardWalls;
 }
 
-function updateMyPositionOnBoard(stringPosition, gameStateTeacherBoard) {
+/*function updateMyPositionOnBoard(stringPosition, gameStateTeacherBoard) {
     for(let i = 0; i < 9; i++) {
         for(let j = 0; j < 9; j++) {
             if(gameStateTeacherBoard[i][j] === 1) {
@@ -1019,14 +1026,59 @@ function updateMyPositionOnBoard(stringPosition, gameStateTeacherBoard) {
             }
         }
     }
+}*/
+
+function isOtherPlayerOnTargetCell(targetPosition) {
+    let otherPlayer = getOtherPlayer();
+    let otherPlayerPosition = otherPlayer.position;
+    if(!otherPlayerPosition) {
+        return false;
+    } else {
+        if(equalsPositions(otherPlayerPosition, targetPosition)) {
+            console.log("L'adversaire est sur la case où je veux aller");
+            return true;
+        }
+    }
 }
 
-//exports.setup = setup;
-//exports.nextMove = nextMove;
+function manageOtherPlayerOnTargetCell() {
+    let otherPlayer = getOtherPlayer();
+    let IAplayer = getIAPlayer();
+    let nextPosition = null;
+    if(IAplayer.position.x < otherPlayer.position.x) { // Dans ce cas là, le joueur est en dessous de moi
+        console.log("Le joueur est en dessous de moi");
+        nextPosition = {x: otherPlayer.position.x + 2, y: otherPlayer.position.y};
+        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
+            return nextPosition;
+        }
+    } else if(IAplayer.position.x > otherPlayer.position.x) { // Dans ce cas là, le joueur est au dessus de moi
+        console.log("Le joueur est au dessus de moi");
+        nextPosition = {x: otherPlayer.position.x - 2, y: otherPlayer.position.y};
+        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
+            return nextPosition;
+        }
+    } else if(IAplayer.position.y < otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma droite
+        console.log("Le joueur est à ma droite");
+        nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y + 2};
+        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
+            return nextPosition;
+        }
+    } else if(IAplayer.position.y > otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma gauche
+        console.log("Le joueur est à ma gauche");
+        nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y - 2};
+        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
+            return nextPosition;
+        }
+    }
+    return null;
+}
+
+exports.set = setup;
+exports.nextMove = nextMove;
 exports.correction = correction;
 exports.updateBoard = updateBoard;
 
-module.exports = { dijkstraAlgorithm, nextMove, setup };
+//module.exports = { dijkstraAlgorithm, nextMove, setup };
 
 function printBoard(board) {
     for(let i = 8; i >= 0; i--) {
@@ -1074,9 +1126,8 @@ async function main(){
 
     ];
     let ownWalls2 = [
-        ["58",1],
-        ["28",1],
-        ["88",1]
+        ["16",1],
+        ["27",0]
     ];
     let formerboard2 = [
         [0,0,0,0,0,-1,-1,-1,-1],
@@ -1118,12 +1169,12 @@ async function main(){
     ];
     let board3 = [
         [0,0,0,0,0,0,0,0,0],
-        [0,0,1,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,1,0,0,0],
         [0,0,0,0,0,2,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0]
     ];
@@ -1137,8 +1188,8 @@ async function main(){
         board: []
     };
     gameStateTeacherStruct.opponentWalls = opponentWalls2;
-    gameStateTeacherStruct.ownWalls = ownWalls3;
-    gameStateTeacherStruct.board = board2;
+    gameStateTeacherStruct.ownWalls = ownWalls2;
+    gameStateTeacherStruct.board = board3;
     printBoard(gameStateTeacherStruct.board);
     //formerPositionOfOtherPlayer = {x: 2, y: 8};
     formerBoard = formerboard2;
@@ -1179,4 +1230,4 @@ async function main(){
     */
 }
 
-main();
+//main();
