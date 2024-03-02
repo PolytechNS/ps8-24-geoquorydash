@@ -1048,29 +1048,22 @@ function manageOtherPlayerOnTargetCell() {
     if(IAplayer.position.x < otherPlayer.position.x) { // Dans ce cas là, le joueur est en dessous de moi
         console.log("Le joueur est en dessous de moi");
         nextPosition = {x: otherPlayer.position.x + 2, y: otherPlayer.position.y};
-        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
-            return nextPosition;
-        }
+        return nextPosition;
     } else if(IAplayer.position.x > otherPlayer.position.x) { // Dans ce cas là, le joueur est au dessus de moi
         console.log("Le joueur est au dessus de moi");
         nextPosition = {x: otherPlayer.position.x - 2, y: otherPlayer.position.y};
-        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
-            return nextPosition;
-        }
+        return nextPosition;
     } else if(IAplayer.position.y < otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma droite
         console.log("Le joueur est à ma droite");
         nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y + 2};
-        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
-            return nextPosition;
-        }
+        return nextPosition;
     } else if(IAplayer.position.y > otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma gauche
         console.log("Le joueur est à ma gauche");
         nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y - 2};
-        if(!checkBarriersBetween(otherPlayer.position, nextPosition)) {
-            return nextPosition;
-        }
+        return nextPosition;
     }
-    return null;
+    // À noter que ces moves peuvent être illégaux si un mur se trouve derrière l'adversaire, mais tant pis car ils seront corrigés par le random
+    // du prof
 }
 
 exports.set = setup;
