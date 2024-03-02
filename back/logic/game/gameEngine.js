@@ -4,10 +4,12 @@ const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../u
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
-function initializeGame() {
+function initializeGame(defaultOption) {
     gameActive = true;
-    gameManager.initializeDefaultGameState();
-    fogOfWar.initializeDefaultFogOfWar();
+    if (defaultOption) {
+        gameManager.initializeDefaultGameState();
+        fogOfWar.initializeDefaultFogOfWar();
+    }
     player1 = gameManager.getPlayerById('ia');
     player2 = gameManager.getPlayerById('p2');
     currentPlayer = gameManager.getCurrentPlayer();

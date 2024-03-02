@@ -7,7 +7,6 @@ socket.on('connect', function() {
 });
 
 socket.on('updateBoard', function(gameState, visibilityMap, gameStateID) {
-    console.log("ON updateBoard, J'affiche le nouveau plateau de jeu");
     if (gameStateID) {
         localStorage.setItem('gameStateID', gameStateID);
     }

@@ -97,8 +97,6 @@ async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId,
         });
     }
     gameState.players = players;
-    console.log('retrievePlayersWithGamestateIDFromDatabase');
-    console.log(gameState);
 }
 
 module.exports = { createPlayerInDatabase, retrieveAllGamesIDWithUserID, retrievePlayersWithGamestateIDFromDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};

@@ -8,7 +8,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = signupForm.querySelector('[name="password"]').value;
         AuthService.signUp(username, password)
             .then(data => {
-                console.log('Signup success:', data);
                 window.location.href = '../loginPage/login.html';
                 alert('Inscription effectuée');
             })

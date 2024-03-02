@@ -58,7 +58,6 @@ class GameManager {
                 }
             ]
         };
-        console.log(this.gameState);
     }
 
     // convertGameStateToGameStateTeacher() {

@@ -20,7 +20,6 @@ class FogOfWar{
         }
         this.oldPlayer1AdjacentsCells = [];
         this.oldPlayer2AdjacentsCells = [];
-        console.log('FogOfWar default');
     }
 
     async resumeVisibilityMap(gameStateID) {

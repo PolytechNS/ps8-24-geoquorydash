@@ -4,10 +4,8 @@ import { GameService } from "../Services/gameService.js";
 document.addEventListener('DOMContentLoaded', function() {
     const token = localStorage.getItem('token');
     if (token){
-        console.log('Demande de l\'historique avec le token:', token);
         GameService.history(token)
             .then(data => {
-                console.log('Reponse recu : ', data);
                 const gameStates = data.gameStates;
                 const listElement = document.createElement('ul');
                 gameStates.forEach(id => {

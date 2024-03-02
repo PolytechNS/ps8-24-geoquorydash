@@ -2,7 +2,6 @@ import { API_ENDPOINT } from '../js/config.js';
 
 export const GameService = {
     history(token) {
-        console.log('GameService.history');
         return fetch(`${API_ENDPOINT}/api/game/history`, {
             method: 'GET',
             headers: {

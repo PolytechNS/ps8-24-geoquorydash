@@ -32,8 +32,8 @@ const setupSocket = (server) => {
                 }
 
                 const userObjectID = verificationResult;
-
-                initializeGame();
+                const defaultOption = true;
+                initializeGame(defaultOption);
                 fogOfWar.updateBoardVisibility();
                 const gamestatePlayers = gameManager.gameState.players;
                 const gameStateID = await createGameInDatabase(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
@@ -62,6 +62,8 @@ const setupSocket = (server) => {
                 socket.emit('databaseConnectionError');
                 return;
             }
+            const defaultOption = false;
+            initializeGame(defaultOption);
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
         });
 
@@ -90,6 +92,7 @@ const setupSocket = (server) => {
 
             if (response) {
                 await endGameInDatabase(gameStateID);
+                console.log('EMIT endGame');
                 socket.emit("endGame", response);
                 return;
             }
@@ -125,6 +128,7 @@ const setupSocket = (server) => {
 
             if (response2) {
                 await endGameInDatabase(gameStateID);
+                console.log('EMIT endGame');
                 socket.emit("endGame", response2);
                 return;
             }
@@ -155,7 +159,6 @@ const setupSocket = (server) => {
 
         socket.on('toggleWall', async (wall, isVertical, gameStateID, token) => {
             var response = toggleWall(wall, isVertical);
-            console.log("response : ", response)
             if (response === 1) {
                 try {
                     await toggleWallInDatabase(gameStateID, wall, isVertical, token);
@@ -188,6 +191,7 @@ const setupSocket = (server) => {
                 socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
             } else if (response) {
                 await endGameInDatabase(gameStateID);
+                console.log('EMIT endGame');
                 socket.emit("endGame", response);
             } else {
                 socket.emit('ImpossibleWallPosition');

@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         AuthService.login(username, password)
             .then(data => {
-                console.log('Login success:', data);
                 localStorage.setItem('token', data.token);
                 alert('Connexion effectuée');
                 const modal = window.parent.document.querySelector('.modal');

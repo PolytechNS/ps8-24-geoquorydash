@@ -19,8 +19,8 @@ async function signup(req, res) {
             const existingUser = await usersCollection.findOne({ username: username });
             if (existingUser) {
                 console.log('User already exists:', username);
-                    res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
-                    res.end('User already exists');
+                res.writeHead(409, { 'Content-Type': 'text/plain' }); // 409 Conflict
+                res.end('User already exists');
                 return;
             }
 
@@ -40,14 +40,12 @@ async function signup(req, res) {
 }
 
 async function login(req, res) {
-    console.log('Login');
     parseJSON(req, async (err, { username, password }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid JSON');
             return;
         }
-        console.log('Login called');
 
         try {
             const usersCollection = await createUserCollection();
