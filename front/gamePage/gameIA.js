@@ -12,6 +12,7 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
+            cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
             cell.addEventListener('mouseenter', (event) => {
