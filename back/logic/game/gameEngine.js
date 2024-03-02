@@ -1,26 +1,15 @@
 const gameManager = require('./gameManager');
 const fogOfWar = require('./fogOfWarController');
-const socketIo = require('socket.io');
 const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../utils/utils.js');
-const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require("../../models/users");
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
-async function initializeGame() {
+function initializeGame(defaultOption) {
     gameActive = true;
-    gameManager.initializeDefaultGameState();
-    fogOfWar.initializeDefaultFogOfWar();
-    player1 = gameManager.getPlayerById('ia');
-    player2 = gameManager.getPlayerById('p2');
-    currentPlayer = gameManager.getCurrentPlayer();
-    otherPlayer = player1;
-}
-
-async function resumeGameFromDB() {
-    gameActive = true;
-    await gameManager.initializeGameState();
-    await fogOfWar.initializeFogOfWar();
+    if (defaultOption) {
+        gameManager.initializeDefaultGameState();
+        fogOfWar.initializeDefaultFogOfWar();
+    }
     player1 = gameManager.getPlayerById('ia');
     player2 = gameManager.getPlayerById('p2');
     currentPlayer = gameManager.getCurrentPlayer();
@@ -44,7 +33,7 @@ function movePlayer(targetPosition) {
 function moveAI() {
     currentPlayer = gameManager.getCurrentPlayer();
     const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
-    movePlayer(iaMove);
+    return movePlayer(iaMove);
 }
 
 function toggleWall(wall, isVertical) {
@@ -86,7 +75,6 @@ function checkBarriersBetween(startPosition, targetPosition, walls) {
 function getPossibleMove() {
     if (!gameActive) return;
     let possibleMove = [];
-    console.log(currentPlayer);
     const adjacentCellsPositionsWithWalls = getAdjacentCellsPositionsWithWalls(currentPlayer.position);
     if(isOtherPlayerOnAdjacentCells(adjacentCellsPositionsWithWalls)) {
         let forwardPosition = null;
@@ -203,4 +191,4 @@ function endGame(message) {
     gameActive = false;
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, resumeGameFromDB};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame};

@@ -1,4 +1,4 @@
-import {askPossibleMove} from "./gameIA.js";
+import {askPossibleMove, handleCellAction, lockBarrier} from "./gameIA.js";
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -7,28 +7,7 @@ function hideOldPossibleMoves() {
     }
 }
 
-
 function updateBoardDisplay(gameState, visibilityMap) {
-    fetch('/api/auth/updateGameState', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ gameState, visibilityMap })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Failed to update gameState');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log('Game state updated successfully:', data);
-    })
-    .catch(error => {
-        console.error('Error updating gameState:', error);
-    });
-
     let playerCells = document.getElementsByClassName('player-cell');
     let currentPlayer = gameState.players.find(player => player.isCurrentPlayer === true);
     let currentPlayerPosition = currentPlayer.position;
@@ -50,7 +29,19 @@ function updateBoardDisplay(gameState, visibilityMap) {
     otherPlayerCell.appendChild(otherPlayer);
     otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
 
+    displayWalls(gameState);
+
     askPossibleMove();
+}
+
+function displayWalls(gameState) {
+    gameState.players.forEach(player => {
+        player.walls.forEach(wall => {
+            let cell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`);
+            handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier');
+            lockBarrier(wall);
+        });
+    })
 }
 
 function getAdjacentPlayerCellsIndices(i, j) {
