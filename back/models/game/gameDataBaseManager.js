@@ -1,6 +1,6 @@
 const { MongoClient } = require('mongodb');
 const { uri } = require('../../bdd.js');
-const { createGameStateInDatabase } = require('./gameState');
+const { createGameStateInDatabase, setGameStateToFinishedInDatabase, gameStatesNotFinished} = require('./gameState');
 const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase, retrieveVisibilityMapWithGameStateIDFromDatabase} = require('./visibilityMap');
 const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase,
     changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase,
@@ -8,6 +8,7 @@ const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPo
 } = require('./player');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
+
 async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
     const client = new MongoClient(uri);
     try {
@@ -40,7 +41,8 @@ async function retrieveGamesFromDatabaseForAUser(token) {
     try {
         await client.connect();
         const database = client.db('myapp_db');
-        return await retrieveAllGamesIDWithUserID(database, userID);
+        const gameStatesId = await retrieveAllGamesIDWithUserID(database, userID);
+        return await gameStatesNotFinished(database, gameStatesId);
 
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -154,6 +156,18 @@ async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) 
 
 }
 
+async function endGameInDatabase(gameStateID) {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        await setGameStateToFinishedInDatabase(database, gameStateID);
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
 module.exports = { createGameInDatabase, retrieveGamesFromDatabaseForAUser, retrieveGameStateFromDB,
     moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
-    retrieveVisibilityMapFromDatabase};
+    retrieveVisibilityMapFromDatabase, endGameInDatabase};

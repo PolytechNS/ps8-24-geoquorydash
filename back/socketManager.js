@@ -2,7 +2,9 @@ const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
-const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase } = require('./models/game/gameDataBaseManager');
+const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
+    endGameInDatabase
+} = require('./models/game/gameDataBaseManager');
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 
@@ -87,6 +89,7 @@ const setupSocket = (server) => {
             }
 
             if (response) {
+                await endGameInDatabase(gameStateID);
                 socket.emit("endGame", response);
                 return;
             }
@@ -121,6 +124,7 @@ const setupSocket = (server) => {
             }
 
             if (response2) {
+                await endGameInDatabase(gameStateID);
                 socket.emit("endGame", response2);
                 return;
             }
@@ -183,6 +187,7 @@ const setupSocket = (server) => {
                 }
                 socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
             } else if (response) {
+                await endGameInDatabase(gameStateID);
                 socket.emit("endGame", response);
             } else {
                 socket.emit('ImpossibleWallPosition');
