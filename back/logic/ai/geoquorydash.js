@@ -1,6 +1,7 @@
 let firstToPlay = false;
 let formerPositionOfOtherPlayer = null;
 let formerNumberOfWallsOnBoard = 0;
+let formerBoard = null;
 
 async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 2 sinon
     let stringPosition = null;
@@ -34,6 +35,8 @@ async function nextMove(gameStateTeacher) {
     console.log("On va calculer notre prochain mouvement, mais avant ça, on sait que :");
     convertGameStateTeacherToGameState(gameStateTeacher);
 
+    let supposedPositionForOtherPlayer = null;
+
     let IAplayer = getIAPlayer();
     let otherPlayer = getOtherPlayer();
     console.log("Mon joueur possède actuellement " + IAplayer.walls.length + " murs");
@@ -58,6 +61,8 @@ async function nextMove(gameStateTeacher) {
     if(!canPlayerStillInstallWall(IAplayer.id)) {
         console.log("Je ne peux plus poser de murs, donc je dois forcément avancer en " + printPosition(nextPositionToGo));
         IAplayer.position = nextPositionToGo;
+        updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
+        formerBoard = gameStateTeacher.board;
         return {action: "move", value: stringNextPositionToGo};
     }
 
@@ -103,11 +108,12 @@ async function nextMove(gameStateTeacher) {
         console.log("J'ai un chemin plus court que celui de mon adversaire pour gagner");
         console.log("J'avance donc sur la case " + printPosition(nextPositionToGo));
         IAplayer.position = nextPositionToGo;
+        updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
+        formerBoard = gameStateTeacher.board;
         return {action: "move", value: stringNextPositionToGo};
 
-    } else if(canGuessOtherPlayerPosition()) {
+    } else if(supposedPositionForOtherPlayer = canGuessOtherPlayerPosition(gameStateTeacher)) {
         console.log("Je ne vois pas mon adversaire mais je peux deviner sa position");
-        let supposedPositionForOtherPlayer = canGuessOtherPlayerPosition();
         console.log("La position supposée de mon adversaire est " + printPosition(supposedPositionForOtherPlayer));
         console.log("Je réapplique alors un nextMove en considérant que la position de mon adversaire est celle que j'ai devinée\n");
         let stringSupposedPositionForOtherPlayer = convertMyPositionToTeacherPosition(supposedPositionForOtherPlayer);
@@ -125,19 +131,26 @@ async function nextMove(gameStateTeacher) {
         return nextMove(gameStateTeacher);
     } else {
         console.log("Je ne vois pas mon adversaire et je ne peux pas deviner sa position");
-        let wallToInstallToSeeOtherPlayer = chooseWallToInstallToSeeOtherPlayer();
-        let stringForWallToInstallToSeeOtherPlayer = "[";
-                wallToInstallToSeeOtherPlayer.forEach(wall => {
-                    stringForWallToInstallToSeeOtherPlayer += printPosition(wall);
-                    stringForWallToInstallToSeeOtherPlayer += ","
-                })
-                stringForWallToInstallToSeeOtherPlayer += "]";
-        console.log("Le meilleur mur à poser pour voir mon adversaire est " + stringForWallToInstallToSeeOtherPlayer);
-        IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
-        let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
+        let wallToInstallToSeeOtherPlayer = null;
+        if(wallToInstallToSeeOtherPlayer = chooseWallToInstallToSeeOtherPlayer()) {
+            let stringForWallToInstallToSeeOtherPlayer = "[";
+            wallToInstallToSeeOtherPlayer.forEach(wall => {
+                stringForWallToInstallToSeeOtherPlayer += printPosition(wall);
+                stringForWallToInstallToSeeOtherPlayer += ","
+            })
+            stringForWallToInstallToSeeOtherPlayer += "]";
+            console.log("Le meilleur mur à poser pour voir mon adversaire est " + stringForWallToInstallToSeeOtherPlayer);
+            IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
+            let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
 
-        formerNumberOfWallsOnBoard += 1;
-        return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
+            formerNumberOfWallsOnBoard += 1;
+            return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
+        } else {
+            IAplayer.position = nextPositionToGo;
+            updateMyPositionOnBoard(stringNextPositionToGo, gameStateTeacher.board);
+            formerBoard = gameStateTeacher.board;
+            return {action: "move", value: stringNextPositionToGo};
+        }
     }
 }
 
@@ -277,7 +290,9 @@ function canSeeTheOtherPlayer() {
 }
 
 // Cette méthode renvoi la position supposée du joueur adverse sans le voir réellement
-function canGuessOtherPlayerPosition() {
+function canGuessOtherPlayerPosition(gameStateTeacher) {
+    let positionForVisibilityReduced = null;
+
     if(formerPositionOfOtherPlayer) {
         let boardWalls = getBoardWallsInWallsList();
         let numberOfWallsOnBoard = boardWalls.length;
@@ -293,9 +308,160 @@ function canGuessOtherPlayerPosition() {
             // du joueur adverse, ce sera son ancienne position au prochain tour
             return(supposedShortestPathForOtherPlayer[0]);
         }
+    } else if(positionForVisibilityReduced = visibilityReduced(formerBoard, gameStateTeacher.board)) {
+        return positionForVisibilityReduced;
     } else {
         return null;
     }
+}
+
+function visibilityReduced(formerBoard, currentBoard) {
+    for(let i = 0; i < 9; i++) {
+        for(let j = 0; j < 9; j++) {
+            if((formerBoard[i][j] === 0 && currentBoard[i][j] === -1)) {
+                console.log("Une avancée du joueur a été détectée car une case a perdu en visibilité");
+                // Dans ce cas là, le joueur est forcément sur une des 4 cases adjacentes à celle qui vient de passer de 0 à -1
+                let stringPositionForCell = `${i + 1}${j + 1}`;
+                let positionForCell = convertTeacherPositionToMyPosition(stringPositionForCell);
+                console.log("Position du changement de visibilité : " + printPosition(positionForCell));
+                let possibleOtherPlayerCell = [];
+                let possiblePositionForOtherPlayer = null;
+                let stringPossiblePositionForOtherPlayer = "";
+
+                if(positionForCell.x > 0) {
+                    possiblePositionForOtherPlayer = {x: positionForCell.x - 2, y: positionForCell.y};
+                    stringPossiblePositionForOtherPlayer = convertMyPositionToTeacherPosition(possiblePositionForOtherPlayer);
+                    if(currentBoard[stringPossiblePositionForOtherPlayer[0] - 1][stringPossiblePositionForOtherPlayer[1] - 1] === -1) {
+                        // On vérifie qu'on ne voit pas cette case, car si on la voyait, on verrais le joueur dessus
+                        possibleOtherPlayerCell.push(possiblePositionForOtherPlayer);
+                    }
+                }
+                if(positionForCell.x < 16) {
+                    possiblePositionForOtherPlayer = {x: positionForCell.x + 2, y: positionForCell.y};
+                    stringPossiblePositionForOtherPlayer = convertMyPositionToTeacherPosition(possiblePositionForOtherPlayer);
+                    if(currentBoard[stringPossiblePositionForOtherPlayer[0] - 1][stringPossiblePositionForOtherPlayer[1] - 1] === -1) {
+                        // On vérifie qu'on ne voit pas cette case, car si on la voyait, on verrais le joueur dessus
+                        possibleOtherPlayerCell.push(possiblePositionForOtherPlayer);
+                    }
+                }
+                if(positionForCell.y > 0) {
+                    possiblePositionForOtherPlayer = {x: positionForCell.x, y: positionForCell.y - 2};
+                    stringPossiblePositionForOtherPlayer = convertMyPositionToTeacherPosition(possiblePositionForOtherPlayer);
+                    if(currentBoard[stringPossiblePositionForOtherPlayer[0] - 1][stringPossiblePositionForOtherPlayer[1] - 1] === -1) {
+                        // On vérifie qu'on ne voit pas cette case, car si on la voyait, on verrais le joueur dessus
+                        possibleOtherPlayerCell.push(possiblePositionForOtherPlayer);
+                    }
+                }
+                if(positionForCell.y < 16) {
+                    possiblePositionForOtherPlayer = {x: positionForCell.x, y: positionForCell.y + 2};
+                    stringPossiblePositionForOtherPlayer = convertMyPositionToTeacherPosition(possiblePositionForOtherPlayer);
+                    if(currentBoard[stringPossiblePositionForOtherPlayer[0] - 1][stringPossiblePositionForOtherPlayer[1] - 1] === -1) {
+                        // On vérifie qu'on ne voit pas cette case, car si on la voyait, on verrais le joueur dessus
+                        possibleOtherPlayerCell.push(possiblePositionForOtherPlayer);
+                    }
+                }
+
+                // Maintenant qu'on a la liste des positions supectes, on cherche laquelle est la bonne
+                if(possibleOtherPlayerCell.length === 0) {
+                    console.log("Il y a eu une erreur dans la détection de la possible position du joueur adverse");
+                    return null;
+                } else if(possibleOtherPlayerCell.length === 1) {
+                    return possibleOtherPlayerCell[0];
+                } else {
+                    // On reparcours l'entiereté du tableau à la recherche d'un autre case dont la visibilité aurait diminué
+                    for(let m = i; m < 9; m++) {
+                        for(let n = 0; n < 9; n++) {
+                            // Comme la première case changée est d'indice (i,j), on recommence la recherche à (i,0)
+                            // pour éviter de refaire les i premières lignes
+                            if((formerBoard[m][n] === 0 && currentBoard[m][n] === -1)) {
+                                let stringPositionForCell2 = `${m + 1}${n + 1}`;
+                                if(stringPositionForCell2 !== stringPositionForCell) {
+                                    let positionForCell2 = convertTeacherPositionToMyPosition(stringPositionForCell2);
+                                    let possiblePositionForOtherPlayer2 = null;
+
+                                    if(positionForCell2.x > 0) {
+                                        possiblePositionForOtherPlayer2 = {x: positionForCell2.x - 2, y: positionForCell2.y};
+                                        for(let a = 0; a < possibleOtherPlayerCell.length; a++) {
+                                            if(equalsPositions(possibleOtherPlayerCell[a], possiblePositionForOtherPlayer2)) {
+                                                return possiblePositionForOtherPlayer2;
+                                            }
+                                        }
+                                    }
+                                    if(positionForCell2.x < 16) {
+                                        possiblePositionForOtherPlayer2 = {x: positionForCell2.x + 2, y: positionForCell2.y};
+                                        for(let a = 0; a < possibleOtherPlayerCell.length; a++) {
+                                            if(equalsPositions(possibleOtherPlayerCell[a], possiblePositionForOtherPlayer2)) {
+                                                return possiblePositionForOtherPlayer2;
+                                            }
+                                        }
+                                    }
+                                    if(positionForCell2.y > 0) {
+                                        possiblePositionForOtherPlayer2 = {x: positionForCell2.x, y: positionForCell2.y - 2};
+                                        for(let a = 0; a < possibleOtherPlayerCell.length; a++) {
+                                            if(equalsPositions(possibleOtherPlayerCell[a], possiblePositionForOtherPlayer2)) {
+                                                return possiblePositionForOtherPlayer2;
+                                            }
+                                        }
+                                    }
+                                    if(positionForCell2.y < 16) {
+                                        possiblePositionForOtherPlayer2 = {x: positionForCell2.x, y: positionForCell2.y + 2};
+                                        for(let a = 0; a < possibleOtherPlayerCell.length; a++) {
+                                            if(equalsPositions(possibleOtherPlayerCell[a], possiblePositionForOtherPlayer2)) {
+                                                return possiblePositionForOtherPlayer2;
+                                            }
+                                        }
+                                    }
+                                    console.log("Problème, car cette case ne partage aucun voisin avec l'autre case");
+                                }
+                            }
+                        }
+                    }
+                    console.log("Aucune autre case n'a perdu en visibilité");
+                    // On a déjà vérifié à ce stade qu'aucune autre case n'avait perdu en visibilité
+                    // Ainsi, il ne nous reste plus qu'à parcourir la liste des voisins de chaque case suceptible de contenir le joueur adverse,
+                    // et si ce voisin vaut 0 ou 1 et n'est pas l'unique case que nous avons trouvé à avoir perdu en visibilité, alors ce n'est pas
+                    // cette case sur lequelle le joueur se situe, auquel cas ce voisin aurait perdu en visibilité également
+                    let notPossibleOtherPlayerCell = [];
+                    console.log("Nombre de cases potentielles : " + possibleOtherPlayerCell.length);
+                    for(let b = 0; b < possibleOtherPlayerCell.length; b++) {
+                        console.log("On s'intéresse à la case " + printPosition(possibleOtherPlayerCell[b]));
+                        let adjacentCells = getAdjacentCellsPositions(possibleOtherPlayerCell[b]);
+                        console.log("Nombre de voisins : " + adjacentCells.length);
+                        for(let c = 0; c < adjacentCells.length; c++) {
+                            console.log("On s'intéresse au voisin " + printPosition(adjacentCells[c]));
+                            let stringPositionForAdjacentCell = convertMyPositionToTeacherPosition(adjacentCells[c]);
+                            let xPosition = stringPositionForAdjacentCell[0];
+                            let yPosition = stringPositionForAdjacentCell[1];
+                            if((currentBoard[xPosition - 1][yPosition - 1] === 0)) {
+                                if(!equalsPositions(adjacentCells[c], positionForCell)) {
+                                    console.log("La case " + printPosition(possibleOtherPlayerCell[b]) + " n'est pas possible");
+                                    notPossibleOtherPlayerCell.push(possibleOtherPlayerCell[b]);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    let filteredPossibleOtherPlayerCell = possibleOtherPlayerCell.filter(possibleCell =>
+                        !notPossibleOtherPlayerCell.some(notPossibleCell =>
+                            notPossibleCell.x === possibleCell.x && notPossibleCell.y === possibleCell.y
+                        )
+                    );
+                    if(filteredPossibleOtherPlayerCell.length === 0) {
+                        console.log("Une erreur a été faite lors du filtrage");
+                        return null;
+                    } else if(filteredPossibleOtherPlayerCell.length === 1) {
+                        return filteredPossibleOtherPlayerCell[0];
+                    } else {
+                        console.log("Plusieurs cases sont encore possible pour le joueur adverse, on prend la première au hasard");
+                        return filteredPossibleOtherPlayerCell[0];
+                        // A améliorer en prenant la case la plus dangereuse
+                    }
+                }
+            }
+        }
+    }
+    console.log("Aucun changement de visibilité apparent sur le board");
+    return null;
 }
 
 function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestPathForOtherPlayer) {
@@ -465,7 +631,7 @@ function chooseWallToInstallToSeeOtherPlayer() {
             return interestingWalls[i];
         }
     }
-    console.log("Auncun mur intéréssant ne peut être posé");
+    console.log("Aucun mur intéréssant ne peut être posé");
     return null;
 }
 
@@ -533,7 +699,12 @@ function canPlayerReachArrival(boardWallsInPositionsList) {
     alreadyVisitedCell = [];    // On réinitialise la liste des cellules déjà visitées pour le joueur adverse
 
     let otherPlayer = getOtherPlayer();
-    let canReachOtherPlayer = checkPathToReachTheEnd(otherPlayer.position, alreadyVisitedCell, otherPlayer.id, boardWallsInPositionsList);
+    let canReachOtherPlayer = null;
+    if(otherPlayer.position) {
+        canReachOtherPlayer = checkPathToReachTheEnd(otherPlayer.position, alreadyVisitedCell, otherPlayer.id, boardWallsInPositionsList)
+    } else {
+        canReachOtherPlayer = true;
+    }
 
     canReach = canReachIAplayer && canReachOtherPlayer;
 
@@ -838,6 +1009,18 @@ function getBoardWallsInWallsList() {
     return boardWalls;
 }
 
+function updateMyPositionOnBoard(stringPosition, gameStateTeacherBoard) {
+    for(let i = 0; i < 9; i++) {
+        for(let j = 0; j < 9; j++) {
+            if(gameStateTeacherBoard[i][j] === 1) {
+                gameStateTeacherBoard[i][j] = 0;
+            } else if(i === stringPosition[0] - 1 && j === stringPosition[1] - 1) {
+                gameStateTeacherBoard[i][j] = 1;
+            }
+        }
+    }
+}
+
 //exports.setup = setup;
 //exports.nextMove = nextMove;
 exports.correction = correction;
@@ -887,18 +1070,32 @@ async function main(){
         [0,0,0,0,1,0,0,0,0]
     ];
 
-    let opponentWalls2 = [];
+    let opponentWalls2 = [
+
+    ];
     let ownWalls2 = [
         ["58",1],
-        ["48",0]
+        ["28",1],
+        ["88",1]
+    ];
+    let formerboard2 = [
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [1,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,0,-1,-1,-1,-1]
     ];
     let board2 = [
         [0,0,0,0,0,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [0,0,0,0,-1,-1,-1,-1,-1],
+        [1,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [1,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1],
         [0,0,0,0,0,-1,-1,-1,-1]
@@ -940,10 +1137,11 @@ async function main(){
         board: []
     };
     gameStateTeacherStruct.opponentWalls = opponentWalls2;
-    gameStateTeacherStruct.ownWalls = ownWalls2;
+    gameStateTeacherStruct.ownWalls = ownWalls3;
     gameStateTeacherStruct.board = board2;
     printBoard(gameStateTeacherStruct.board);
-    formerPositionOfOtherPlayer = {x: 2, y: 8};
+    //formerPositionOfOtherPlayer = {x: 2, y: 8};
+    formerBoard = formerboard2;
     let start = Date.now();
     await nextMove(gameStateTeacherStruct).then((move) => {
         console.log("NEXT MOVE: ",move);
