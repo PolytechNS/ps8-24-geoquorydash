@@ -5,7 +5,9 @@ const createUserCollection = require('../../models/users/users');
 const { ObjectId } = require('mongodb');
 
 async function signup(req, res) {
+    console.log('signup');
     parseJSON(req, async (err, { username, password }) => {
+        console.log('signup parseJSON', username, password);
         if (err) {
             console.log('Invalid JSON:', err);
             res.writeHead(400, { 'Content-Type': 'text/plain' });
