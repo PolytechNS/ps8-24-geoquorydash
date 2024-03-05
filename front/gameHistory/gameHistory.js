@@ -8,15 +8,18 @@ document.addEventListener('DOMContentLoaded', function() {
             .then(data => {
                 const gameStates = data.gameStates;
                 const listElement = document.createElement('ul');
+                let partNumber = 1; // Variable pour numéro de partie
                 gameStates.forEach(id => {
                     const itemLi = document.createElement('li');
                     const itemButton = document.createElement('button');
                     itemLi.appendChild(itemButton);
-                    itemButton.textContent = `Game ${id}`;
+                    itemButton.textContent = `Partie ${partNumber}`;
+                    itemButton.dataset.gameId = id;
                     itemButton.addEventListener('click', () => {
                         loadGame(id);
                     });
                     listElement.appendChild(itemLi);
+                    partNumber++;
                 });
 
                 document.body.appendChild(listElement);
