@@ -13,11 +13,13 @@ const { run, uri } = require('./bdd');
 const server = http.createServer(function (request, response) {
     // First, let's check the URL to see if it's a REST request or a file request.
     // We will remove all cases of "../" in the url for security purposes.
-    console.log("AZY PAPI");
     let filePath = request.url.split("/").filter(function(elem) {
         return elem !== "..";
     });
-
+    console.log(filePath);
+    filePath.forEach((elem) => {
+        console.log(elem);
+    });
     try {
         // If the URL starts by /api, then it's a REST request (you can change that if you want).
         if (filePath[1] === "api") {
