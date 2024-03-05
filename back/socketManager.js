@@ -18,9 +18,10 @@ const setupSocket = (server) => {
         socket.on('startNewGame', async (token) => {
             console.log('ON startNewGame');
 
+            const defaultOption = true;
             if (!token) {
                 // Initialiser une nouvelle partie qui ne sera pas stocker en BD car l'utilisateur n'est pas connecté
-                initializeGame();
+                initializeGame(defaultOption);
                 fogOfWar.updateBoardVisibility();
                 socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap);
             } else {
@@ -32,7 +33,6 @@ const setupSocket = (server) => {
                 }
 
                 const userObjectID = verificationResult;
-                const defaultOption = true;
                 initializeGame(defaultOption);
                 fogOfWar.updateBoardVisibility();
                 const gamestatePlayers = gameManager.gameState.players;
