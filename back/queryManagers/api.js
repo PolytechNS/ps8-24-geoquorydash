@@ -10,7 +10,6 @@ function manageRequest(request, response) {
         return;
     }
 
-    console.log('Received request:', request.method, request.url);
     if (request.url.startsWith('/api/auth')) {
         authRouter(request, response).then();
     }

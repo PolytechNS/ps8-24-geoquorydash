@@ -1,7 +1,6 @@
 const authController = require('./authController');
 
 async function handleAuthRoutes(req, res) {
-    console.log('handleAuthRoutes');
     // You might want to parse the URL and method more carefully in a production app
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (url.pathname === '/api/auth/signup' && req.method === 'POST') {

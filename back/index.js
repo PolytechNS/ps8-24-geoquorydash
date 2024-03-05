@@ -16,10 +16,7 @@ const server = http.createServer(function (request, response) {
     let filePath = request.url.split("/").filter(function(elem) {
         return elem !== "..";
     });
-    console.log(filePath);
-    filePath.forEach((elem) => {
-        console.log(elem);
-    });
+
     try {
         // If the URL starts by /api, then it's a REST request (you can change that if you want).
         if (filePath[1] === "api") {
