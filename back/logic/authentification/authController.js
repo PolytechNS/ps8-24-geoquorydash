@@ -6,7 +6,6 @@ const { ObjectId } = require('mongodb');
 
 async function signup(req, res) {
     parseJSON(req, async (err, { username, password }) => {
-        console.log('signup parseJSON', username, password);
         if (err) {
             console.log('Invalid JSON:', err);
             res.writeHead(400, { 'Content-Type': 'text/plain' });
