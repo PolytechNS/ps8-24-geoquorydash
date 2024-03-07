@@ -8,12 +8,13 @@ async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 
     if(AIplay === 1) { // Notre ia joue en premier
         console.log("On commence à jouer en premier");
         firstToPlay = true;
-        stringPosition = "51";
+        stringPosition = "31";
     } else {
         console.log("On commence à jouer en deuxième");
-        stringPosition = "59";
+        stringPosition = "79";
     }
     initializeGameState();
+    initializeFormerBoard();
     // initializeGameStateTeacher();
 
     let IAplayer = getIAPlayer();
@@ -31,7 +32,6 @@ async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 
 }
 
 async function nextMove(gameStateTeacher) {
-    formerNumberOfWallsOnBoard = getBoardWallsInWallsList().length;
     console.log("On va calculer notre prochain mouvement, mais avant ça, on sait que :");
     convertGameStateTeacherToGameState(gameStateTeacher);
 
@@ -102,7 +102,6 @@ async function nextMove(gameStateTeacher) {
                 IAplayer.walls.push(wallToInstall);
 
                 let wallToInstallForTeacher = convertOurWallToTopLeftCornerWall(wallToInstall);
-                formerNumberOfWallsOnBoard += 1;
                 return {action: "wall", value: wallToInstallForTeacher};
             }
         }
@@ -132,7 +131,7 @@ async function nextMove(gameStateTeacher) {
                 }
             }
         }
-        return nextMove(gameStateTeacher);
+        return await nextMove(gameStateTeacher);
     } else {
         console.log("Je ne vois pas mon adversaire et je ne peux pas deviner sa position");
         let wallToInstallToSeeOtherPlayer = null;
@@ -147,7 +146,6 @@ async function nextMove(gameStateTeacher) {
             IAplayer.walls.push(wallToInstallToSeeOtherPlayer);
             let wallToInstallToSeeOtherPlayerForTeacher = convertOurWallToTopLeftCornerWall(wallToInstallToSeeOtherPlayer);
 
-            formerNumberOfWallsOnBoard += 1;
             return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
         } else {
             if(isOtherPlayerOnTargetCell(nextPositionToGo)) {
@@ -165,7 +163,10 @@ async function correction(rightMove) {
 }
 
 async function updateBoard(gameStateTeacher) {
-    formerBoard = gameStateTeacher;
+    formerBoard = gameStateTeacher.board;
+    convertGameStateTeacherToGameState(gameStateTeacher);
+    let boardWalls = getBoardWallsInWallsList();
+    formerNumberOfWallsOnBoard = boardWalls.length;
     return true;
 }
 
@@ -299,12 +300,11 @@ function canSeeTheOtherPlayer() {
 // Cette méthode renvoi la position supposée du joueur adverse sans le voir réellement
 function canGuessOtherPlayerPosition(gameStateTeacher) {
     let positionForVisibilityReduced = null;
+    let boardWalls = getBoardWallsInWallsList();
+    let numberOfWallsOnBoard = boardWalls.length;
 
     if(formerPositionOfOtherPlayer) {
-        let boardWalls = getBoardWallsInWallsList();
-        let numberOfWallsOnBoard = boardWalls.length;
         if(numberOfWallsOnBoard > formerNumberOfWallsOnBoard) { // Dans ce cas là, le joueur a posé un mur, donc il n'a pas bougé
-            formerNumberOfWallsOnBoard = numberOfWallsOnBoard; // Ce sera le prochain ancien nombre de murs
             return formerPositionOfOtherPlayer;
         } else { // Dans ce cas là, le joueur n'a pas posé de mur donc il a forcément bougé
             let otherPlayer = getOtherPlayer();
@@ -315,11 +315,14 @@ function canGuessOtherPlayerPosition(gameStateTeacher) {
             // du joueur adverse, ce sera son ancienne position au prochain tour
             return(supposedShortestPathForOtherPlayer[0]);
         }
-    } else if(positionForVisibilityReduced = visibilityReduced(formerBoard, gameStateTeacher.board)) {
-        return positionForVisibilityReduced;
-    } else {
-        return null;
+    } else if(formerBoard) {
+        if(formerNumberOfWallsOnBoard === numberOfWallsOnBoard) { // On vérifie si la visibilité à changée mais pas à cause d'un mur
+            if(positionForVisibilityReduced = visibilityReduced(formerBoard, gameStateTeacher.board)) {
+                return positionForVisibilityReduced;
+            }
+        }
     }
+    return null;
 }
 
 function visibilityReduced(formerBoard, currentBoard) {
@@ -804,6 +807,34 @@ function initializeGameState() {
         ]
     });
 }
+
+function initializeFormerBoard() {
+    if(firstToPlay) {
+        formerBoard = [
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [1,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1],
+            [0,0,0,0,0,-1,-1,-1,-1]
+        ];
+    } else {
+        formerBoard = [
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,1],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0],
+            [-1,-1,-1,-1,0,0,0,0,0]
+        ];
+    }
+}
 /*
 // La structure de gameState du prof
 let gameStateTeacher = {
@@ -1066,161 +1097,7 @@ function manageOtherPlayerOnTargetCell() {
     // du prof
 }
 
-exports.set = setup;
+exports.setup = setup;
 exports.nextMove = nextMove;
 exports.correction = correction;
 exports.updateBoard = updateBoard;
-
-//module.exports = { dijkstraAlgorithm, nextMove, setup };
-
-function printBoard(board) {
-    for(let i = 8; i >= 0; i--) {
-        let stringToPrint = "| ";
-        for(let j = 0; j < 9; j++) {
-            stringToPrint += board[j][i];
-            if(board[j][i] !== -1) {
-                stringToPrint += " ";
-            }
-            stringToPrint += " ";
-        }
-        stringToPrint += "|";
-        console.log(stringToPrint);
-    }
-    console.log("\n");
-}
-
-async function main(){
-    let opponentWalls1 = [
-        ["19",0],
-        ["25",0],
-        ["34",0]
-    ];
-    let ownWalls1 = [
-        ["38",1],
-        ["16",0],
-        ["52",0],
-        ["59",0],
-        ["33",0],
-        ["23",1]
-    ];
-    let board1 = [
-        [0,0,0,0,2,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,1,0,0,0,0]
-    ];
-
-    let opponentWalls2 = [
-
-    ];
-    let ownWalls2 = [
-        ["16",1],
-        ["27",0]
-    ];
-    let formerboard2 = [
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [1,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1]
-    ];
-    let board2 = [
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [0,0,0,0,-1,-1,-1,-1,-1],
-        [1,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1],
-        [0,0,0,0,0,-1,-1,-1,-1]
-    ];
-
-    let opponentWalls3 = [
-        
-    ];
-    let ownWalls3 = [
-        ["15",1],
-        ["35",1],
-        ["17",1],
-        ["27",0],
-        ["78",0],
-        ["68",1],
-        ["12",0],
-        ["22",1],
-        ["45",1],
-        ["76",0]
-    ];
-    let board3 = [
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,1,0,0,0],
-        [0,0,0,0,0,2,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0,0,0]
-    ];
-
-    console.log("-----------------------------------------------------------------------");
-    await setup(1);
-    console.log("Le jeu a avancé et l'état du plateau de jeu est désormais :\n")
-    let gameStateTeacherStruct = {
-        opponentWalls: [],        // Contient des tableaux, eux mêmes contenant une position et un isVertical
-        ownWalls: [],             // Pareil
-        board: []
-    };
-    gameStateTeacherStruct.opponentWalls = opponentWalls2;
-    gameStateTeacherStruct.ownWalls = ownWalls2;
-    gameStateTeacherStruct.board = board3;
-    printBoard(gameStateTeacherStruct.board);
-    //formerPositionOfOtherPlayer = {x: 2, y: 8};
-    formerBoard = formerboard2;
-    let start = Date.now();
-    await nextMove(gameStateTeacherStruct).then((move) => {
-        console.log("NEXT MOVE: ",move);
-        let timeTaken = Date.now() - start;
-        console.log("Total time taken : " + timeTaken + " milliseconds");
-    });
-    console.log("-----------------------------------------------------------------------");
-
-
-
-
-
-    // ------------------- FONCTIONS ----------------------------------
-
-    /*
-    function init_gameboard(){
-        let gameboard = [];
-                for (let i = 0; i < 9; i++) {
-                    let row = [];
-                    for (let j = 0; j < 9; j++) {row.push(parseInt("0"));}
-                    gameboard.push(row);
-                }
-        return gameboard.reverse();
-    }
-    function showGameboard(gameboard){
-        gameboard.forEach(row => {
-            let rowString = "";
-            row.forEach(cell => {
-                rowString += "|"+cell;
-            });
-            rowString += "|";
-            console.log(rowString);
-        });
-    }
-    */
-}
-
-//main();
