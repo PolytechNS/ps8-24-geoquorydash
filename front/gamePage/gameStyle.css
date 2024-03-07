@@ -68,9 +68,3 @@ body {
 .hidden {
     display: none;
 }
-
-#playerTurn {
-    font-size: 2vw;
-    justify-content: center;
-    color: white;
-}
