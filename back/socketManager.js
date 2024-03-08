@@ -1,6 +1,7 @@
 const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
+const gameOnlineManager = require('./logic/game/gameOnlineManager');
 const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
@@ -13,7 +14,6 @@ const setupSocket = (server) => {
 
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
-
 
         socket.on('startNewGame', async (token) => {
             console.log('ON startNewGame');
@@ -196,8 +196,24 @@ const setupSocket = (server) => {
             } else {
                 socket.emit('ImpossibleWallPosition');
             }
-        })
+        });
 
+
+        socket.on('findMatch', (token) => {
+            console.log('ON joinGameRoom');
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            gameOnlineManager.addPlayerSocketToWaitList(socket);
+            gameOnlineManager.tryMatchmaking(io);
+        });
+
+        socket.on('test', (data) => {
+            console.log('ON test');
+            socket.emit('test', data);
+        });
     });
 }
 

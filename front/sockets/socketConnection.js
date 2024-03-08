@@ -1,6 +1,6 @@
 var socket = io('/api/game');
 import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
-import {displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp} from '../gamePage/gameIA.js';
+import {displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp} from '../gamePage/game.js';
 
 socket.on('connect', function() {
     console.log('Connected to /api/game!');
@@ -58,4 +58,7 @@ socket.on('databaseConnectionError', function() {
     alert('Connection problem detected. Your game may not be saved. Please try again later.');
 });
 
+socket.on('matchFound', function(roomId) {
+    alert('Match found! Your game will start soon.');
+});
 export default socket;

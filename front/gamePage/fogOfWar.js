@@ -1,4 +1,4 @@
-import {askPossibleMove, handleCellAction, lockBarrier} from "./gameIA.js";
+import {askPossibleMove, handleCellAction, lockBarrier} from "./game.js";
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
