@@ -20,12 +20,8 @@ body {
     gap: 10vw;
 }
 
-#newGameButton{
-    color: white;
+#newGameButton img, #gameHistoryButton img {
+    width: 30vw;
+    height: auto;
 }
-
-#gameHistoryButton{
-    color: white;
-}
-
 
