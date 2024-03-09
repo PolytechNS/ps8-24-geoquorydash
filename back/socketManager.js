@@ -70,6 +70,7 @@ const setupSocket = (server) => {
 
         socket.on('disconnect', () => {
             console.log('Client disconnected');
+            gameOnlineManager.removePlayerSocketFromWaitList(socket);
         });
 
 
@@ -206,7 +207,9 @@ const setupSocket = (server) => {
                 socket.emit('tokenInvalid');
                 return;
             }
-            gameOnlineManager.addPlayerSocketToWaitList(socket);
+            if (!gameOnlineManager.isPlayerInWaitList(socket)) {
+                gameOnlineManager.addPlayerSocketToWaitList(socket);
+            }
             gameOnlineManager.tryMatchmaking(io);
         });
 
