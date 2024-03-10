@@ -4,14 +4,23 @@ const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../u
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
-function initializeGame(defaultOption) {
+function initializeGame(defaultOption, onlineGameOption) {
     gameActive = true;
     if (defaultOption) {
-        gameManager.initializeDefaultGameState();
         fogOfWar.initializeDefaultFogOfWar();
+        if (onlineGameOption) {
+            gameManager.initializeDefaultOnlineGameState();
+        } else {
+            gameManager.initializeDefaultGameState();
+        }
     }
-    player1 = gameManager.getPlayerById('ia');
-    player2 = gameManager.getPlayerById('p2');
+    try {
+        player1 = gameManager.getPlayers()[0];
+        player2 = gameManager.getPlayers()[1];
+    } catch (error) {
+        console.error("Error initializing game:", error);
+    }
+
     currentPlayer = gameManager.getCurrentPlayer();
     otherPlayer = player1;
 }

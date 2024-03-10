@@ -1,7 +1,7 @@
 import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
-const BotPlayer = createPlayer('BotPlayer', 'blue');
+const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
 let currentPlayer = player2;
 
@@ -35,7 +35,7 @@ for (let i = 0; i < 17; i++) {
 }
 
 const player1Cell = document.getElementById('cell-0-8');
-player1Cell.appendChild(BotPlayer);
+player1Cell.appendChild(player1);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
@@ -105,7 +105,7 @@ function displayPossibleMove(possibleMove) {
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
         cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-
+        console.log("Je peux bouger en " + move.x + " " + move.y);
         // Créer une nouvelle fonction de rappel qui inclut les paramètres spécifiques
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
@@ -182,7 +182,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.backgroundImage = 'url("../img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
         }
-        barrier.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+        barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
         cell.classList.add('previewMode');
         if (cell2) {
@@ -200,7 +200,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier2.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
-            barrier2.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
             cell2.classList.add('previewMode');
         }
@@ -219,7 +219,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier3.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
-            barrier3.style.filter = currentPlayer.id === 'BotPlayer' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
             cell3.classList.add('previewMode');
         }

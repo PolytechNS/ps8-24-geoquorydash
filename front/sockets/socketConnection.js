@@ -6,11 +6,11 @@ socket.on('connect', function() {
     console.log('Connected to /api/game!');
 });
 
-socket.on('updateBoard', function(gameState, visibilityMap, gameStateID) {
+socket.on('updateBoard', function(gameState, visibilityMap, gameStateID, player) {
     if (gameStateID) {
         localStorage.setItem('gameStateID', gameStateID);
     }
-    updateBoardDisplay(gameState, visibilityMap);
+    updateBoardDisplay(gameState, visibilityMap, player);
 });
 
 socket.on('possibleMoveList', function(possibleMove) {
@@ -60,5 +60,6 @@ socket.on('databaseConnectionError', function() {
 
 socket.on('matchFound', function(roomId) {
     alert('Match trouvé! Vous allez être redirigé vers la partie.');
+    localStorage.setItem('roomId', roomId);
 });
 export default socket;

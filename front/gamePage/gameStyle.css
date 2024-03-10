@@ -36,7 +36,7 @@ body {
     position: absolute;
 }
 
-.player1, .BotPlayer {
+.player1, .player1 {
     background-image: url('../img/Skin002.png');
     background-size: cover;
     filter: url(#svgTintRed);

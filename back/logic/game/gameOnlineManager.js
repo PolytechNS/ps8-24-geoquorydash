@@ -1,3 +1,8 @@
+const {initializeGame} = require("./gameEngine");
+const fogOfWar = require("./fogOfWarController");
+const gameManager = require("./gameManager");
+const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
+
 class GameOnlineManager {
     waitingPlayers = {};
     constructor() {}
@@ -30,7 +35,7 @@ class GameOnlineManager {
         }
     }
 
-    tryMatchmaking = (io) => {
+    tryMatchmaking = async (io) => {
         const userIds = Object.keys(this.waitingPlayers);
         while (userIds.length >= 2) {
             const player1 = userIds.shift();
@@ -44,6 +49,18 @@ class GameOnlineManager {
             socket2.join(roomId);
 
             io.of('/api/game').to(roomId).emit('matchFound', roomId);
+
+            const defaultOption = true;
+            const onlineGameOption = true;
+            initializeGame(defaultOption, onlineGameOption);
+            fogOfWar.updateBoardVisibility();
+
+            const gameStatePlayers = gameManager.gameState.players;
+            const gameStateID = await createGameInDatabase(gameStatePlayers, fogOfWar.visibilityMap, player1, player2);
+
+            const invertedVisibilityMap = fogOfWar.visibilityMap.map(value => -value);
+            socket1.emit("updateBoard", gameManager.gameState, invertedVisibilityMap, gameStateID, gameManager.getPlayers()[0]);
+            socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
         }
     };
 }

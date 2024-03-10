@@ -7,7 +7,40 @@ function hideOldPossibleMoves() {
     }
 }
 
-function updateBoardDisplay(gameState, visibilityMap) {
+function updateBoardDisplay(gameState, visibilityMap, player) {
+    if (player) {
+        updateBoardDisplayOnlineGame(gameState, visibilityMap, player);
+    } else {
+        updateBoardDisplayLocalGame(gameState, visibilityMap);
+    }
+}
+
+function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
+    let playerCells = document.getElementsByClassName('player-cell');
+
+    for (let i = 0; i < playerCells.length; i++) {
+        playerCells[i].style.opacity = visibilityMap[i] <= 0 ? 1 : 0.1;
+    }
+
+    hideOldPossibleMoves(player);
+
+    let playerCell = document.getElementById(`cell-${player.position.x}-${player.position.y}`);
+    playerCell.appendChild(document.getElementById(player.id));
+    playerCell.firstElementChild.style.opacity = 1;
+    playerCell.style.opacity = 1;
+
+    let otherPlayer = gameState.players.find(otherPlayer => otherPlayer.id !== player.id);
+    let otherPlayerCell = document.getElementById(`cell-${otherPlayer.position.x}-${otherPlayer.position.y}`);
+    var otherPlayerInBoard = document.getElementById(otherPlayer.id);
+    otherPlayerCell.appendChild(otherPlayerInBoard);
+    otherPlayerCell.style.opacity === '1' ? otherPlayerInBoard.style.opacity = '1' : otherPlayerInBoard.style.opacity = '0';
+
+    displayWalls(gameState);
+
+    if (player.isCurrentPlayer) askPossibleMove();
+}
+
+function updateBoardDisplayLocalGame(gameState, visibilityMap) {
     let playerCells = document.getElementsByClassName('player-cell');
     let currentPlayer = gameState.players.find(player => player.isCurrentPlayer === true);
     let currentPlayerPosition = currentPlayer.position;
@@ -25,7 +58,7 @@ function updateBoardDisplay(gameState, visibilityMap) {
 
     let otherPlayerPosition = gameState.players.find(player => player.id !== currentPlayer.id).position;
     let otherPlayerCell = document.getElementById(`cell-${otherPlayerPosition.x}-${otherPlayerPosition.y}`);
-    var otherPlayer = document.getElementById('BotPlayer');
+    var otherPlayer = document.getElementById('player1');
     otherPlayerCell.appendChild(otherPlayer);
     otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
 
@@ -151,7 +184,7 @@ function adjustVisibilityForWallsHorizontal(barrierCellId, currentPlayer) {
     let { i, j } = getIndicesFromId(barrierCellId);
     let adjacentBarrierCells = getAdjacentBarrierCellsIndicesHorizontal(i, j);
 
-    if (currentPlayer === 'BotPlayer'){
+    if (currentPlayer === 'player1'){
         let visibilityToAdd = 2;
         for (let i = 0; i < adjacentBarrierCells.length; i++){
             for (let j = 0; j < adjacentBarrierCells[i].length; j++){
@@ -174,7 +207,7 @@ function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
     let { i, j } = getIndicesFromId(barrierCellId);
     let adjacentBarrierCells = getAdjacentBarrierCellsIndicesVertical(i, j);
 
-    if (currentPlayer === 'BotPlayer'){
+    if (currentPlayer === 'player1'){
         let visibilityToAdd = 2;
         for (let i = 0; i < adjacentBarrierCells.length; i++){
             for (let j = 0; j < adjacentBarrierCells[i].length; j++){
