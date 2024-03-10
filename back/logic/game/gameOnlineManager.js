@@ -1,39 +1,42 @@
 class GameOnlineManager {
-    waitingPlayersSockets = [];
+    waitingPlayers = {};
     constructor() {}
 
-    addPlayerSocketToWaitList(socket) {
-        console.log('Player added to wait list');
-        this.waitingPlayersSockets.push(socket);
+    addPlayerToWaitList(userId, socket) {
+        this.waitingPlayers[userId] = socket;
     }
 
-    isPlayerInWaitList(socket) {
-        console.log(this.waitingPlayersSockets);
-        return this.waitingPlayersSockets.includes(socket);
+    updatePlayerSocket(userId, newSocket) {
+        this.waitingPlayers[userId] = newSocket;
     }
 
-    removePlayerSocketFromWaitList(socket) {
-        const index = this.waitingPlayersSockets.indexOf(socket);
-        if (index > -1) {
-            console.log('Player removed from wait list');
-            this.waitingPlayersSockets.splice(index, 1);
+    isPlayerInWaitList(userId) {
+        return userId in this.waitingPlayers;
+    }
+
+    removePlayerFromWaitList(userId) {
+        if (userId in this.waitingPlayers) {
+            console.log('Player removed from wait list:', userId);
+            delete this.waitingPlayers[userId];
         }
     }
 
     tryMatchmaking = (io) => {
-        while (this.waitingPlayersSockets.length >= 2) {
-            const socket1 = this.waitingPlayersSockets.shift();
-            const socket2 = this.waitingPlayersSockets.shift();
+        const userIds = Object.keys(this.waitingPlayers);
+        while (userIds.length >= 2) {
+            const player1 = userIds.shift();
+            const player2 = userIds.shift();
 
-            const roomId = socket1.id + "_" + socket2.id;
+            const socket1 = this.waitingPlayers[player1];
+            const socket2 = this.waitingPlayers[player2];
+
+            const roomId = player1 + "_" + player2;
             socket1.join(roomId);
             socket2.join(roomId);
 
             io.of('/api/game').to(roomId).emit('matchFound', roomId);
         }
     };
-
-
 }
 
 const GameOnlineManagerInstance = new GameOnlineManager();

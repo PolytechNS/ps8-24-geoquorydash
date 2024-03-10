@@ -75,7 +75,6 @@ function verifyAndValidateUserID(token) {
         return null;
     }
 
-    // Validation de l'ID utilisateur
     if (!ObjectId.isValid(userID)) {
         console.log('Invalid userID:', userID);
         return null;

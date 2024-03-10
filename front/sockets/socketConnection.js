@@ -42,7 +42,7 @@ window.onload = function() {
         if (gameStateID && token) {
             socket.emit('resumeGame', gameStateID, token);
         } else {
-            alert('An error occured while trying to resume the game. Please try again later.');
+            alert('Une erreur est survenue. Veuillez vous reconnecter.');
             window.location.href = '/home.html';
         }
     }
@@ -50,15 +50,15 @@ window.onload = function() {
 
 socket.on('tokenInvalid', function() {
     localStorage.removeItem('token');
-    alert('Your token is invalid. Please log in again.')
+    alert('Votre session a expiré. Veuillez vous reconnecter.');
     window.location.href = '/home.html';
 });
 
 socket.on('databaseConnectionError', function() {
-    alert('Connection problem detected. Your game may not be saved. Please try again later.');
+    alert('Probleme de connexion avec la base de données. Veuillez réessayer plus tard.');
 });
 
 socket.on('matchFound', function(roomId) {
-    alert('Match found! Your game will start soon.');
+    alert('Match trouvé! Vous allez être redirigé vers la partie.');
 });
 export default socket;

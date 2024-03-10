@@ -67,10 +67,10 @@ const setupSocket = (server) => {
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
         });
 
-
-        socket.on('disconnect', () => {
+        socket.on('disconnect', (token) => {
             console.log('Client disconnected');
-            gameOnlineManager.removePlayerSocketFromWaitList(socket);
+            const userId = verifyAndValidateUserID(token);
+            gameOnlineManager.removePlayerFromWaitList(userId);
         });
 
 
@@ -207,8 +207,10 @@ const setupSocket = (server) => {
                 socket.emit('tokenInvalid');
                 return;
             }
-            if (!gameOnlineManager.isPlayerInWaitList(socket)) {
-                gameOnlineManager.addPlayerSocketToWaitList(socket);
+            if (gameOnlineManager.isPlayerInWaitList(userId)) {
+                gameOnlineManager.updatePlayerSocket(userId, socket);
+            } else {
+                gameOnlineManager.addPlayerToWaitList(userId, socket);
             }
             gameOnlineManager.tryMatchmaking(io);
         });
