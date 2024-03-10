@@ -1,4 +1,4 @@
-import {askPossibleMove, handleCellAction, lockBarrier} from "./game.js";
+import {askPossibleMove, handleCellAction, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners} from "./game.js";
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -13,6 +13,12 @@ function updateBoardDisplay(gameState, visibilityMap, player) {
     } else {
         updateBoardDisplayLocalGame(gameState, visibilityMap);
     }
+}
+
+function getIndicesFromId(barrierCellId) {
+    let i = parseInt(barrierCellId.split('-')[1]);
+    let j = parseInt(barrierCellId.split('-')[2]);
+    return { i, j };
 }
 
 function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
@@ -37,7 +43,20 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
 
     displayWalls(gameState);
 
-    if (player.isCurrentPlayer) askPossibleMove();
+    const barrierCells = document.getElementsByClassName('barrier-cell');
+    if (player.isCurrentPlayer) {
+        Array.from(barrierCells).forEach(barrierCell => {
+            let barrierCellId = barrierCell.id;
+            let { i, j } = getIndicesFromId(barrierCellId);
+            activateBarrierCellListeners(barrierCell, i, j);
+        });
+        askPossibleMove();
+    } else {
+        Array.from(barrierCells).forEach(barrierCell => {
+            deactivateBarrierCellListeners(barrierCell);
+        });
+    }
+
 }
 
 function updateBoardDisplayLocalGame(gameState, visibilityMap) {

@@ -15,18 +15,7 @@ for (let i = 0; i < 17; i++) {
             cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            cell.addEventListener('mouseenter', (event) => {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'displayBarrier');
-            });
-            cell.addEventListener('mouseleave', (event) => {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'hideBarrier');
-            });
-            cell.addEventListener('click', function (event) {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'lockBarrier');
-            });
+            activateBarrierCellListeners(cell, i, j)
         }
 
         cell.id = `cell-${i}-${j}`;
@@ -45,6 +34,37 @@ function createPlayer(className, bgColor) {
     player.className = `player ${className}`;
     player.id = `${className}`;
     return player;
+}
+
+function activateBarrierCellListeners(cell, i, j) {
+    cell.eventHandlers = {
+        mouseenter: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'displayBarrier');
+        },
+        mouseleave: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'hideBarrier');
+        },
+        click: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'lockBarrier');
+        }
+    };
+
+    Object.keys(cell.eventHandlers).forEach(eventType => {
+        cell.addEventListener(eventType, cell.eventHandlers[eventType]);
+    });
+}
+
+function deactivateBarrierCellListeners(cell) {
+    if (!cell.eventHandlers) return; // Assurez-vous que les gestionnaires existent
+
+    Object.keys(cell.eventHandlers).forEach(eventType => {
+        cell.removeEventListener(eventType, cell.eventHandlers[eventType]);
+    });
+
+    delete cell.eventHandlers; // Supprimez les références pour nettoyer
 }
 
 function handleCellAction(cell, i, j, actionType) {
@@ -163,7 +183,7 @@ function lockBarrier(wall) {
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
     // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
-    socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'));
+    socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
@@ -241,4 +261,4 @@ function endGame(player) {
     window.location.href = '/gameType/gameType.html';
 }
 
-export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction };
+export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners };
