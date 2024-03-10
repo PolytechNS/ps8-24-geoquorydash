@@ -67,6 +67,37 @@ const setupSocket = (server) => {
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
         });
 
+        socket.on('startOnlineGame', async (token) => {
+            console.log('ON startOnlineGame');
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+
+            try {
+                const verificationResult = verifyAndValidateUserID(token);
+                if (!verificationResult) {
+                    socket.emit('tokenInvalid');
+                    return;
+                }
+                const userObjectID = verificationResult;
+                const defaultOption = true;
+                initializeGame(defaultOption);
+                fogOfWar.updateBoardVisibility();
+                const gamestatePlayers = gameManager.gameState.players;
+                const gameStateID = await createGameInDatabase(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
+                socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
+            } catch (error) {
+                if (error instanceof DatabaseConnectionError) {
+                    socket.emit('databaseConnectionError');
+                } else {
+                    console.log("Une erreur inattendue est survenue : ", error.message);
+                }
+            }
+        });
+
+
         socket.on('disconnect', () => {
             console.log('Client disconnected');
             const userId = gameOnlineManager.getUserIdBySocket(socket);
