@@ -2,6 +2,16 @@ class GameOnlineManager {
     waitingPlayers = {};
     constructor() {}
 
+    getUserIdBySocket(disconnectedSocket) {
+        for (const userId in this.waitingPlayers) {
+            const socket = this.waitingPlayers[userId];
+            if (socket === disconnectedSocket) {
+                return userId;
+            }
+        }
+        return null;
+    }
+
     addPlayerToWaitList(userId, socket) {
         this.waitingPlayers[userId] = socket;
     }
@@ -16,7 +26,6 @@ class GameOnlineManager {
 
     removePlayerFromWaitList(userId) {
         if (userId in this.waitingPlayers) {
-            console.log('Player removed from wait list:', userId);
             delete this.waitingPlayers[userId];
         }
     }

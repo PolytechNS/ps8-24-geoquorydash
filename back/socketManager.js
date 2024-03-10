@@ -67,12 +67,13 @@ const setupSocket = (server) => {
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
         });
 
-        socket.on('disconnect', (token) => {
+        socket.on('disconnect', () => {
             console.log('Client disconnected');
-            const userId = verifyAndValidateUserID(token);
-            gameOnlineManager.removePlayerFromWaitList(userId);
+            const userId = gameOnlineManager.getUserIdBySocket(socket);
+            if (userId) {
+                gameOnlineManager.removePlayerFromWaitList(userId);
+            }
         });
-
 
         socket.on('movePlayer', async (targetPosition, gameStateID, token) => {
             var response = movePlayer(targetPosition);
