@@ -210,7 +210,6 @@ const setupSocket = (server) => {
 
         socket.on('toggleWall', async (wall, isVertical, gameStateID, token, roomId) => {
             const onlineGameOption = !!roomId;
-            console.log(gameManager.getCurrentPlayer().id);
             var response = toggleWall(wall, isVertical, onlineGameOption);
             if (response === 1) {
                 try {

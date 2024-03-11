@@ -180,7 +180,6 @@ class FogOfWar{
         let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
         let playersStartingTop = ['ia', 'player1'];
         let visibilityToAdd = playersStartingTop.includes(gameManager.getCurrentPlayer().id) ? 2 : -2;
-        console.log(playersStartingTop.includes(gameManager.getCurrentPlayer().id));
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
                 this.visibilityMap[cellIndex] += visibilityToAdd;
