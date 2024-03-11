@@ -198,7 +198,7 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                gameOnlineManager.emitUpdateBoard(gameStateID);
+                gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
             }
         });
 
@@ -242,7 +242,7 @@ const setupSocket = (server) => {
                     }
                 }
                 if (roomId) {
-                    gameOnlineManager.emitUpdateBoard(gameStateID);
+                    gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
                 } else {
                     socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
                 }
