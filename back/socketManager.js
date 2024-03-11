@@ -197,14 +197,7 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                const userIds = Object.keys(gameOnlineManager.waitingPlayers);
-                const player1 = userIds.shift();
-                const player2 = userIds.shift();
-
-                const socket1 = gameOnlineManager.waitingPlayers[player1];
-                const socket2 = gameOnlineManager.waitingPlayers[player2];
-                socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
-                socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+                gameOnlineManager.emitUpdateBoard(gameStateID);
             }
 
 

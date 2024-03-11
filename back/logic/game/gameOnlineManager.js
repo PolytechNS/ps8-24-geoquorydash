@@ -35,7 +35,7 @@ class GameOnlineManager {
         }
     }
 
-    tryMatchmaking = async (io) => {
+    async tryMatchmaking(io) {
         const userIds = Object.keys(this.waitingPlayers);
         while (userIds.length >= 2) {
             const player1 = userIds.shift();
@@ -62,6 +62,17 @@ class GameOnlineManager {
             socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
         }
     };
+
+    emitUpdateBoard(gameStateID){
+        const userIds = Object.keys(this.waitingPlayers);
+        const player1 = userIds.shift();
+        const player2 = userIds.shift();
+
+        const socket1 = this.waitingPlayers[player1];
+        const socket2 = this.waitingPlayers[player2];
+        socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
+        socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+    }
 }
 
 const GameOnlineManagerInstance = new GameOnlineManager();
