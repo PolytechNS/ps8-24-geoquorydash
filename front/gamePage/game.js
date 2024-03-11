@@ -36,6 +36,41 @@ function createPlayer(className, bgColor) {
     return player;
 }
 
+function calculatePlayerBarrierCount() {
+    let player1BarriersPlaced = 0;
+    let player2BarriersPlaced = 0;
+
+    for (let i = 0; i < 17; i++) {
+        for (let j = 0; j < 17; j++) {
+            const cell = document.getElementById(`cell-${i}-${j}`);
+            if (cell.querySelector('.barrier')) {
+                const barrierFilter = cell.querySelector('.barrier').style.filter;
+                if (barrierFilter.includes('#svgTintRed')) {
+                    player1BarriersPlaced++;
+                } else if (barrierFilter.includes('#svgTintGreen')) {
+                    player2BarriersPlaced++;
+                }
+            }
+        }
+    }
+
+    const player1BarrierCount = 10 - (player1BarriersPlaced/3);
+    const player2BarrierCount = 10 - (player2BarriersPlaced/3);
+
+    return { player1BarrierCount, player2BarrierCount };
+}
+
+function updatePlayerBarrierCount(playerId, count) {
+    document.getElementById(`${playerId}-barrier-count`).innerText = `Barrières restantes : ${count}`;
+}
+
+function updatePlayerBarrierCounts() {
+    const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
+    updatePlayerBarrierCount('player1', player1BarrierCount);
+    updatePlayerBarrierCount('player2', player2BarrierCount);
+}
+
+
 function activateBarrierCellListeners(cell, i, j) {
     cell.eventHandlers = {
         mouseenter: function(event) {
@@ -115,10 +150,9 @@ function askPossibleMove() {
 function displayPossibleMove(possibleMove) {
     var allElements = document.querySelectorAll('*');
     allElements.forEach(function(cell) {
-        // Supprimer l'écouteur en utilisant la référence stockée
         if (cell.moveEventListener) {
             cell.removeEventListener('click', cell.moveEventListener);
-            cell.moveEventListener = null; // Nettoyer la référence
+            cell.moveEventListener = null;
         }
     });
 
@@ -126,10 +160,8 @@ function displayPossibleMove(possibleMove) {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
         cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
         console.log("Je peux bouger en " + move.x + " " + move.y);
-        // Créer une nouvelle fonction de rappel qui inclut les paramètres spécifiques
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
-        // Stocker la référence de cette fonction pour pouvoir la supprimer plus tard
         cell.moveEventListener = callback;
     });
 }
@@ -182,7 +214,6 @@ function lockBarrier(wall) {
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
-    // console.log("EMIT movePlayer, Je veux bouger en " + i + " " + j);
     socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 
@@ -261,4 +292,4 @@ function endGame(player) {
     window.location.href = '/gameType/gameType.html';
 }
 
-export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners };
+export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

@@ -1,4 +1,4 @@
-import {askPossibleMove, handleCellAction, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners} from "./game.js";
+import {askPossibleMove, handleCellAction, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts} from "./game.js";
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -13,6 +13,7 @@ function updateBoardDisplay(gameState, visibilityMap, player) {
     } else {
         updateBoardDisplayLocalGame(gameState, visibilityMap);
     }
+    updatePlayerBarrierCounts();
 }
 
 function getIndicesFromId(barrierCellId) {
