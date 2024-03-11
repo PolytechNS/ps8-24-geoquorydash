@@ -199,8 +199,6 @@ const setupSocket = (server) => {
                 }
                 gameOnlineManager.emitUpdateBoard(gameStateID);
             }
-
-
         });
 
 
