@@ -126,8 +126,9 @@ const setupSocket = (server) => {
             if (response) {
                 await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
-                socket.emit("endGame", response);
-                return;
+                roomId ?
+                    io.of('/api/game').to(roomId).emit("endGame", response) :
+                    socket.emit("endGame", response);                return;
             }
             fogOfWar.updateBoardVisibility();
 
