@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jeux de plateau</title>
   <link rel="stylesheet" href="gameStyle.css">
+  <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
 </head>
 <body>
+
+<button id="burger-menu-button">&#9776; Menu</button>
+<div id="burger-menu-container"></div>
 
   <div class="container">
     <div class="player-info" id="player1-info">
@@ -28,5 +32,7 @@
 
   <script src="../sockets/socket.io.js"></script>
   <script type="module" src="../sockets/socketConnection.js"></script>
+  <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+
 </body>
 </html>
