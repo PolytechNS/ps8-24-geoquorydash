@@ -2,7 +2,7 @@ const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const gameOnlineManager = require('./logic/game/gameOnlineManager');
-const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
+const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, changeCurrentPlayer} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
 } = require('./models/game/gameDataBaseManager');
@@ -126,8 +126,9 @@ const setupSocket = (server) => {
             if (response) {
                 await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
-                socket.emit("endGame", response);
-                return;
+                roomId ?
+                    io.of('/api/game').to(roomId).emit("endGame", response) :
+                    socket.emit("endGame", response);                return;
             }
             fogOfWar.updateBoardVisibility();
 
@@ -197,10 +198,8 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                this.to(roomId).emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                gameOnlineManager.emitUpdateBoard(gameStateID);
             }
-
-
         });
 
 
@@ -210,8 +209,9 @@ const setupSocket = (server) => {
         });
 
 
-        socket.on('toggleWall', async (wall, isVertical, gameStateID, token) => {
-            var response = toggleWall(wall, isVertical);
+        socket.on('toggleWall', async (wall, isVertical, gameStateID, token, roomId) => {
+            const onlineGameOption = !!roomId;
+            var response = toggleWall(wall, isVertical, onlineGameOption);
             if (response === 1) {
                 try {
                     await toggleWallInDatabase(gameStateID, wall, isVertical, token);
@@ -241,7 +241,11 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                if (roomId) {
+                    gameOnlineManager.emitUpdateBoard(gameStateID);
+                } else {
+                    socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                }
             } else if (response) {
                 await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
@@ -265,11 +269,6 @@ const setupSocket = (server) => {
                 gameOnlineManager.addPlayerToWaitList(userId, socket);
             }
             gameOnlineManager.tryMatchmaking(io);
-        });
-
-        socket.on('test', (data) => {
-            console.log('ON test');
-            socket.emit('test', data);
         });
     });
 }

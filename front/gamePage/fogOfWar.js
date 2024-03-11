@@ -9,6 +9,7 @@ function hideOldPossibleMoves() {
 
 function updateBoardDisplay(gameState, visibilityMap, player) {
     if (player) {
+        console.log('player', player);
         updateBoardDisplayOnlineGame(gameState, visibilityMap, player);
     } else {
         updateBoardDisplayLocalGame(gameState, visibilityMap);

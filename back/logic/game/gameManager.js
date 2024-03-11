@@ -243,6 +243,7 @@ class GameManager {
     getCurrentPlayer() {
         return this.gameState.players.find(player => player.isCurrentPlayer === true);
     }
+
 }
 
 const gameManagerInstance = new GameManager();
