@@ -54,6 +54,8 @@ function toggleWall(wall, isVertical, onlineGameOption) {
     }
 
     if(canPlayerReachArrival(walls)) {
+        console.log(gameManager.getCurrentPlayer().id);
+
         var response = updateWalls(wall, isVertical, onlineGameOption);
         if (response) {
             return response;

@@ -178,8 +178,9 @@ class FogOfWar{
     adjustVisibilityForWalls(wall, isVertical) {
         let { x, y } = wall[0];
         let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
-        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' || 'player1' ? 2 : -2;
-
+        let playersStartingTop = ['ia', 'player1'];
+        let visibilityToAdd = playersStartingTop.includes(gameManager.getCurrentPlayer().id) ? 2 : -2;
+        console.log(playersStartingTop.includes(gameManager.getCurrentPlayer().id));
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
                 this.visibilityMap[cellIndex] += visibilityToAdd;
