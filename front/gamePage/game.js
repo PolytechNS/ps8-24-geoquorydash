@@ -138,7 +138,11 @@ function handleCellAction(cell, i, j, actionType) {
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
         } else if (actionType === 'lockBarrier' && cell.classList.contains('previewMode')) {
-            socketToggleWall(cell, cell2, cell3, isVertical);
+            if (canToggleBarrier()) {
+                socketToggleWall(cell, cell2, cell3, isVertical);
+            } else {
+                alert("Vous n'avez plus de barrières disponibles !");
+            }
         }
     }
 }
@@ -215,6 +219,14 @@ function lockBarrier(wall) {
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
     socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
+}
+
+function canToggleBarrier() {
+    const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
+    if ((currentPlayer === player1 && player1BarrierCount < 0) || (currentPlayer === player2 && player2BarrierCount < 0)) {
+        return false;
+    }
+    return true;
 }
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
