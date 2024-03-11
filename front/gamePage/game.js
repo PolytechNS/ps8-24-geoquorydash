@@ -15,7 +15,7 @@ for (let i = 0; i < 17; i++) {
             cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            activateBarrierCellListeners(cell, i, j)
+            if (localStorage.getItem('gameStateID')) activateBarrierCellListeners(cell, i, j);
         }
 
         cell.id = `cell-${i}-${j}`;
