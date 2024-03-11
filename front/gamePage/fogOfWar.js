@@ -9,7 +9,6 @@ function hideOldPossibleMoves() {
 
 function updateBoardDisplay(gameState, visibilityMap, player) {
     if (player) {
-        console.log('player', player);
         updateBoardDisplayOnlineGame(gameState, visibilityMap, player);
     } else {
         updateBoardDisplayLocalGame(gameState, visibilityMap);
@@ -73,7 +72,7 @@ function updateBoardDisplayLocalGame(gameState, visibilityMap) {
     hideOldPossibleMoves(currentPlayer);
 
     let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
-    currentPlayerCell.appendChild(document.getElementById('player2'));
+    currentPlayerCell.appendChild(document.getElementById('player1'));
     currentPlayerCell.firstElementChild.style.opacity = 1;
     currentPlayerCell.style.opacity = 1;
 

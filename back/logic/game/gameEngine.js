@@ -29,7 +29,6 @@ function movePlayer(targetPosition) {
     if (!gameActive) return;
 
     currentPlayer.position = targetPosition;
-
     if (currentPlayer === player1 && targetPosition.x === 16) {
         endGame('Le joueur 2 a gagné!');
         return currentPlayer;
@@ -66,9 +65,7 @@ function toggleWall(wall, isVertical, onlineGameOption) {
 function updateWalls(wall, isVertical, onlineGameOption) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    if (onlineGameOption) {
-        changeCurrentPlayer();
-    } else {
+    if (!onlineGameOption) {
         return turn();
     }
 }

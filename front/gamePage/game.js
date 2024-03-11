@@ -15,7 +15,7 @@ for (let i = 0; i < 17; i++) {
             cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            if (localStorage.getItem('gameStateID')) activateBarrierCellListeners(cell, i, j);
+            if (localStorage.getItem('roomId')) activateBarrierCellListeners(cell, i, j);
         }
 
         cell.id = `cell-${i}-${j}`;
@@ -163,7 +163,6 @@ function displayPossibleMove(possibleMove) {
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
         cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        console.log("Je peux bouger en " + move.x + " " + move.y);
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
         cell.moveEventListener = callback;

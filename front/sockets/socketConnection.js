@@ -18,6 +18,7 @@ socket.on('possibleMoveList', function(possibleMove) {
 });
 
 socket.on('endGame', function(player) {
+    console.log('endGame');
     endGame(player);
 });
 

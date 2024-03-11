@@ -128,7 +128,8 @@ const setupSocket = (server) => {
                 console.log('EMIT endGame');
                 roomId ?
                     io.of('/api/game').to(roomId).emit("endGame", response) :
-                    socket.emit("endGame", response);                return;
+                    socket.emit("endGame", response);
+                return;
             }
             fogOfWar.updateBoardVisibility();
 
@@ -241,6 +242,7 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
+                changeCurrentPlayer();
                 if (roomId) {
                     gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
                 } else {
