@@ -17,4 +17,14 @@ async function loadBurgerMenu() {
     const response = await fetch('../burgerMenu/burgerMenu.html');
     const html = await response.text();
     burgerMenuContainer.innerHTML = html;
+
+    const deconnexionButton = document.getElementById('deconnexionButton');
+    deconnexionButton.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+            localStorage.clear();
+            window.location.href = '../home.html';
+        }
+    });
 }

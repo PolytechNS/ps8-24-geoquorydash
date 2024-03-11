@@ -5,7 +5,7 @@
     left: 0;
     bottom: 0;
     width: 15vw;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(0, 0, 0, 0.8);
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
@@ -17,7 +17,7 @@
 }
 
 .burger-menu ul li {
-    margin-bottom: 10vh;
+    margin-bottom: 5vh;
 }
 
 .burger-menu ul li a {
@@ -25,6 +25,18 @@
     color: #fff;
     font-size: 18px;
     display: block;
+}
+
+.burger-menu ul li img {
+    width: 10vw;
+}
+
+#accueilButton img {
+    height: 4vh;
+}
+
+#deconnexionButton img {
+    height: 3vh;
 }
 
 .show {
