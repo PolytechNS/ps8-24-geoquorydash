@@ -45,7 +45,7 @@ function moveAI() {
     return movePlayer(iaMove);
 }
 
-function toggleWall(wall, isVertical) {
+function toggleWall(wall, isVertical, onlineGameOption) {
     if (!gameActive) return;
 
     var walls = gameManager.getBoardWalls();
@@ -54,7 +54,7 @@ function toggleWall(wall, isVertical) {
     }
 
     if(canPlayerReachArrival(walls)) {
-        var response = updateWalls(wall, isVertical);
+        var response = updateWalls(wall, isVertical, onlineGameOption);
         if (response) {
             return response;
         }
@@ -63,10 +63,14 @@ function toggleWall(wall, isVertical) {
     return 0;
 }
 
-function updateWalls(wall, isVertical) {
+function updateWalls(wall, isVertical, onlineGameOption) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    return turn();
+    if (onlineGameOption) {
+        changeCurrentPlayer();
+    } else {
+        return turn();
+    }
 }
 
 function checkBarriersBetween(startPosition, targetPosition, walls) {
@@ -201,6 +205,7 @@ function changeCurrentPlayer() {
         player.isCurrentPlayer = !player.isCurrentPlayer;
     });
     currentPlayer = gameManager.getCurrentPlayer();
+    otherPlayer = currentPlayer === player1 ? player2 : player1;
 }
 
 function endGame(message) {

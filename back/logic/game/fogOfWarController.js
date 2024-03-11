@@ -178,13 +178,13 @@ class FogOfWar{
     adjustVisibilityForWalls(wall, isVertical) {
         let { x, y } = wall[0];
         let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
-        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' ? 2 : -2;
+        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' || 'player1' ? 2 : -2;
 
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
                 this.visibilityMap[cellIndex] += visibilityToAdd;
             });
-            visibilityToAdd += gameManager.getCurrentPlayer().id === 'ia' ? -1 : 1;
+            visibilityToAdd += gameManager.getCurrentPlayer().id === 'ia' || 'player1'? -1 : 1;
         });
         // this.displayVisibilityMap();
     }

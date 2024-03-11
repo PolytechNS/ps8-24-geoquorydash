@@ -165,7 +165,7 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    socket.emit('toggleWall', wall, isVertical, localStorage.getItem('gameStateID'), localStorage.getItem('token'));
+    socket.emit('toggleWall', wall, isVertical, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 function lockBarrier(wall) {
     var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
