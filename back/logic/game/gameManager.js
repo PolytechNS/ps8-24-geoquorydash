@@ -51,10 +51,31 @@ class GameManager {
                     isCurrentPlayer: false
                 },
                 {
-                    id: "p2",
+                    id: "player2",
                     position: { x: 16, y: 8 },
                     walls: [],
                     isCurrentPlayer: true
+                }
+            ]
+        };
+    }
+
+    initializeDefaultOnlineGameState() {
+        // genere un booleen aleatoire pour savoir qui commence
+        let randomBoolean = Math.random() >= 0.5;
+        this.gameState = {
+            players: [
+                {
+                    id: "player1",
+                    position: { x: 0, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: randomBoolean
+                },
+                {
+                    id: "player2",
+                    position: { x: 16, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: !randomBoolean
                 }
             ]
         };
@@ -203,6 +224,10 @@ class GameManager {
         return this.gameState.players.find(player => player.id === playerId);
     }
 
+    getPlayers() {
+        return this.gameState.players;
+    }
+
     getBoardWalls() {
         let boardWalls = [];
         this.gameState.players.forEach(player => {
@@ -218,6 +243,7 @@ class GameManager {
     getCurrentPlayer() {
         return this.gameState.players.find(player => player.isCurrentPlayer === true);
     }
+
 }
 
 const gameManagerInstance = new GameManager();

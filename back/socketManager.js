@@ -1,7 +1,8 @@
 const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
-const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
+const gameOnlineManager = require('./logic/game/gameOnlineManager');
+const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, changeCurrentPlayer} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
 } = require('./models/game/gameDataBaseManager');
@@ -13,7 +14,6 @@ const setupSocket = (server) => {
 
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
-
 
         socket.on('startNewGame', async (token) => {
             console.log('ON startNewGame');
@@ -67,13 +67,46 @@ const setupSocket = (server) => {
             socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
         });
 
+        socket.on('startOnlineGame', async (token) => {
+            console.log('ON startOnlineGame');
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
 
-        socket.on('disconnect', () => {
-            console.log('Client disconnected');
+            try {
+                const verificationResult = verifyAndValidateUserID(token);
+                if (!verificationResult) {
+                    socket.emit('tokenInvalid');
+                    return;
+                }
+                const userObjectID = verificationResult;
+                const defaultOption = true;
+                initializeGame(defaultOption);
+                fogOfWar.updateBoardVisibility();
+                const gamestatePlayers = gameManager.gameState.players;
+                const gameStateID = await createGameInDatabase(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
+                socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
+            } catch (error) {
+                if (error instanceof DatabaseConnectionError) {
+                    socket.emit('databaseConnectionError');
+                } else {
+                    console.log("Une erreur inattendue est survenue : ", error.message);
+                }
+            }
         });
 
 
-        socket.on('movePlayer', async (targetPosition, gameStateID, token) => {
+        socket.on('disconnect', () => {
+            console.log('Client disconnected');
+            const userId = gameOnlineManager.getUserIdBySocket(socket);
+            if (userId) {
+                gameOnlineManager.removePlayerFromWaitList(userId);
+            }
+        });
+
+        socket.on('movePlayer', async (targetPosition, gameStateID, token, roomId) => {
             var response = movePlayer(targetPosition);
 
             try {
@@ -93,8 +126,9 @@ const setupSocket = (server) => {
             if (response) {
                 await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
-                socket.emit("endGame", response);
-                return;
+                roomId ?
+                    io.of('/api/game').to(roomId).emit("endGame", response) :
+                    socket.emit("endGame", response);                return;
             }
             fogOfWar.updateBoardVisibility();
 
@@ -112,42 +146,60 @@ const setupSocket = (server) => {
                 }
             }
 
-            let response2 = turn();
+            if (!roomId) {
+                let response2 = turn();
 
-            try {
-                const targetAIPosition = gameManager.gameState.players.find(player => player.id === 'ia').position;
-                await moveAIPlayerInDatabase(gameStateID, targetAIPosition);
-            } catch (error) {
-                if (error instanceof DatabaseConnectionError) {
-                    socket.emit('databaseConnectionError');
-                } else {
-                    // Gérer toutes les autres erreurs non spécifiques
-                    console.log("Une erreur inattendue est survenue : ", error.message);
+                try {
+                    const targetAIPosition = gameManager.gameState.players.find(player => player.id === 'ia').position;
+                    await moveAIPlayerInDatabase(gameStateID, targetAIPosition);
+                } catch (error) {
+                    if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
                 }
-            }
 
-            if (response2) {
-                await endGameInDatabase(gameStateID);
-                console.log('EMIT endGame');
-                socket.emit("endGame", response2);
-                return;
-            }
-            fogOfWar.updateBoardVisibility();
-            try {
-                await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMap);
-            } catch (error) {
-                if (error instanceof InvalidTokenError) {
-                    socket.emit('tokenInvalid');
+                if (response2) {
+                    await endGameInDatabase(gameStateID);
+                    console.log('EMIT endGame');
+                    socket.emit("endGame", response2);
                     return;
-                } else if (error instanceof DatabaseConnectionError) {
-                    socket.emit('databaseConnectionError');
-                } else {
-                    // Gérer toutes les autres erreurs non spécifiques
-                    console.log("Une erreur inattendue est survenue : ", error.message);
                 }
+                fogOfWar.updateBoardVisibility();
+                try {
+                    await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMap);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
+                socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+            } else {
+                changeCurrentPlayer();
+                fogOfWar.updateBoardVisibility();
+                try {
+                    await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMap);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
+                gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
             }
-
-            socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
         });
 
 
@@ -157,8 +209,9 @@ const setupSocket = (server) => {
         });
 
 
-        socket.on('toggleWall', async (wall, isVertical, gameStateID, token) => {
-            var response = toggleWall(wall, isVertical);
+        socket.on('toggleWall', async (wall, isVertical, gameStateID, token, roomId) => {
+            const onlineGameOption = !!roomId;
+            var response = toggleWall(wall, isVertical, onlineGameOption);
             if (response === 1) {
                 try {
                     await toggleWallInDatabase(gameStateID, wall, isVertical, token);
@@ -188,7 +241,11 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                if (roomId) {
+                    gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
+                } else {
+                    socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                }
             } else if (response) {
                 await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
@@ -196,8 +253,23 @@ const setupSocket = (server) => {
             } else {
                 socket.emit('ImpossibleWallPosition');
             }
-        })
+        });
 
+
+        socket.on('findMatch', (token) => {
+            console.log('ON joinGameRoom');
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            if (gameOnlineManager.isPlayerInWaitList(userId)) {
+                gameOnlineManager.updatePlayerSocket(userId, socket);
+            } else {
+                gameOnlineManager.addPlayerToWaitList(userId, socket);
+            }
+            gameOnlineManager.tryMatchmaking(io);
+        });
     });
 }
 

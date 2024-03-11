@@ -89,7 +89,7 @@ async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId,
         result.forEach(player => {
             const playerData = {
                 position: player.position,
-                id: player.userId.toString() === 'ai' ? 'ia' : 'p2', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
+                id: player.userId.toString() === 'ai' ? 'ia' : 'player2', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
                 walls: player.walls,
                 isCurrentPlayer: player.isCurrentPlayer
             };

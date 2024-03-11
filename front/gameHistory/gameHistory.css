@@ -1,0 +1,34 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background-image: url('../img/Image_fond_geometry_dash.jpeg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+button {
+    padding: 1vh 2vw;
+    font-size: 4vh;
+    font-weight: bold;
+    background-image: url('../img/gameType/button.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    width: 40vw;
+    height: 12vh;
+    margin: 2vh;
+    border-radius: 20px;
+}
+
+ul {
+    list-style-type: none;
+    overflow-y: auto;
+    overflow-x: hidden;
+    max-height: 80vh;
+}
