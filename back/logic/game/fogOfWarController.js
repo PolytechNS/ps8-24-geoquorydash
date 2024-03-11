@@ -204,6 +204,10 @@ class FogOfWar{
         }
     }
 
+    invertedVisibilityMap() {
+        return this.visibilityMap.map((visibility) => visibility * -1);
+    }
+
 }
 
 const fogOfWarInstance = new FogOfWar();

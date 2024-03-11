@@ -58,8 +58,7 @@ class GameOnlineManager {
             const gameStatePlayers = gameManager.gameState.players;
             const gameStateID = await createGameInDatabase(gameStatePlayers, fogOfWar.visibilityMap, player1, player2);
 
-            const invertedVisibilityMap = fogOfWar.visibilityMap.map(value => -value);
-            socket1.emit("updateBoard", gameManager.gameState, invertedVisibilityMap, gameStateID, gameManager.getPlayers()[0]);
+            socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
             socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
         }
     };

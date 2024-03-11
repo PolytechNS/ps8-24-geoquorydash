@@ -2,7 +2,7 @@ const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const gameOnlineManager = require('./logic/game/gameOnlineManager');
-const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame} = require("./logic/game/gameEngine");
+const { movePlayer, getPossibleMove, toggleWall, turn, initializeGame, changeCurrentPlayer} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
 } = require('./models/game/gameDataBaseManager');
@@ -197,7 +197,14 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                this.to(roomId).emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);
+                const userIds = Object.keys(gameOnlineManager.waitingPlayers);
+                const player1 = userIds.shift();
+                const player2 = userIds.shift();
+
+                const socket1 = gameOnlineManager.waitingPlayers[player1];
+                const socket2 = gameOnlineManager.waitingPlayers[player2];
+                socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
+                socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
             }
 
 

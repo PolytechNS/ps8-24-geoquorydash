@@ -196,8 +196,15 @@ function turn() {
     currentPlayer = gameManager.getCurrentPlayer();
 }
 
+function changeCurrentPlayer() {
+    gameManager.gameState.players.forEach(player => {
+        player.isCurrentPlayer = !player.isCurrentPlayer;
+    });
+    currentPlayer = gameManager.getCurrentPlayer();
+}
+
 function endGame(message) {
     gameActive = false;
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, changeCurrentPlayer};
