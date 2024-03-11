@@ -15,7 +15,10 @@ for (let i = 0; i < 17; i++) {
             cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            if (localStorage.getItem('roomId')) activateBarrierCellListeners(cell, i, j);
+            //check url in js
+
+            if (!window.location.href.includes('gameOnline') && localStorage.getItem('gameStateID') !== 'waitingForMatch')
+                activateBarrierCellListeners(cell, i, j);
         }
 
         cell.id = `cell-${i}-${j}`;

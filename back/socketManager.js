@@ -36,6 +36,7 @@ const setupSocket = (server) => {
                 initializeGame(defaultOption);
                 fogOfWar.updateBoardVisibility();
                 const gamestatePlayers = gameManager.gameState.players;
+                console.log(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
                 const gameStateID = await createGameInDatabase(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
                 socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
             }
@@ -242,8 +243,11 @@ const setupSocket = (server) => {
                         console.log("Une erreur inattendue est survenue : ", error.message);
                     }
                 }
-                changeCurrentPlayer();
+
                 if (roomId) {
+                    console.log('AVANT', gameManager.gameState)
+                    changeCurrentPlayer();
+                    console.log('APRES', gameManager.gameState)
                     gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
                 } else {
                     socket.emit('updateBoard', gameManager.gameState, fogOfWar.visibilityMap);

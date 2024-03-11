@@ -64,7 +64,6 @@ class GameOnlineManager {
             delete this.waitingPlayers[player1];
             delete this.waitingPlayers[player2];
 
-
             this.gameInSession[roomId][0].emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
             this.gameInSession[roomId][1].emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
         }

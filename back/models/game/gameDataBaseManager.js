@@ -18,7 +18,7 @@ async function createGameInDatabase(gameStateForPlayer, visibilityMap, userId1, 
         const gameStateID = await createGameStateInDatabase(database);
         await createVisibilityMapInDatabase(database, gameStateID, visibilityMap);
 
-        let userPlayer = gameStateForPlayer.find(player => player.id === 'player1');
+        let userPlayer = gameStateForPlayer.find(player => player.id === 'player2');
         await createPlayerInDatabase(database, gameStateID, userPlayer, userId1);
 
         if (userId2) {

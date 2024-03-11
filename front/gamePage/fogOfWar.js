@@ -72,7 +72,7 @@ function updateBoardDisplayLocalGame(gameState, visibilityMap) {
     hideOldPossibleMoves(currentPlayer);
 
     let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
-    currentPlayerCell.appendChild(document.getElementById('player1'));
+    currentPlayerCell.appendChild(document.getElementById('player2'));
     currentPlayerCell.firstElementChild.style.opacity = 1;
     currentPlayerCell.style.opacity = 1;
 
