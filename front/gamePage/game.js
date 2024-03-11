@@ -61,7 +61,7 @@ function calculatePlayerBarrierCount() {
 }
 
 function updatePlayerBarrierCount(playerId, count) {
-    document.getElementById(`${playerId}-barrier-count`).innerText = `Barrières restantes : ${count}`;
+    document.getElementById(`${playerId}-barrier-count`).innerText = `${count}`;
 }
 
 function updatePlayerBarrierCounts() {

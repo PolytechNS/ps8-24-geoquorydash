@@ -9,6 +9,8 @@ burgerMenuButton.addEventListener('click', async () => {
     }
     const burgerMenu = document.querySelector('.burger-menu');
     burgerMenu.classList.toggle('show');
+
+    burgerMenuButton.classList.toggle('open', burgerMenu.classList.contains('show'));
 });
 
 async function loadBurgerMenu() {
