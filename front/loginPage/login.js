@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         AuthService.login(username, password)
             .then(data => {
                 localStorage.setItem('token', data.token);
-                alert('Connexion effectuée');
+                alert('Bienvenue ' + username + ' !');
                 const modal = window.parent.document.querySelector('.modal');
                 modal.style.display = 'none';
             })

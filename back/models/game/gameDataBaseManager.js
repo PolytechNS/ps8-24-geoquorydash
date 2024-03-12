@@ -9,7 +9,7 @@ const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPo
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 
-async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
+async function createGameInDatabase(gameStateForPlayer, visibilityMap, userId1, userId2) {
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -18,11 +18,16 @@ async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
         const gameStateID = await createGameStateInDatabase(database);
         await createVisibilityMapInDatabase(database, gameStateID, visibilityMap);
 
-        let aiPlayer = gameStateForPlayer.find(player => player.id === 'ia');
-        await createPlayerInDatabase(database, gameStateID, aiPlayer);
+        let userPlayer = gameStateForPlayer.find(player => player.id === 'player2');
+        await createPlayerInDatabase(database, gameStateID, userPlayer, userId1);
 
-        let userPlayer = gameStateForPlayer.find(player => player.id === 'p2');
-        await createPlayerInDatabase(database, gameStateID, userPlayer, userID);
+        if (userId2) {
+            let userPlayer2 = gameStateForPlayer.find(player => player.id === 'player1');
+            await createPlayerInDatabase(database, gameStateID, userPlayer2, userId2);
+        } else {
+            let aiPlayer = gameStateForPlayer.find(player => player.id === 'ia');
+            await createPlayerInDatabase(database, gameStateID, aiPlayer);
+        }
 
         return gameStateID;
     } catch (error) {

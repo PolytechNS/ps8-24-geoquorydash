@@ -1,10 +1,9 @@
-import {initializeVisibility, updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical} from "./fogOfWar.js";
+import socket from "../sockets/socketConnection.js";
 
 const board = document.getElementById('board');
-const player1 = createPlayer('player1');
-const player2 = createPlayer('player2');
-let currentPlayer = player1;
-let gameActive = true;
+const player1 = createPlayer('player1', 'blue');
+const player2 = createPlayer('player2', 'red');
+let currentPlayer = player2;
 
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
@@ -13,21 +12,13 @@ for (let i = 0; i < 17; i++) {
 
         if (i % 2 === 0 && j % 2 === 0) {
             cell.classList.add('player-cell');
-            //cell.addEventListener('click', () => movePlayer(cell));
+            cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            cell.addEventListener('mouseenter', (event) => {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'displayBarrier');
-            });
-            cell.addEventListener('mouseleave', (event) => {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'hideBarrier');
-            });
-            cell.addEventListener('click', function (event) {
-                event.preventDefault();
-                handleCellAction(cell, i, j, 'lockBarrier');
-            });
+            //check url in js
+
+            if (!window.location.href.includes('gameOnline') && localStorage.getItem('gameStateID') !== 'waitingForMatch')
+                activateBarrierCellListeners(cell, i, j);
         }
 
         cell.id = `cell-${i}-${j}`;
@@ -35,26 +26,88 @@ for (let i = 0; i < 17; i++) {
     }
 }
 
-
 const player1Cell = document.getElementById('cell-0-8');
 player1Cell.appendChild(player1);
 
 const player2Cell = document.getElementById('cell-16-8');
 player2Cell.appendChild(player2);
 
-initializeVisibility(board);
-updateBoardDisplay(board, currentPlayer);
-
-displayPossibleMove();
-
-function createPlayer(className) {
+function createPlayer(className, bgColor) {
     const player = document.createElement('div');
     player.className = `player ${className}`;
     player.id = `${className}`;
     return player;
 }
 
+function calculatePlayerBarrierCount() {
+    let player1BarriersPlaced = 0;
+    let player2BarriersPlaced = 0;
+
+    for (let i = 0; i < 17; i++) {
+        for (let j = 0; j < 17; j++) {
+            const cell = document.getElementById(`cell-${i}-${j}`);
+            if (cell.querySelector('.barrier')) {
+                const barrierFilter = cell.querySelector('.barrier').style.filter;
+                if (barrierFilter.includes('#svgTintRed')) {
+                    player1BarriersPlaced++;
+                } else if (barrierFilter.includes('#svgTintGreen')) {
+                    player2BarriersPlaced++;
+                }
+            }
+        }
+    }
+
+    const player1BarrierCount = 10 - (player1BarriersPlaced/3);
+    const player2BarrierCount = 10 - (player2BarriersPlaced/3);
+
+    return { player1BarrierCount, player2BarrierCount };
+}
+
+function updatePlayerBarrierCount(playerId, count) {
+    document.getElementById(`${playerId}-barrier-count`).innerText = `${count}`;
+}
+
+function updatePlayerBarrierCounts() {
+    const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
+    updatePlayerBarrierCount('player1', player1BarrierCount);
+    updatePlayerBarrierCount('player2', player2BarrierCount);
+}
+
+
+function activateBarrierCellListeners(cell, i, j) {
+    cell.eventHandlers = {
+        mouseenter: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'displayBarrier');
+        },
+        mouseleave: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'hideBarrier');
+        },
+        click: function(event) {
+            event.preventDefault();
+            handleCellAction(cell, i, j, 'lockBarrier');
+        }
+    };
+
+    Object.keys(cell.eventHandlers).forEach(eventType => {
+        cell.addEventListener(eventType, cell.eventHandlers[eventType]);
+    });
+}
+
+function deactivateBarrierCellListeners(cell) {
+    if (!cell.eventHandlers) return; // Assurez-vous que les gestionnaires existent
+
+    Object.keys(cell.eventHandlers).forEach(eventType => {
+        cell.removeEventListener(eventType, cell.eventHandlers[eventType]);
+    });
+
+    delete cell.eventHandlers; // Supprimez les références pour nettoyer
+}
+
 function handleCellAction(cell, i, j, actionType) {
+    if (cell.classList.contains('locked')) return;
+
     let cell2, cell3;
     let isVertical = i % 2 === 0 && j % 2 !== 0;
     let isHorizontal = j % 2 === 0 && i % 2 !== 0;
@@ -87,85 +140,36 @@ function handleCellAction(cell, i, j, actionType) {
             displayPossibleToggleBarrier(cell, cell2, cell3, isVertical);
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
-        } else if (actionType === 'lockBarrier') {
-            lockBarrier(cell, cell2, cell3, isVertical);
-        }
-    }
-}
-
-function playerIsNeighbor() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-
-    const neighborsList = getNeighborsWithBarriers(playerCell);
-    for(const neighbor of neighborsList) {
-        if(neighbor.querySelector('.player')) {
-            return neighbor;
-        }
-    }
-    return null;
-}
-
-function displayPossibleMove() {
-    if (!gameActive) return;
-
-    const playerCell = currentPlayer.parentElement;
-    const neighborsList = getNeighborsWithBarriers(playerCell);
-
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const [x, y] = playerCell.id.split('-').slice(1).map(Number);
-        const [nx, ny] = neighborPlayer.id.split('-').slice(1).map(Number);
-        let forwardCell = null;
-        if(x === nx) {
-            if(y < ny) {
-                forwardCell = document.getElementById(`cell-${x}-${y + 4}`);
+        } else if (actionType === 'lockBarrier' && cell.classList.contains('previewMode')) {
+            if (canToggleBarrier()) {
+                socketToggleWall(cell, cell2, cell3, isVertical);
             } else {
-                forwardCell = document.getElementById(`cell-${x}-${y - 4}`);
+                alert("Vous n'avez plus de barrières disponibles !");
             }
-        } else {
-            if(x < nx) {
-                forwardCell = document.getElementById(`cell-${x + 4}-${y}`);
-            } else {
-                forwardCell = document.getElementById(`cell-${x - 4}-${y}`);
-            }
-        }
-        if(!checkBarriersBetween(neighborPlayer.id, forwardCell.id)) {
-            forwardCell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        }
-
-        for(const neighbor of neighborsList) {
-            if(playerIsNeighbor()) {
-               if(neighbor.id !== playerIsNeighbor().id) {
-                    neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-                }
-            }
-        }
-    } else {
-        for(const neighbor of neighborsList) {
-            neighbor.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
         }
     }
 }
 
-function hidePossibleMove() {
-    if (!gameActive) return;
+function askPossibleMove() {
+    socket.emit('possibleMoveRequest');
+}
 
-    const playerCell = currentPlayer.parentElement;
-
-    const neighborsList = getGeographicNeighbors(playerCell);
-    for(const neighbor of neighborsList) {
-        neighbor.style.backgroundColor = 'transparent';
-    }
-
-    let neighborPlayer = null;
-    if(neighborPlayer = playerIsNeighbor()) {
-        const neighborsOfPlayer2 = getGeographicNeighbors(neighborPlayer);
-        for(const neighbor2 of neighborsOfPlayer2) {
-            neighbor2.style.backgroundColor = 'transparent';
+function displayPossibleMove(possibleMove) {
+    var allElements = document.querySelectorAll('*');
+    allElements.forEach(function(cell) {
+        if (cell.moveEventListener) {
+            cell.removeEventListener('click', cell.moveEventListener);
+            cell.moveEventListener = null;
         }
-    }
+    });
+
+    possibleMove.forEach(move => {
+        let cell = document.getElementById(`cell-${move.x}-${move.y}`);
+        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        let callback = () => socketMovePlayer(move.x, move.y);
+        cell.addEventListener('click', callback);
+        cell.moveEventListener = callback;
+    });
 }
 
 function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical) {
@@ -180,257 +184,55 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
         targetCell.removeChild(taretCellChild);
         targetCell2.removeChild(taretCell2Child);
         targetCell3.removeChild(taretCell3Child);
+        targetCell.classList.remove('previewMode');
+        targetCell2.classList.remove('previewMode');
+        targetCell3.classList.remove('previewMode');
     }
 
 }
 
-function lockBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-    if(isBarrierPlacementValid(targetCell, targetCell2, targetCell3)) {
-        if(!canPlayerReachArrival(player1)) {
-            retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 1");
-            return;
-        } else if(!canPlayerReachArrival(player2)) {
-            retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, car cela bloquerait le joueur 2");
-            return;
-        }
-        hidePossibleMove();
+function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
+    let wall;
+    wall = [];
 
-        targetCell.classList.add('locked');
-        targetCell2.classList.add('locked');
-        targetCell3.classList.add('locked');
+    const [targetCellx, targetCelly] = targetCell.id.split('-').slice(1).map(Number);
+    const [targetCell2x, targetCell2y] = targetCell2.id.split('-').slice(1).map(Number);
+    const [targetCell3x, targetCell3y] = targetCell3.id.split('-').slice(1).map(Number);
 
-        if(isVertical) {
-            adjustVisibilityForWallsVertical(targetCell.id, currentPlayer.id);
-        } else {
-            adjustVisibilityForWallsHorizontal(targetCell.id, currentPlayer.id);
-        }
+    wall.push({x: targetCellx, y: targetCelly});
+    wall.push({x: targetCell2x, y: targetCell2y});
+    wall.push({x: targetCell3x, y: targetCell3y});
 
-        turn();
-        displayPossibleMove();
-    } else {
-        retrieveImpossibleMovePopUp("Vous n'avez pas le droit de poser cette barrière, il y a deja une barriere");
-        return;
+    socket.emit('toggleWall', wall, isVertical, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
+}
+function lockBarrier(wall) {
+    var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
+    var targetCell2 = document.getElementById(`cell-${wall[1].x}-${wall[1].y}`)
+    var targetCell3 = document.getElementById(`cell-${wall[2].x}-${wall[2].y}`)
 
-    }
+    targetCell.classList.add('locked');
+    targetCell2.classList.add('locked');
+    targetCell3.classList.add('locked');
+    targetCell.classList.remove('previewMode');
+    targetCell2.classList.remove('previewMode');
+    targetCell3.classList.remove('previewMode');
 }
 
-function canPlayerReachArrival(player) {
-    const currentCell = player.parentElement;
-    let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
-    let canReach = false;
-
-    if(player === player1) {
-        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player1");
-    } else if(player === player2) {
-        canReach = checkPathToReachTheEnd(currentCell, alreadyVisitedCell, "player2");
-    }
-
-    if (canReach) {
-        // console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " peut encore atteindre la fin");
-    } else {
-        // console.log("Le joueur " + (player === player1 ? "player1" : "player2") + " est bloqué à cause de ce mouvement");
-    }
-
-    return canReach;
+function socketMovePlayer(i, j) {
+    let targetPosition = {x: i, y: j};
+    socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 
-function retrieveImpossibleMovePopUp(message) {
-    const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);
-}
-
-function checkPathToReachTheEnd(currentCell, alreadyVisitedCell, player) {
-    if(alreadyVisitedCell.includes(currentCell)) { // Dans ce cas là, la cellule a déjà été visitée
+function canToggleBarrier() {
+    const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
+    if ((currentPlayer === player1 && player1BarrierCount < 0) || (currentPlayer === player2 && player2BarrierCount < 0)) {
         return false;
     }
-
-    const [x, y] = currentCell.id.split('-').slice(1).map(Number);
-    if ((player === "player1" && x === 16) || (player === "player2" && x === 0)) {
-        return true;
-    }
-
-    alreadyVisitedCell.push(currentCell);
-    const neighborsList = getNeighborsWithBarriers(currentCell);
-    for (const neighbor of neighborsList) {
-        if (checkPathToReachTheEnd(neighbor, alreadyVisitedCell, player)) {
-            return true;
-        }
-    }
-    return false;
-}
-
-function movePlayer(targetCell) {
-    if (!gameActive) return;
-
-    const playerCellId = currentPlayer.parentElement.id;
-    const targetCellId = targetCell.id;
-    const [x, y] = playerCellId.split('-').slice(1).map(Number);
-    const [targetX, targetY] = targetCellId.split('-').slice(1).map(Number);
-
-    if (((Math.abs(targetX - x) === 2 && targetY === y) || (Math.abs(targetY - y) === 2 && targetX === x))) {
-        const barrierInBetween = checkBarriersBetween(playerCellId, targetCellId);
-        if (!barrierInBetween) {
-            const closePlayer = targetCell.querySelector('.player');
-            if (!(closePlayer && closePlayer !== currentPlayer)) {
-                hidePossibleMove();
-                targetCell.appendChild(currentPlayer);
-                if (currentPlayer === player1 && targetX === 16) {
-                    endGame('Le joueur 1 a gagné!');
-                } else if (currentPlayer === player2 && targetX === 0) {
-                    endGame('Le joueur 2 a gagné!');
-                }
-                /*
-                if (currentPlayer === player1) {
-                    player1Path = calculateShortestPath(targetCell, 16);
-                } else {
-                    player2Path = calculateShortestPath(targetCell, 0);
-                }*/
-
-                turn();
-                displayPossibleMove();
-            }
-        }
-    } else if ((Math.abs(targetX - x) === 4 && targetY === y) || (Math.abs(targetY - y) === 4 && targetX === x)) {
-        const jumpedCell = getJumpedPlayer(playerCellId, targetCellId);
-        const barrierInBetween = checkBarriersBetween(playerCellId, jumpedCell.id);
-        const secondBarrierInBetween = checkBarriersBetween(jumpedCell.id, targetCellId);
-        const jumpedPlayer = getJumpedPlayer(playerCellId, targetCellId);
-
-        if (jumpedPlayer && !barrierInBetween && !secondBarrierInBetween) {
-            hidePossibleMove();
-            targetCell.appendChild(currentPlayer);
-
-            if (currentPlayer === player1 && targetX === 16) {
-                endGame('Le joueur 1 a gagné!');
-            } else if (currentPlayer === player2 && targetX === 0) {
-                endGame('Le joueur 2 a gagné!');
-            }
-            /*
-            if (currentPlayer === player1) {
-                player1Path = calculateShortestPath(targetCell, 16);
-            } else {
-                player2Path = calculateShortestPath(targetCell, 0);
-            }*/
-
-            turn();
-            displayPossibleMove();
-        }
-    }
-}
-
-
-// Cette fonction marche très bien car elle est appelée uniquement dans les cas adéquat, lorsque deux cellules sont voisines
-function checkBarriersBetween(startCellId, targetCellId) {
-    const [x1, y1] = startCellId.split('-').slice(1).map(Number);
-    const [x2, y2] = targetCellId.split('-').slice(1).map(Number);
-
-    const interX = x1 + (x2 - x1) / 2;
-    const interY = y1 + (y2 - y1) / 2;
-
-    const barrierCell = document.getElementById(`cell-${interX}-${interY}`);
-    return barrierCell && barrierCell.querySelector('.barrier');
-}
-
-// Cette fonction, appelée lorsque l'on tente de faire un saut de 2 cases d'un coup, vérifie si un joueur est présent sur la case
-// située entre celle du joueur courant et celle où l'on veut atterir, et elle retourne la case contenant le joueur que l'on cherche à
-// sauter dans le cas où il y a bien un joueur entre les deux cases
-function getJumpedPlayer(startCellId, targetCellId) {
-    const [startX, startY] = startCellId.split('-').slice(1).map(Number);
-    const [targetX, targetY] = targetCellId.split('-').slice(1).map(Number);
-
-    const jumpedX = startX + (targetX - startX) / 2;
-    const jumpedY = startY + (targetY - startY) / 2;
-
-    const jumpedCell = document.getElementById(`cell-${jumpedX}-${jumpedY}`);
-    if (jumpedCell) {
-        const jumpedPlayer = jumpedCell.querySelector('.player');
-        if (jumpedPlayer && jumpedPlayer !== currentPlayer) {
-            return jumpedCell;
-        }
-    }
-
-    return null;
-}
-
-/*
-function calculateShortestPath(startCell, targetRow) {
-    const queue = [{ cell: startCell, path: [] }];
-    const visited = new Set();
-
-    while (queue.length > 0) {
-        const { cell, path } = queue.shift();
-        const [x, y] = cell.id.split('-').slice(1).map(Number);
-
-        if (x === targetRow) {
-            return path;
-        }
-
-        const neighbors = getNeighborsWithBarriers(cell);
-        for (const neighbor of neighbors) {
-            const neighborId = neighbor.id;
-            const isBarrier = neighbor.querySelector('.barrier');
-
-            if (!visited.has(neighborId) && !(isBarrier && !path.includes(neighborId))) {
-                visited.add(neighborId);
-                if (neighbor.classList.contains('player-cell')) {
-                    queue.push({ cell: neighbor, path: [...path, neighborId] });
-                } else {
-                    queue.push({ cell: neighbor, path });
-                }
-            }
-        }
-    }
-
-    return [];
-}*/
-
-function isAPlayableCell(cell) {
-    if(cell.classList.contains('player-cell')) {
-        return true;
-    }
-    print("Cette cellule n'est pas une case mais un bord");
-    return false;
-}
-
-function getGeographicNeighbors(cell) {
-    const [x, y] = cell.id.split('-').slice(1).map(Number);
-    if(!isAPlayableCell(cell)) {
-        print("Cette cellule n'a pas de voisins géographiques car c'est un bord");
-        return null;
-    }
-    const neighbors = [];
-
-    if (x > 0) neighbors.push(document.getElementById(`cell-${x - 2}-${y}`));
-    if (x < 16) neighbors.push(document.getElementById(`cell-${x + 2}-${y}`));
-    if (y > 0) neighbors.push(document.getElementById(`cell-${x}-${y - 2}`));
-    if (y < 16) neighbors.push(document.getElementById(`cell-${x}-${y + 2}`));
-
-    return neighbors;
-}
-
-function getNeighborsWithBarriers(cell) {
-    const [x, y] = cell.id.split('-').slice(1).map(Number);
-    if(!isAPlayableCell(cell)) {
-        print("Cette cellule n'a pas de voisins en prenant en compte les barrières car c'est un bord");
-        return null;
-    }
-    const neighbors = [];
-    const geographicNeighbors = getGeographicNeighbors(cell);
-
-    for(const neighborCell of geographicNeighbors) {
-        if(!checkBarriersBetween(cell.id, neighborCell.id)) {
-            neighbors.push(neighborCell);
-        }
-    }
-    return neighbors
+    return true;
 }
 
 function toggleBarrier(cell, cell2, cell3, isVertical) {
-    if (isBarrierPlacementValid(cell, cell2, cell3)) {
+    if (!cell.querySelector('.barrier') && (!cell2.querySelector('.barrier') || !cell2) && (!cell3.querySelector('.barrier') || !cell3)) {
         const barrier = document.createElement('div');
         barrier.className = 'barrier';
         if (isVertical) {
@@ -447,6 +249,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
         }
         barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
         cell.appendChild(barrier);
+        cell.classList.add('previewMode');
         if (cell2) {
             const barrier2 = document.createElement('div');
             barrier2.className = 'barrier';
@@ -464,6 +267,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell2.appendChild(barrier2);
+            cell2.classList.add('previewMode');
         }
         if (cell3) {
             const barrier3 = document.createElement('div');
@@ -482,28 +286,24 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             }
             barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
             cell3.appendChild(barrier3);
+            cell3.classList.add('previewMode');
         }
     }
 }
 
-function isBarrierPlacementValid(cell, cell2, cell3) {
-    const isCellEmpty = !cell.classList.contains('locked');
-    const isCell2Empty = !cell2.classList.contains('locked');
-    const isCell3Empty = !cell3.classList.contains('locked');
-    return isCellEmpty && isCell2Empty && isCell3Empty;
-}
-
-
-function turn() {
-    currentPlayer = currentPlayer === player1 ? player2 : player1;
-    updateBoardDisplay(board, currentPlayer);
-    document.getElementById('playerTurn').innerText = `C'est au tour du joueur ${currentPlayer.id === 'player1' ? '1' : '2'}`;
-}
-
-function endGame(message) {
-    gameActive = false;
+function ImpossibleWallPlacementPopUp() {
+    var message = "Impossible de poser le mur a l'emplacement souhaité !";
     const messageElement = document.getElementById('message');
     messageElement.innerText = message;
     messageElement.classList.add('visible');
-    board.classList.add('hidden');
+    setTimeout(function() {
+        messageElement.classList.remove('visible');
+    }, 2000);
 }
+
+function endGame(player) {
+    alert("Le joueur " + player.id + " a gagne !");
+    window.location.href = '/gameType/gameType.html';
+}
+
+export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

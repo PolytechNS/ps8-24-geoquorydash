@@ -4,14 +4,23 @@ const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../u
 
 let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
-function initializeGame(defaultOption) {
+function initializeGame(defaultOption, onlineGameOption) {
     gameActive = true;
     if (defaultOption) {
-        gameManager.initializeDefaultGameState();
         fogOfWar.initializeDefaultFogOfWar();
+        if (onlineGameOption) {
+            gameManager.initializeDefaultOnlineGameState();
+        } else {
+            gameManager.initializeDefaultGameState();
+        }
     }
-    player1 = gameManager.getPlayerById('ia');
-    player2 = gameManager.getPlayerById('p2');
+    try {
+        player1 = gameManager.getPlayers()[0];
+        player2 = gameManager.getPlayers()[1];
+    } catch (error) {
+        console.error("Error initializing game:", error);
+    }
+
     currentPlayer = gameManager.getCurrentPlayer();
     otherPlayer = player1;
 }
@@ -20,7 +29,6 @@ function movePlayer(targetPosition) {
     if (!gameActive) return;
 
     currentPlayer.position = targetPosition;
-
     if (currentPlayer === player1 && targetPosition.x === 16) {
         endGame('Le joueur 2 a gagné!');
         return currentPlayer;
@@ -36,7 +44,7 @@ function moveAI() {
     return movePlayer(iaMove);
 }
 
-function toggleWall(wall, isVertical) {
+function toggleWall(wall, isVertical, onlineGameOption) {
     if (!gameActive) return;
 
     var walls = gameManager.getBoardWalls();
@@ -45,7 +53,7 @@ function toggleWall(wall, isVertical) {
     }
 
     if(canPlayerReachArrival(walls)) {
-        var response = updateWalls(wall, isVertical);
+        var response = updateWalls(wall, isVertical, onlineGameOption);
         if (response) {
             return response;
         }
@@ -54,10 +62,12 @@ function toggleWall(wall, isVertical) {
     return 0;
 }
 
-function updateWalls(wall, isVertical) {
+function updateWalls(wall, isVertical, onlineGameOption) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
-    return turn();
+    if (!onlineGameOption) {
+        return turn();
+    }
 }
 
 function checkBarriersBetween(startPosition, targetPosition, walls) {
@@ -187,8 +197,16 @@ function turn() {
     currentPlayer = gameManager.getCurrentPlayer();
 }
 
+function changeCurrentPlayer() {
+    gameManager.gameState.players.forEach(player => {
+        player.isCurrentPlayer = !player.isCurrentPlayer;
+    });
+    currentPlayer = gameManager.getCurrentPlayer();
+    otherPlayer = currentPlayer === player1 ? player2 : player1;
+}
+
 function endGame(message) {
     gameActive = false;
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, changeCurrentPlayer};
