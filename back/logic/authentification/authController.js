@@ -2,7 +2,6 @@ const { generateToken, verifyToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
 const { ObjectId } = require('mongodb');
-const {retrieveGamesFromDatabaseForAUser} = require("../../models/game/gameDataBaseManager");
 
 async function signup(req, res) {
     parseJSON(req, async (err, { username, password }) => {
@@ -106,7 +105,6 @@ async function username(req, res) {
     }
 }
 
-
 function verifyAndValidateUserID(token) {
     try {
         const tokenData = verifyToken(token);
@@ -124,4 +122,4 @@ function verifyAndValidateUserID(token) {
     return userID;
 }
 
-module.exports = { signup, login, username, verifyAndValidateUserID};
+module.exports = { signup, login, username, verifyAndValidateUserID };
