@@ -2,6 +2,7 @@ const { generateToken, verifyToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
 const { ObjectId } = require('mongodb');
+const {retrieveGamesFromDatabaseForAUser} = require("../../models/game/gameDataBaseManager");
 
 async function signup(req, res) {
     parseJSON(req, async (err, { username, password }) => {
@@ -67,6 +68,45 @@ async function login(req, res) {
     });
 }
 
+async function username(req, res) {
+    const authHeader = req.headers.authorization;
+    let token;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+
+        const userID = verifyAndValidateUserID(token);
+        if (userID) {
+            try {
+                const usersCollection = await createUserCollection();
+                const user = await usersCollection.findOne({ _id: new ObjectId(userID) });
+                if (user) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify(user.username));
+                } else {
+                    console.log("user not found");
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('User not found');
+                }
+            } catch (error) {
+                console.log("error")
+                console.error('Error fetching user data:', error);
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Internal server error');
+            }
+        } else {
+            console.log("unauthorized");
+            res.writeHead(401, { 'Content-Type': 'text/plain' });
+            res.end('Unauthorized');
+        }
+    } else {
+        console.log("invalid or missing");
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid or missing Authorization header');
+    }
+}
+
+
 function verifyAndValidateUserID(token) {
     try {
         const tokenData = verifyToken(token);
@@ -84,4 +124,4 @@ function verifyAndValidateUserID(token) {
     return userID;
 }
 
-module.exports = { signup, login, verifyAndValidateUserID};
+module.exports = { signup, login, username, verifyAndValidateUserID};

@@ -1,4 +1,4 @@
-import { SearchService } from '../Services/searchService.js';
+import { FriendsService } from '../Services/friendsService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const searchForm = document.getElementById('friendsForm');
@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     searchForm.addEventListener('submit', function(event) {
         event.preventDefault();
         const username = searchForm.querySelector('[name="search"]').value;
-        SearchService.searchUsers(username)
+        FriendsService.searchUsers(username)
             .then(data => {
                 displaySearchResults(data);
             })

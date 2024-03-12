@@ -27,4 +27,33 @@ async function searchUsers(req, res) {
     });
 }
 
-module.exports = {searchUsers};
+async function addFriend(req, res) {
+    parseJSON(req, async (err, { currentUser, targetUser }) => {
+        if (err) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid JSON');
+            return;
+        }
+
+        try {
+            const usersCollection = await createUserCollection();
+            const result = await usersCollection.updateOne(
+                { username: targetUser },
+                { $addToSet: { friendRequests: currentUser } }
+            );
+            if (result.modifiedCount > 0) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Friend request sent successfully' }));
+            } else {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('User not found');
+            }
+        } catch (error) {
+            console.error('Error sending friend request:', error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal server error');
+        }
+    });
+}
+
+module.exports = {searchUsers, addFriend};

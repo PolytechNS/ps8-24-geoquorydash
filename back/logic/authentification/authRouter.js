@@ -7,6 +7,8 @@ async function handleAuthRoutes(req, res) {
         await authController.signup(req, res);
     } else if (url.pathname === '/api/auth/login' && req.method === 'POST') {
         await authController.login(req, res);
+    } else if (url.pathname === '/api/auth/username' && req.method === 'POST') {
+        await authController.username(req, res);
     } else {
         // Not Found
         res.writeHead(404, {'Content-Type': 'text/plain'});
