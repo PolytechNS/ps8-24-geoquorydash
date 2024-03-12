@@ -1,6 +1,6 @@
 const friendsController = require('./friendsController');
 
-async function handleAuthRoutes(req, res) {
+async function handleFriendsRoutes(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
     if (url.pathname === '/api/friends/search' && req.method === 'POST') {
         await friendsController.searchUsers(req, res);
@@ -11,4 +11,4 @@ async function handleAuthRoutes(req, res) {
     }
 }
 
-module.exports = handleAuthRoutes;
+module.exports = handleFriendsRoutes;

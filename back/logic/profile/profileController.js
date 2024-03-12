@@ -1,7 +1,7 @@
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
 
-async function searchUsers(req, res) {
+async function getPicture(req, res) {
     parseJSON(req, async (err, { username }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
@@ -11,13 +11,13 @@ async function searchUsers(req, res) {
 
         try {
             const usersCollection = await createUserCollection();
-            const users = await usersCollection.find({ username: { $regex: username, $options: 'i' } }).toArray();
-            if (users) {
+            const user = await usersCollection.findOne({ username });
+            if (user) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(users));
+                res.end(JSON.stringify({ profilePicture: user.profilePicture }));
             } else {
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('User not found');
+                res.end('Not Found');
             }
         } catch (error) {
             console.error('Error during login:', error);
@@ -27,4 +27,4 @@ async function searchUsers(req, res) {
     });
 }
 
-module.exports = {searchUsers};
+module.exports = {getPicture};

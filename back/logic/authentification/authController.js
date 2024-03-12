@@ -25,6 +25,9 @@ async function signup(req, res) {
             const newUser = {
                 username,
                 password,
+                profilePicture: null,
+                friends: [],
+                friendRequests: []
             };
             await usersCollection.insertOne(newUser);
             res.writeHead(200, { 'Content-Type': 'application/json' });
