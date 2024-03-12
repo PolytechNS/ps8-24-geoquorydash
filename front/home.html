@@ -5,13 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="home.css">
-    <link rel="stylesheet" href="burgerMenu/burgerMenu.css">
 </head>
 <body>
     <img src="img/home/title.png" alt="Title" class="top-image">
-
-    <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
-    <div id="burger-menu-container"></div>
 
     <div class="main">
         <a href="skinPage/skin.html"><img src="img/home/button_skin.png" alt="Skin"></a>
@@ -19,7 +15,7 @@
         <a href="settingsPage/settings.html"><img src="img/home/button_settings.png" alt="Settings"></a>
     </div>
     <div class="secondary">
-        <a href="friendsPage/friends.html"><img src="img/home/button_friends.png" alt="Friends"></a>
+        <a href="#" id="openFriendsPage"><img src="img/home/button_friends.png" alt="Friends"></a>
         <a href="statPage/stat.html"><img src="img/home/button_stat.png" alt="Stat"></a>
         <a href="successPage/success.html"><img src="img/home/button_success.png" alt="Success"></a>
         <a href="#" id="openAccountPage"><img src="img/home/button_account.png" alt="Account"></a>
@@ -31,7 +27,12 @@
         </div>
     </div>
 
+    <div id="friendsModal" class="modal">
+        <div class="modal-content">
+            <iframe id="friendsFrame" src="friendsPage/friends.html"></iframe>
+        </div>
+    </div>
+
     <script src="home.js"></script>
-    <script src="../burgerMenu/burgerMenu.js" type="module"></script>
 </body>
 </html>

@@ -6,6 +6,20 @@
     <link rel="stylesheet" href="friends.css">
 </head>
 <body>
-<div>RIEN A VOIR ICI</div>
+    <img src="../img/friends/title_friends.png" alt="title" class="top-image">
+
+    <div class="form-container">
+        <label for="search" class="friend-label"><img src="../img/friends/search.png" alt="search"></label>
+        <form id="friendsForm">
+            <div id="searchBlock">
+                <input type="text" id="search" name="search">
+                <input type="image" src="../img/friends/ok.png" alt="OK" id="okButton">
+            </div>
+        </form>
+    </div>
+
+    <ul id="searchResults"></ul>
+
+    <script src="friends.js" type="module"></script>
 </body>
 </html>
