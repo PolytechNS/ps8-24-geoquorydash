@@ -16,5 +16,13 @@ export const FriendsService = {
             body: JSON.stringify({ currentUser, targetUser }),
         })
             .then(response => response.json());
-    }
+    },
+    removeFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/remove`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
 };

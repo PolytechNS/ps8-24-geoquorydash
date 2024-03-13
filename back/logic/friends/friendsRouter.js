@@ -6,6 +6,8 @@ async function handleFriendsRoutes(req, res) {
         await friendsController.searchUsers(req, res);
     } else if (url.pathname === '/api/friends/add' && req.method === 'POST') {
         await friendsController.addFriend(req, res);
+    } else if (url.pathname === '/api/friends/remove' && req.method === 'POST') {
+        await friendsController.removeFriend(req, res);
     } else {
         // Not Found
         res.writeHead(404, {'Content-Type': 'text/plain'});

@@ -56,3 +56,16 @@ body {
 .hidden {
     display: none;
 }
+
+.custom-button {
+    position: absolute;
+    top: 5vh;
+    right: 5vw;
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 15vh;
+    width: 25vw;
+    border-radius: 15px;
+    cursor: pointer;
+}
+

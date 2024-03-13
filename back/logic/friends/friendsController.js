@@ -56,4 +56,33 @@ async function addFriend(req, res) {
     });
 }
 
-module.exports = {searchUsers, addFriend};
+async function removeFriend(req, res) {
+    parseJSON(req, async (err, { currentUser, targetUser }) => {
+        if (err) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid JSON');
+            return;
+        }
+
+        try {
+            const usersCollection = await createUserCollection();
+            const result = await usersCollection.updateOne(
+                { username: currentUser },
+                { $pull: { friendRequests: targetUser } }
+            );
+            if (result.modifiedCount > 0) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Friend request removed successfully' }));
+            } else {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('User not found');
+            }
+        } catch (error) {
+            console.error('Error removing friend request:', error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal server error');
+        }
+    });
+}
+
+module.exports = {searchUsers, addFriend, removeFriend};

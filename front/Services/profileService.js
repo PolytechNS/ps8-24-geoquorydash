@@ -8,5 +8,13 @@ export const ProfileService = {
             body: JSON.stringify({ username }),
         })
             .then(response => response.json());
-    }
+    },
+    button(username, currentUser){
+        return fetch(`${API_ENDPOINT}/api/profile/button`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, currentUser }),
+        })
+            .then(response => response.json());
+    },
 };

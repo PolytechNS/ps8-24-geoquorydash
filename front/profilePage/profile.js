@@ -53,6 +53,30 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Error fetching profile data:', error);
             });
+        AuthService.username(token)
+            .then(currentUser => {
+                ProfileService.button(username, currentUser)
+                    .then(buttonData => {
+                        if (buttonData.button === 'friends') {
+                            updateButtonImage('../img/profile/friend.png');
+                        } else if(buttonData.button === 'pending') {
+                            updateButtonImage('../img/profile/cancel.png');
+                        } else {
+                            updateButtonImage('../img/profile/add.png');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching username:', error);
+                    });
+            })
+            .catch(error => {
+            console.error('Error fetching current user:', error);
+        });
+    }
+
+    function updateButtonImage(imageUrl) {
+        const addFriendBtn = document.getElementById('add-friend-btn');
+        addFriendBtn.style.backgroundImage = `url(${imageUrl})`;
     }
 
     function updateMyProfileContent(username) {
@@ -79,18 +103,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (token) {
             AuthService.username(token)
                 .then(currentUser => {
-                    FriendsService.addFriend(currentUser, username)
-                        .then(response => {
-                            console.log('Friend request sent successfully.');
-                            alert(response.message);
-                        })
-                        .catch(error => {
-                            console.error('Error sending friend request:', error);
-                        });
+                    if (addFriendBtn.style.backgroundImage.includes('add.png')) {
+                        FriendsService.addFriend(currentUser, username)
+                            .then(response => {
+                                alert(response.message);
+                                updateButtonImage('../img/profile/cancel.png');
+                            })
+                            .catch(error => {
+                                console.error('Error sending friend request:', error);
+                            });
+                    } else if (addFriendBtn.style.backgroundImage.includes('cancel.png')) {
+                        FriendsService.removeFriend(currentUser, username)
+                            .then(response => {
+                                alert(response.message);
+                                updateButtonImage('../img/profile/add.png');
+                            })
+                            .catch(error => {
+                                console.error('Error sending friend request:', error);
+                            });
+                    } else {
+                    }
                 })
                 .catch(error => {
                     console.error('Error fetching current user:', error);
                 });
         }
     });
+
 });
