@@ -21,6 +21,16 @@ body {
     margin: 3vh 3vw 5vh;
 }
 
+.profile-container-me {
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 100%;
+    height: 100%;
+    align-items: flex-start;
+    margin: 3vh 3vw 5vh;
+}
+
+
 .profile-picture {
     width: 15vw;
     height: 15vw;
@@ -41,4 +51,8 @@ body {
 @font-face {
     font-family: 'PUSAB';
     src: url('../img/game/PUSAB___.otf');
+}
+
+.hidden {
+    display: none;
 }
