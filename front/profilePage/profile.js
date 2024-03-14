@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (profileData.profilePicture) {
                     profilePictureElement.src = profileData.profilePicture;
                 } else {
-                    profilePictureElement.src = '../img/Skin002.png';
+                    profilePictureElement.src = '../img/profile/picture.png';
                 }
             })
             .catch(error => {
@@ -90,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (profileData.profilePicture) {
                     myProfilePictureElement.src = profileData.profilePicture;
                 } else {
-                    myProfilePictureElement.src = '../img/Skin002.png';
+                    myProfilePictureElement.src = '../img/profile/picture.png';
                 }
             })
             .catch(error => {

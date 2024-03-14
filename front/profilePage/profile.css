@@ -32,12 +32,26 @@ body {
 
 
 .profile-picture {
+    position: relative;
     width: 15vw;
     height: 15vw;
     border-radius: 5px;
     margin-right: 4vw;
     margin-bottom: 10vh;
 }
+
+.profile-picture::after {
+    content: '';
+    position: absolute; /* Utilisez une position absolue */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 255, 0, 0.2); /* Ajoute une superposition semi-transparente de vert */
+    border-radius: 5px;
+    z-index: 1; /* Assurez-vous que l'image est superposée à l'arrière-plan */
+}
+
 
 .username {
     font-size: 12vh;
