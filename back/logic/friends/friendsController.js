@@ -41,12 +41,13 @@ async function addFriend(req, res) {
                 { username: targetUser },
                 { $addToSet: { friendRequests: currentUser } }
             );
+            console.log(result.modifiedCount);
             if (result.modifiedCount > 0) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend request sent successfully' }));
             } else {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('User not found');
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'User not found' }));
             }
         } catch (error) {
             console.error('Error sending friend request:', error);
@@ -67,15 +68,16 @@ async function removeFriend(req, res) {
         try {
             const usersCollection = await createUserCollection();
             const result = await usersCollection.updateOne(
-                { username: currentUser },
-                { $pull: { friendRequests: targetUser } }
+                { username: targetUser },
+                { $pull: { friendRequests: currentUser } }
             );
+            console.log(result.modifiedCount);
             if (result.modifiedCount > 0) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend request removed successfully' }));
             } else {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('User not found');
+                res.writeHead(404, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ error: 'User not found' }));
             }
         } catch (error) {
             console.error('Error removing friend request:', error);
