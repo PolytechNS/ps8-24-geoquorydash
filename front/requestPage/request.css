@@ -13,7 +13,7 @@ body {
     margin-bottom: 8vh;
 }
 
-#friendsResults {
+#requestResults {
     max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
@@ -24,7 +24,8 @@ body {
     align-items: center;
 }
 
-#friendsResults li {
+#requestResults li {
+    position: relative;
     background-image: url('../img/friends/liBackground.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -35,7 +36,33 @@ body {
     width: 70vw;
 }
 
-#friendsResults li a {
+#requestResults li button {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-size: contain;
+    background-repeat: no-repeat;
+    border: none;
+    width: 7vh;
+    height: 7vh;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#requestResults li button.accept {
+    background-image: url('../img/friends/accept.png');
+    right: 15vw;
+    background-position: center;
+}
+
+#requestResults li button.denied {
+    background-image: url('../img/friends/denied.png');
+    right: 8vw;
+    background-position: center;
+}
+
+
+#requestResults li a {
     text-decoration: none;
     color: white !important;
     font-family: 'PUSAB', sans-serif;

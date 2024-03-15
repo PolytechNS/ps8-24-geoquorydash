@@ -17,12 +17,44 @@ export const FriendsService = {
         })
             .then(response => response.json());
     },
-    removeFriend(currentUser, targetUser) {
-        return fetch(`${API_ENDPOINT}/api/friends/remove`, {
+    cancel(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/cancel`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentUser, targetUser }),
         })
             .then(response => response.json());
     },
+    getRequests(currentUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/requests`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser }),
+        })
+            .then(response => response.json());
+    },
+    acceptFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    deniedFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/denied`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    getFriends(currentUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/friends`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser }),
+        })
+            .then(response => response.json());
+    }
 };
