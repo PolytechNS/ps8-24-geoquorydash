@@ -5,21 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Jeux de plateau</title>
   <link rel="stylesheet" href="gameStyle.css">
+  <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
 </head>
 <body>
 
+<a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
+<div id="burger-menu-container"></div>
+
   <div class="container">
+    <div class="player-info" id="player1-info">
+      <span class="player-name"><img src="../img/game/joueur1.png" alt="Joueur 1"></span>
+      <span class="player-stock" id="player1-barrier-count">10</span>
+    </div>
     <div class="board" id="board"></div>
-    <div id="playerTurn">C'est au tour du joueur 1</div>
+    <div class="player-info" id="player2-info">
+      <span class="player-name"><img src="../img/game/joueur2.png" alt="Joueur 2"></span>
+      <span class="player-stock" id="player2-barrier-count">10</span>
+    </div>
   </div>
 
   <svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintRed"><feColorMatrix type="matrix" values="0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0  0 0 0 1 0" /></filter></svg>
   <svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintGreen"><feColorMatrix type="matrix" values="0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2823529411764706 0.2823529411764706 0.2823529411764706  0 0  0 0 0 1 0" /></filter></svg>
 
-  <script type="module" src="./gameIA.js"></script>
+  <script type="module" src="game.js"></script>
   <script type="module" src="./fogOfWar.js"></script>
 
   <script src="../sockets/socket.io.js"></script>
   <script type="module" src="../sockets/socketConnection.js"></script>
+  <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+
 </body>
 </html>

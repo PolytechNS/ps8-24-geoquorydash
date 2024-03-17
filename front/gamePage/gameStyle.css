@@ -10,13 +10,74 @@ body {
     background-repeat: no-repeat;
 }
 
+.burger-menu-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 999;
+    width: 4vw;
+    height: 8vh;
+}
+
+.burger-menu-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.burger-menu-button.open {
+    left: 17vw;
+}
+
+
 .container {
     display: flex;
-    flex-direction: column;
+    justify-content: space-between;
     align-items: center;
 }
 
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 5vh;
+    font-weight: bold;
+    width: 100%;
+    margin-bottom: 2vh;
+    color: white;
+}
+
+.player-info img {
+    width: 15vw;
+    height: 5vh;
+    margin-bottom: 2vh;
+}
+
+.player-stock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: url('../img/game/stock.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center center;
+    width: 20vw;
+    height: 10vh;
+    padding: 1vh;
+    font-family: 'PUSAB', sans-serif;
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.2vw;
+}
+
+@font-face {
+    font-family: 'PUSAB';
+    src: url('../img/game/PUSAB___.otf');
+}
+
 .board {
+    margin-left: 8vw;
+    margin-right: 8vw;
     display: grid;
     grid-template: repeat(8, 7vh 2vh) 7vh / repeat(8, 7vh 2vh) 7vh;
 }
@@ -36,7 +97,7 @@ body {
     position: absolute;
 }
 
-.player1, .BotPlayer {
+.player1, .player1 {
     background-image: url('../img/Skin002.png');
     background-size: cover;
     filter: url(#svgTintRed);

@@ -9,22 +9,25 @@ const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPo
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 
-async function createGameInDatabase(gameStateForPlayer, visibilityMap, userID) {
+async function createGameInDatabase(gameState, visibilityMap, users, gameStateID) {
     const client = new MongoClient(uri);
     try {
         await client.connect();
         const database = client.db('myapp_db');
 
-        const gameStateID = await createGameStateInDatabase(database);
+        // const gameStateID = await createGameStateInDatabase(database);
         await createVisibilityMapInDatabase(database, gameStateID, visibilityMap);
 
-        let aiPlayer = gameStateForPlayer.find(player => player.id === 'ia');
-        await createPlayerInDatabase(database, gameStateID, aiPlayer);
+        let userPlayer = gameState.players.find(player => player.id === 'player2');
+        await createPlayerInDatabase(database, gameStateID, userPlayer, users.userId1);
 
-        let userPlayer = gameStateForPlayer.find(player => player.id === 'p2');
-        await createPlayerInDatabase(database, gameStateID, userPlayer, userID);
-
-        return gameStateID;
+        if (users.userId2) {
+            let userPlayer2 = gameState.players.find(player => player.id === 'player1');
+            await createPlayerInDatabase(database, gameStateID, userPlayer2, users.userId2);
+        } else {
+            let aiPlayer = gameState.players.find(player => player.id === 'ia');
+            await createPlayerInDatabase(database, gameStateID, aiPlayer);
+        }
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw error;
@@ -99,15 +102,22 @@ async function moveUserPlayerInDatabase(gameStateID, token, targetPosition) {
     }
 }
 
-async function moveAIPlayerInDatabase(gameStateID, targetPosition) {
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        const database = client.db('myapp_db');
-        await changeAIPlayerPositionInDatabase(database, gameStateID, targetPosition);
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        throw new DatabaseConnectionError("Error connecting to MongoDB");
+async function moveAIPlayerInDatabase(gameStateID, targetPosition, token) {
+    if (token) {
+        const userID = verifyAndValidateUserID(token);
+        if (!userID) {
+            console.error("Invalid token");
+            throw new InvalidTokenError("Invalid token");
+        }
+        const client = new MongoClient(uri);
+        try {
+            await client.connect();
+            const database = client.db('myapp_db');
+            await changeAIPlayerPositionInDatabase(database, gameStateID, targetPosition);
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            throw new DatabaseConnectionError("Error connecting to MongoDB");
+        }
     }
 }
 
@@ -118,22 +128,22 @@ async function toggleWallInDatabase(gameStateID, wall, isVertical, token) {
             console.error("Invalid token");
             throw new InvalidTokenError("Invalid token");
         }
-    }
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        const database = client.db('myapp_db');
-        wall.push({
-            isVertical: isVertical
-        });
-        if (userID) {
-            await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
-        } else {
-            await addWallToAIPlayerInDatabase(database, gameStateID, wall);
+        const client = new MongoClient(uri);
+        try {
+            await client.connect();
+            const database = client.db('myapp_db');
+            wall.push({
+                isVertical: isVertical
+            });
+            if (userID) {
+                await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
+            } else {
+                await addWallToAIPlayerInDatabase(database, gameStateID, wall);
+            }
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            throw new DatabaseConnectionError("Error connecting to MongoDB");
         }
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        throw new DatabaseConnectionError("Error connecting to MongoDB");
     }
 }
 
@@ -156,16 +166,24 @@ async function modifyVisibilityMapInDatabase(token, gameStateID, visibilityMap) 
 
 }
 
-async function endGameInDatabase(gameStateID) {
-    const client = new MongoClient(uri);
-    try {
-        await client.connect();
-        const database = client.db('myapp_db');
-        await setGameStateToFinishedInDatabase(database, gameStateID);
-    } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        throw new DatabaseConnectionError("Error connecting to MongoDB");
+async function endGameInDatabase(gameStateID, token) {
+    if (token){
+        if (!verifyAndValidateUserID(token)) {
+            console.error("Invalid token");
+            throw new InvalidTokenError("Invalid token");
+        }
+
+        const client = new MongoClient(uri);
+        try {
+            await client.connect();
+            const database = client.db('myapp_db');
+            await setGameStateToFinishedInDatabase(database, gameStateID);
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            throw new DatabaseConnectionError("Error connecting to MongoDB");
+        }
     }
+
 }
 
 module.exports = { createGameInDatabase, retrieveGamesFromDatabaseForAUser, retrieveGameStateFromDB,
