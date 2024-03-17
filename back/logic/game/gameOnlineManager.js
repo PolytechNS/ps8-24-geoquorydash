@@ -2,6 +2,7 @@ const {initializeGame} = require("./gameEngine");
 const fogOfWar = require("./fogOfWarController");
 const gameManager = require("./gameManager");
 const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
+const {createGameStateInDatabase} = require("../../models/game/gameState");
 
 class GameOnlineManager {
     waitingPlayers = {};
@@ -45,13 +46,14 @@ class GameOnlineManager {
             const socket1 = this.waitingPlayers[player1];
             const socket2 = this.waitingPlayers[player2];
 
+            const gameStateId = await createGameStateInDatabase();
             const defaultOption = true;
             const onlineGameOption = true;
-            initializeGame({defaultOption, onlineGameOption});
-            fogOfWar.updateBoardVisibility();
+            initializeGame({defaultOption, onlineGameOption, id: gameStateId});
+            fogOfWar.updateBoardVisibility(gameStateId);
 
-            const gameStatePlayers = gameManager.gameState.players;
-            const gameStateID = await createGameInDatabase(gameStatePlayers, fogOfWar.visibilityMap, player1, player2);
+            const gameState = gameManager.gameStateList[gameStateId];
+            const gameStateID = await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: player1, userId2: player2});
 
             const roomId = gameStateID.toString();
 

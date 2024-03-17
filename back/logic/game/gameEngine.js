@@ -23,7 +23,6 @@ function initializeGame(options) {
     // // print all the keys
     // currentPlayer = player1.isCurrentPlayer ? player1 : player2;
     // otherPlayer = currentPlayer === player1 ? player2 : player1;
-    console.log("Game initialized avec id ", options.id, gameManager.gameStateList[options.id]);
 }
 
 function movePlayer(targetPosition, gameStateId) {
@@ -110,7 +109,7 @@ function getPossibleMove(id) {
                 forwardPosition = {x: currentPlayer.position.x - 4, y: currentPlayer.position.y};
             }
         }
-        if(!checkBarriersBetween(otherPlayer, forwardPosition)) {
+        if(!checkBarriersBetween(otherPlayer, forwardPosition, {walls: null, id: id})) {
             possibleMove.push(forwardPosition);
         }
 

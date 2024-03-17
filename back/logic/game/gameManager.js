@@ -243,7 +243,6 @@ class GameManager {
     }
 
     getCurrentPlayer(id) {
-        console.log('Getting current player of game', id);
         return this.gameStateList[id].players.find(player => player.isCurrentPlayer);
     }
 

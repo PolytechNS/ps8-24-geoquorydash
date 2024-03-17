@@ -22,7 +22,6 @@ const setupSocket = (server) => {
             const defaultOption = true;
             if (!token) {
                 // Initialiser une nouvelle partie qui ne sera pas stocker en BD car l'utilisateur n'est pas connecté
-                console.log('startNewGame avec id ', socket.id)
                 initializeGame({defaultOption, id: socket.id});
                 fogOfWar.updateBoardVisibility(socket.id);
                 socket.emit("updateBoard", gameManager.gameStateList[socket.id], fogOfWar.visibilityMapObjectList[socket.id].visibilityMap);
@@ -35,12 +34,13 @@ const setupSocket = (server) => {
                 }
 
                 const userObjectID = verificationResult;
-                const gameStateId = await createGameStateInDatabase();
+                const gameStateIdObject = await createGameStateInDatabase();
+                const gameStateId = gameStateIdObject.toString();
                 initializeGame({defaultOption, id: gameStateId});
                 fogOfWar.updateBoardVisibility(gameStateId);
                 const gameState = gameManager.gameStateList[gameStateId];
-                const gameStateID = await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: userObjectID});
-                socket.emit("updateBoard", gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, gameStateID);
+                await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: userObjectID}, gameStateIdObject);
+                socket.emit("updateBoard", gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, gameStateId);
             }
 
         });
@@ -54,19 +54,20 @@ const setupSocket = (server) => {
                 return;
             }
 
-            try {
-                var gameState = await gameManager.resumeGame(gameStateID);
-            } catch (error) {
-                throw error;
-            }
-
-            try {
-                var visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
-            } catch (error) {
-                throw error;
-            }
-            const defaultOption = false;
-            initializeGame({defaultOption, id: gameStateID});
+            // try {
+            //     var gameState = await gameManager.resumeGame(gameStateID);
+            // } catch (error) {
+            //     throw error;
+            // }
+            // try {
+            //     var visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
+            // } catch (error) {
+            //     throw error;
+            // }
+            // const defaultOption = false;
+            // initializeGame({defaultOption, id: gameStateID});
+            const gameState = gameManager.gameStateList[gameStateID];
+            const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
             socket.emit("updateBoard", gameState, visibilityMap, gameStateID);
         });
 
@@ -247,9 +248,7 @@ const setupSocket = (server) => {
                 }
 
                 if (roomId) {
-                    console.log('AVANT', gameManager.gameStateList[gameStateID])
                     changeCurrentPlayer(gameStateID);
-                    console.log('APRES', gameManager.gameStateList[gameStateID])
                     gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
                 } else {
                     socket.emit('updateBoard', gameManager.gameStateList[gameStateID], fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap);
