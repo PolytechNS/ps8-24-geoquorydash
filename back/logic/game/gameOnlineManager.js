@@ -47,7 +47,7 @@ class GameOnlineManager {
 
             const defaultOption = true;
             const onlineGameOption = true;
-            initializeGame(defaultOption, onlineGameOption);
+            initializeGame({defaultOption, onlineGameOption});
             fogOfWar.updateBoardVisibility();
 
             const gameStatePlayers = gameManager.gameState.players;
@@ -72,8 +72,9 @@ class GameOnlineManager {
     emitUpdateBoard(gameStateID, roomId){
         const socket1 = this.gameInSession[roomId][0];
         const socket2 = this.gameInSession[roomId][1];
-        socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
-        socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+        let visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
+        socket1.emit("updateBoard", gameManager.gameStateList[gameStateID], fogOfWar.invertedVisibilityMap(visibilityMap), gameStateID, gameManager.getPlayers(gameStateID)[0]);
+        socket2.emit("updateBoard", gameManager.gameStateList[gameStateID], visibilityMap, gameStateID, gameManager.getPlayers(gameStateID)[1]);
     }
 }
 

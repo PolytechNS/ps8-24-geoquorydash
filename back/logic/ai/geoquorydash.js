@@ -33,7 +33,7 @@ async function updateBoard(gameState) {
 
 }
 
-function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
+function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls, id) {
     // Initialisation des variables
     let alreadyVisitedCells = [];
     let cellsWithWeights = [];
@@ -44,7 +44,7 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     cellsWithWeights.push({position: position, pathLength: pathLength, predecessor: null});
 
     // On commence à travailler
-    let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls);
+    let shortestPathFinalPosition = getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls, id);
 
     //console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
 
@@ -53,7 +53,7 @@ function dijkstraAlgorithm(position, getAdjacentCellsPositionsWithWalls) {
     return shortestPath[0];
 }
 
-function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
+function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls, id) {
     let currentPosition = {x: position.x, y: position.y};
 
     let AIwinningPosition = null;
@@ -64,7 +64,7 @@ function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWe
     }
 
     while(currentPosition.x !== AIwinningPosition) {
-        updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls);
+        updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength + 1, getAdjacentCellsPositionsWithWalls, id);
         currentPosition = getNextCellToWorkOn(alreadyVisitedCells, cellsWithWeights);
     }
     
@@ -74,13 +74,13 @@ function getShortestPathFinalPosition(position, alreadyVisitedCells, cellsWithWe
 }
 
 // Cette fonction sert, pour une cellule donnée, à mettre à jour le poids de ses voisins, voisins pour lesquels on a encore jamais calculé le poids de ses voisins à lui
-function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls) {
+function updateWeightsFromACell(currentPosition, alreadyVisitedCells, cellsWithWeights, pathLength, getAdjacentCellsPositionsWithWalls, id) {
     alreadyVisitedCells.push(currentPosition);
     
     let currentCell = cellsWithWeights.find(cell => equalsPositions(cell.position, currentPosition));
     let currentPathLength = currentCell ? currentCell.pathLength : 0;
 
-    let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(currentPosition);
+    let adjacentCellsPosition = getAdjacentCellsPositionsWithWalls(currentPosition, {id: id});
     adjacentCellsPosition.forEach(adjacentPosition => {
         
         if (!alreadyVisitedCells.some(cell => equalsPositions(cell, adjacentPosition))) {

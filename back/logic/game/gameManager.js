@@ -5,7 +5,7 @@ const { retrieveGameStateFromDB } = require("../../models/game/gameDataBaseManag
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
 class GameManager {
-    gridMap = [];
+    gameStateList = {};
 
     gameState = {
         players: [
@@ -30,7 +30,7 @@ class GameManager {
         try {
             const gameState = await retrieveGameStateFromDB(gameStateID);
             if (gameState) {
-                this.gameState = gameState;
+                this.gameStateList[gameStateID] = gameState;
                 return gameState;
             }
             return null;
@@ -41,29 +41,30 @@ class GameManager {
     }
 
 
-    initializeDefaultGameState() {
-        this.gameState = {
+    initializeDefaultGameState(id) {
+        this.gameStateList[id] = {
             players: [
                 {
                     id: "ia",
-                    position: { x: 0, y: 8 },
+                    position: {x: 0, y: 8},
                     walls: [],
                     isCurrentPlayer: false
                 },
                 {
                     id: "player2",
-                    position: { x: 16, y: 8 },
+                    position: {x: 16, y: 8},
                     walls: [],
                     isCurrentPlayer: true
                 }
-            ]
+            ],
+            isGameActive: true
         };
     }
 
-    initializeDefaultOnlineGameState() {
+    initializeDefaultOnlineGameState(id) {
         // genere un booleen aleatoire pour savoir qui commence
         let randomBoolean = Math.random() >= 0.5;
-        this.gameState = {
+        this.gameStateList[id] = {
             players: [
                 {
                     id: "player1",
@@ -77,7 +78,8 @@ class GameManager {
                     walls: [],
                     isCurrentPlayer: !randomBoolean
                 }
-            ]
+            ],
+            isGameActive: true
         };
     }
 
@@ -197,10 +199,10 @@ class GameManager {
     }
 
     // Methods to manage the game
-    computeMoveForAI(getAdjacentCellsPositionsWithWalls){
-        let iaPlayer = this.gameState.players.find(player => player.id === "ia");
+    computeMoveForAI(getAdjacentCellsPositionsWithWalls, id){
+        let iaPlayer = this.gameStateList[id].players.find(player => player.id === "ia");
         let iaPosition = iaPlayer.position;
-        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls);
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls, id);
     }
 
     validateMove(move) {
@@ -224,13 +226,13 @@ class GameManager {
         return this.gameState.players.find(player => player.id === playerId);
     }
 
-    getPlayers() {
-        return this.gameState.players;
+    getPlayers(gameStateID) {
+        return this.gameStateList[gameStateID].players;
     }
 
-    getBoardWalls() {
+    getBoardWalls(gameStateID) {
         let boardWalls = [];
-        this.gameState.players.forEach(player => {
+        this.gameStateList[gameStateID].players.forEach(player => {
             player.walls.forEach(wall => {
                 wall.forEach(cell => {
                     boardWalls.push(cell);
@@ -240,10 +242,22 @@ class GameManager {
         return boardWalls;
     }
 
-    getCurrentPlayer() {
-        return this.gameState.players.find(player => player.isCurrentPlayer === true);
+    getCurrentPlayer(id) {
+        console.log('Getting current player of game', id);
+        return this.gameStateList[id].players.find(player => player.isCurrentPlayer);
     }
 
+    getOtherPlayer(id) {
+        return this.gameStateList[id].players.find(player => !player.isCurrentPlayer);
+    }
+
+    isGameActive(id) {
+        return this.gameStateList[id].isGameActive;
+    }
+
+    endGame(id) {
+        this.gameStateList[id].isGameActive = false;
+    }
 }
 
 const gameManagerInstance = new GameManager();
