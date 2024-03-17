@@ -53,9 +53,10 @@ class GameOnlineManager {
             fogOfWar.updateBoardVisibility(gameStateId);
 
             const gameState = gameManager.gameStateList[gameStateId];
-            const gameStateID = await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: player1, userId2: player2});
+            const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap;
+            await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: player1, userId2: player2});
 
-            const roomId = gameStateID.toString();
+            const roomId = gameStateId.toString();
 
             this.gameInSession[roomId] = [socket1, socket2];
             this.gameInSession[roomId][0].join(roomId);
@@ -66,8 +67,8 @@ class GameOnlineManager {
             delete this.waitingPlayers[player1];
             delete this.waitingPlayers[player2];
 
-            this.gameInSession[roomId][0].emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
-            this.gameInSession[roomId][1].emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+            this.gameInSession[roomId][0].emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0]);
+            this.gameInSession[roomId][1].emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1]);
         }
     };
 

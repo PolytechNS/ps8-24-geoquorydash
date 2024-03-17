@@ -78,6 +78,8 @@ class FogOfWar{
         // Update the old adjacent cells
         visibilityMapObject.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
         visibilityMapObject.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
+
+        this.displayVisibilityMap(id);
     }
 
     getAdjacentPlayerCellsIndices(i, j) {
@@ -193,20 +195,20 @@ class FogOfWar{
             cellGroup.forEach(cellIndex => {
                 visibilityMap[cellIndex] += visibilityToAdd;
             });
-            visibilityToAdd += gameManager.getCurrentPlayer(gameStateID).id === 'ia' || 'player1'? -1 : 1;
+            visibilityToAdd += playersStartingTop.includes(gameManager.getCurrentPlayer(gameStateID).id) ? -1 : 1;
         });
         // this.displayVisibilityMap();
     }
 
-    displayVisibilityMap() {
+    displayVisibilityMap(id) {
         console.log('');
         for (let i = 0; i < 9; i++) {
             let row = '';
             for (let j = 0; j < 9; j++) {
-                if(this.visibilityMap[i * 9 + j] >= 0) {
-                    row += ' ' + this.visibilityMap[i * 9 + j] + ' ';
+                if(this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] >= 0) {
+                    row += ' ' + this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] + ' ';
                 } else {
-                    row += this.visibilityMap[i * 9 + j] + ' ';
+                    row += this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] + ' ';
                 }
             }
              console.log(row);
