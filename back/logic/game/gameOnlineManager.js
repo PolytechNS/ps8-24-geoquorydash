@@ -2,6 +2,7 @@ const {initializeGame} = require("./gameEngine");
 const fogOfWar = require("./fogOfWarController");
 const gameManager = require("./gameManager");
 const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
+const {createGameStateInDatabase} = require("../../models/game/gameState");
 
 class GameOnlineManager {
     waitingPlayers = {};
@@ -45,39 +46,38 @@ class GameOnlineManager {
             const socket1 = this.waitingPlayers[player1];
             const socket2 = this.waitingPlayers[player2];
 
+            const gameStateId = await createGameStateInDatabase();
             const defaultOption = true;
             const onlineGameOption = true;
-            initializeGame(defaultOption, onlineGameOption);
-            fogOfWar.updateBoardVisibility();
+            initializeGame({defaultOption, onlineGameOption, id: gameStateId});
+            fogOfWar.updateBoardVisibility(gameStateId);
 
-            const gameStatePlayers = gameManager.gameState.players;
-            const gameStateID = await createGameInDatabase(gameStatePlayers, fogOfWar.visibilityMap, player1, player2);
+            const gameState = gameManager.gameStateList[gameStateId];
+            const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap;
+            await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: player1, userId2: player2});
 
-            const roomId = gameStateID;
-            socket1.join(roomId);
-            socket2.join(roomId);
+            const roomId = gameStateId.toString();
+
             this.gameInSession[roomId] = [socket1, socket2];
+            this.gameInSession[roomId][0].join(roomId);
+            this.gameInSession[roomId][1].join(roomId);
 
             io.of('/api/game').to(roomId).emit('matchFound', roomId);
 
             delete this.waitingPlayers[player1];
             delete this.waitingPlayers[player2];
 
-
-            socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
-            socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+            this.gameInSession[roomId][0].emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0]);
+            this.gameInSession[roomId][1].emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1]);
         }
     };
 
     emitUpdateBoard(gameStateID, roomId){
-        // const userIds = Object.keys(this.waitingPlayers);
-        // const player1 = userIds.shift();
-        // const player2 = userIds.shift();
-
         const socket1 = this.gameInSession[roomId][0];
         const socket2 = this.gameInSession[roomId][1];
-        socket1.emit("updateBoard", gameManager.gameState, fogOfWar.invertedVisibilityMap(), gameStateID, gameManager.getPlayers()[0]);
-        socket2.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID, gameManager.getPlayers()[1]);
+        let visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
+        socket1.emit("updateBoard", gameManager.gameStateList[gameStateID], fogOfWar.invertedVisibilityMap(visibilityMap), gameStateID, gameManager.getPlayers(gameStateID)[0]);
+        socket2.emit("updateBoard", gameManager.gameStateList[gameStateID], visibilityMap, gameStateID, gameManager.getPlayers(gameStateID)[1]);
     }
 }
 

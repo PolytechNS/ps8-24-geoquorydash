@@ -15,7 +15,6 @@ async function signup(req, res) {
 
         try {
             const usersCollection = await createUserCollection();
-            // Vérifier si l'utilisateur existe déjà
             const existingUser = await usersCollection.findOne({ username: username });
             if (existingUser) {
                 console.log('User already exists:', username);
@@ -66,6 +65,32 @@ async function login(req, res) {
     });
 }
 
+async function searchUsers(req, res) {
+    parseJSON(req, async (err, { username }) => {
+        if (err) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid JSON');
+            return;
+        }
+
+        try {
+            const usersCollection = await createUserCollection();
+            const users = await usersCollection.find({ username: { $regex: username, $options: 'i' } }).toArray();
+            if (users) {
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(users));
+            } else {
+                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.end('User not found');
+            }
+        } catch (error) {
+            console.error('Error during login:', error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal server error');
+        }
+    });
+}
+
 function verifyAndValidateUserID(token) {
     try {
         const tokenData = verifyToken(token);
@@ -83,4 +108,4 @@ function verifyAndValidateUserID(token) {
     return userID;
 }
 
-module.exports = { signup, login, verifyAndValidateUserID};
+module.exports = { signup, login, searchUsers, verifyAndValidateUserID};

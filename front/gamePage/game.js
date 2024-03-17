@@ -15,7 +15,10 @@ for (let i = 0; i < 17; i++) {
             cell.style.opacity = 0.1;
         } else {
             cell.classList.add('barrier-cell');
-            if (localStorage.getItem('gameStateID')) activateBarrierCellListeners(cell, i, j);
+            //check url in js
+
+            if (!window.location.href.includes('gameOnline') && localStorage.getItem('gameStateID') !== 'waitingForMatch')
+                activateBarrierCellListeners(cell, i, j);
         }
 
         cell.id = `cell-${i}-${j}`;
@@ -148,7 +151,8 @@ function handleCellAction(cell, i, j, actionType) {
 }
 
 function askPossibleMove() {
-    socket.emit('possibleMoveRequest');
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
+    socket.emit('possibleMoveRequest', id);
 }
 
 function displayPossibleMove(possibleMove) {
@@ -163,7 +167,6 @@ function displayPossibleMove(possibleMove) {
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
         cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
-        console.log("Je peux bouger en " + move.x + " " + move.y);
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
         cell.moveEventListener = callback;
@@ -201,7 +204,8 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    socket.emit('toggleWall', wall, isVertical, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
+    socket.emit('toggleWall', wall, isVertical, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 function lockBarrier(wall) {
     var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
@@ -218,7 +222,8 @@ function lockBarrier(wall) {
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
-    socket.emit('movePlayer', targetPosition, localStorage.getItem('gameStateID'), localStorage.getItem('token'), localStorage.getItem('roomId'));
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
+    socket.emit('movePlayer', targetPosition, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 
 function canToggleBarrier() {
@@ -290,13 +295,14 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-    var message = "Impossible de poser le mur a l'emplacement souhaité !";
-    const messageElement = document.getElementById('message');
-    messageElement.innerText = message;
+/*    const messageElement = document.getElementById('message');
+    messageElement.innerText = 'Placement de barrière impossible';
     messageElement.classList.add('visible');
     setTimeout(function() {
         messageElement.classList.remove('visible');
-    }, 2000);
+    }, 2000);*/
+
+    alert("Placement de barrière impossible");
 }
 
 function endGame(player) {
