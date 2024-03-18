@@ -1,5 +1,6 @@
 // Main method, exported at the end of the file. It's the one that will be called when a REST request is received.
 const authRouter = require('../logic/authentification/authRouter');
+const gameRouter = require('../logic/game/gameRouter');
 function manageRequest(request, response) {
     addCors(response);
 
@@ -10,7 +11,12 @@ function manageRequest(request, response) {
     }
 
     if (request.url.startsWith('/api/auth')) {
-        authRouter(request, response);
+        authRouter(request, response).then();
+    }
+    if (request.url.startsWith('/api/game')) {
+        gameRouter(request, response).then(() => {
+            response.end();
+        });
     }
 
     response.statusCode = 200;

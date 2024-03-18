@@ -1,12 +1,11 @@
 const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { dijkstraAlgorithm } = require("../ai/geoquorydash.js");
-const { nextMove } = require("../ai/geoquorydash.js");
-const { setup } = require("../ai/geoquorydash.js");
-//const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
+const { retrieveGameStateFromDB } = require("../../models/game/gameDataBaseManager.js");
+// const { getAdjacentCellsPositionsWithWalls } = require("./gameEngine");
 // const fogOfWarInstance = require("./fogOfWarController.js");
 
 class GameManager {
-    gridMap = [];
+    gameStateList = {};
 
     gameState = {
         players: [
@@ -20,35 +19,68 @@ class GameManager {
     };
 
     gameStateTeacher = {
-        opponentWalls: [[]],    // Contient un tableau de tableau, eux même contenant une position et un isVertical
-        ownWalls: [[]],         // Pareil
+        opponentWalls: [[]], // contient une position et un isVertical
+        ownWalls: [[]], // pareil
         board: [[]]
     };
 
-    constructor() {
-        this.gridMap = new Array(17).fill(0).map(() => new Array(17).fill(0));
-        this.gameState = {
+    constructor() {}
+
+    async resumeGame(gameStateID) {
+        try {
+            const gameState = await retrieveGameStateFromDB(gameStateID);
+            if (gameState) {
+                this.gameStateList[gameStateID] = gameState;
+                return gameState;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            return null;
+        }
+    }
+
+
+    initializeDefaultGameState(id) {
+        this.gameStateList[id] = {
             players: [
                 {
                     id: "ia",
-                    position: { x: 0, y: 8 },
+                    position: {x: 0, y: 8},
                     walls: [],
                     isCurrentPlayer: false
                 },
                 {
-                    id: "p2",
+                    id: "player2",
+                    position: {x: 16, y: 8},
+                    walls: [],
+                    isCurrentPlayer: true
+                }
+            ],
+            isGameActive: true
+        };
+    }
+
+    initializeDefaultOnlineGameState(id) {
+        // genere un booleen aleatoire pour savoir qui commence
+        let randomBoolean = Math.random() >= 0.5;
+        this.gameStateList[id] = {
+            players: [
+                {
+                    id: "player1",
+                    position: { x: 0, y: 8 },
+                    walls: [],
+                    isCurrentPlayer: randomBoolean
+                },
+                {
+                    id: "player2",
                     position: { x: 16, y: 8 },
                     walls: [],
-                    isCurrentPlayer: true // Au départ, le user courant est le joueur 2
+                    isCurrentPlayer: !randomBoolean
                 }
-            ]
+            ],
+            isGameActive: true
         };
-
-        setup(2);
-        console.log("Setup fait");
-
-
-        return this;
     }
 
     // convertGameStateToGameStateTeacher() {
@@ -56,12 +88,10 @@ class GameManager {
     //     let IAplayerWalls = IAplayer.walls;
     //     this.gameStateTeacher.ownWalls = [];
     //     this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacher.ownWalls);
-
     //     let otherPlayer = this.gameState.players.find(player => player.id === "p2");
     //     let otherPlayerWalls = otherPlayer.walls;
     //     this.gameStateTeacher.opponentWalls = [];
     //     this.addWallsToAPlayer(otherPlayerWalls, this.gameStateTeacher.opponentWalls);
-
     //     this.gameStateTeacher.board = [[]];
     //     this.gameStateTeacher.board = this.rearrangeVisibilityMapToBoard(fogOfWarInstance.visibilityMap);
     //     let convertedIAplayerPosition = this.convertMyPositionToTeacherPosition(IAplayer.position);
@@ -82,12 +112,12 @@ class GameManager {
         for(let i = 0; i < 9; i++) {
             for(let j = 0; j < 9; j++) {
                 if(this.gameStateTeacher.board[i][j] === 1) {           // Dans ce cas, il s'agit de la case sur laquelle mon bot se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     IAplayer.position = myPosition;
                 } else if(this.gameStateTeacher.board[i][j] === 2) {    // Dans ce cas, il s'agit de la case sur laquelle mon opposant se trouve
-                    teacherPosition = `${i}${j}`;
-                    myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
+                    var teacherPosition = `${i}${j}`;
+                    var myPosition = this.convertTeacherPositionToMyPosition(teacherPosition);
                     otherPlayer.position = myPosition;
                 }
             }
@@ -95,10 +125,10 @@ class GameManager {
     }
 
     reconstructWallsListWithTopLeftCorners(walls) {
-        wallsList = [];
+        var wallsList = [];
         walls.forEach(wall => {
             let oneWall = [];
-            topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
+            var topLeftCornerPosition = this.convertTeacherPositionToMyPosition(wall[0]);
             if(wall[1] === 1) {     // Dans ce cas là, le mur est vertical
                 oneWall.push({x: topLeftCornerPosition.x, y: topLeftCornerPosition.y + 1});
                 oneWall.push({x: topLeftCornerPosition.x + 1, y: topLeftCornerPosition.y + 1});
@@ -161,23 +191,18 @@ class GameManager {
         return myPosition;
     }
 
-    // Cette méthode n'est pas appelée 
-    /*async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
-        myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
-        let nextPositionToGo = await this.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
+    async computeMyAINextMove(gameStateTeacher, getAdjacentCellsPositionsWithWalls) {
+        var myGameState = this.convertGameStateTeacherToGameState(gameStateTeacher);
+        let nextPositionToGo = await computeMoveForAI(getAdjacentCellsPositionsWithWalls);
         let stringNextPositionToGo = this.convertMyPositionToTeacherPosition(nextPositionToGo);
         return stringNextPositionToGo;
-    }*/
-
-    // Methods to manage the game
-    computeMoveForAI(getAdjacentCellsPositionsWithWalls){
-        let iaPlayer = this.gameState.players.find(player => player.id === "ia");
-        let iaPosition = iaPlayer.position;
-        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls)[0];
     }
 
-    async computeNextMoveForAI(getAdjacentCellsPositionsWithWalls) {
-        return await nextMove(getAdjacentCellsPositionsWithWalls);
+    // Methods to manage the game
+    computeMoveForAI(getAdjacentCellsPositionsWithWalls, id){
+        let iaPlayer = this.gameStateList[id].players.find(player => player.id === "ia");
+        let iaPosition = iaPlayer.position;
+        return dijkstraAlgorithm(iaPosition, getAdjacentCellsPositionsWithWalls, id);
     }
 
     validateMove(move) {
@@ -201,9 +226,13 @@ class GameManager {
         return this.gameState.players.find(player => player.id === playerId);
     }
 
-    getBoardWalls() {
+    getPlayers(gameStateID) {
+        return this.gameStateList[gameStateID].players;
+    }
+
+    getBoardWalls(gameStateID) {
         let boardWalls = [];
-        this.gameState.players.forEach(player => {
+        this.gameStateList[gameStateID].players.forEach(player => {
             player.walls.forEach(wall => {
                 wall.forEach(cell => {
                     boardWalls.push(cell);
@@ -213,8 +242,20 @@ class GameManager {
         return boardWalls;
     }
 
-    getCurrentPlayer() {
-        return this.gameState.players.find(player => player.isCurrentPlayer === true);
+    getCurrentPlayer(id) {
+        return this.gameStateList[id].players.find(player => player.isCurrentPlayer);
+    }
+
+    getOtherPlayer(id) {
+        return this.gameStateList[id].players.find(player => !player.isCurrentPlayer);
+    }
+
+    isGameActive(id) {
+        return this.gameStateList[id].isGameActive;
+    }
+
+    endGame(id) {
+        this.gameStateList[id].isGameActive = false;
     }
 }
 

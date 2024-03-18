@@ -8,14 +8,17 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = signupForm.querySelector('[name="password"]').value;
         AuthService.signUp(username, password)
             .then(data => {
-                console.log('Signup success:', data);
-                localStorage.setItem('token', data.token);
                 window.location.href = '../loginPage/login.html';
                 alert('Inscription effectuée');
             })
             .catch(error => {
                 console.error('Signup error:', error);
-                alert('Insription impossible, veuillez reessayer.');
+                // Utilisez le message d'erreur pour déterminer la nature de l'erreur
+                if (error.message === 'Username already exists') {
+                    alert('Ce nom d’utilisateur existe déjà. Veuillez en choisir un autre.');
+                } else {
+                    alert('Inscription impossible, veuillez réessayer.');
+                }
             });
     });
 });
