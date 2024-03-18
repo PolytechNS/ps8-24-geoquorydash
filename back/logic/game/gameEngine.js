@@ -42,10 +42,26 @@ function movePlayer(targetPosition) {
     }
 }*/
 
-function moveAI() {
+async function moveAI() {
+    // Quand on fait ce move, nous sommes l'ia, donc le joueur local correspond au joueur adverse
     currentPlayer = gameManager.getCurrentPlayer();
-    const iaMove = gameManager.computeMoveForAI(getAdjacentCellsPositionsWithWalls);
-    movePlayer(iaMove);
+    console.log("Id du joueur : " + currentPlayer.id);
+    const iaMove = await gameManager.computeMoveForAI(fogOfWar);
+    console.log(iaMove);
+    console.log("Nature du move de " + currentPlayer.id + " : " + iaMove.action);
+    if(iaMove.action === "move") {
+        console.log("Le joueur " + currentPlayer.id + " a decidé d'avancer");
+        let targetPosition = convertTeacherPositionToMyPosition(iaMove.value);
+        return movePlayer(targetPosition);
+    } else if(iaMove.action === "wall") {
+        console.log("Le joueur " + currentPlayer.id + " a decidé de poser un mur");
+        let wallToInstall = convertTopLeftCornerWallToOurWall(iaMove.value[0], iaMove.value[1]);
+        let isVertical = true;
+        if(iaMove.value[1] === 0) {
+            isVertical = false;
+        }
+        return toggleWall(wallToInstall, isVertical);
+    }
 }
 
 function toggleWall(wall, isVertical) {
@@ -53,12 +69,14 @@ function toggleWall(wall, isVertical) {
 
     var walls = gameManager.getBoardWalls();
     for (const wallCell of wall) {
+        console.log("Je push une case en mur");
         walls.push(wallCell);
     }
 
     if(canPlayerReachArrival(walls)) {
         var response = updateWalls(wall, isVertical);
         if (response) {
+            console.log("Mon mur a bien été posé");
             return response;
         }
         return 1;
@@ -68,6 +86,7 @@ function toggleWall(wall, isVertical) {
 function updateWalls(wall, isVertical) {
     currentPlayer.walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical);
+    console.log("Les murs ont bien été mis à jour");
     return turn();
 }
 
@@ -202,13 +221,15 @@ function convertTopLeftCornerWallToOurWall(topLeftCornerPosition, isVertical) {
 
 function turn() {
     if (!gameActive) return;
-
+    console.log("LE JEU EST TOUJOURS EN COURS");
     // On change le joueur courant car on change de tour
     for (let player of gameManager.getGameState().players) {
+        console.log("On est dans le changement de tour et on a : " + player.id + "/" + player.isCurrentPlayer);
         player.isCurrentPlayer = !player.isCurrentPlayer;
     }
     otherPlayer = currentPlayer;
     currentPlayer = gameManager.getCurrentPlayer();
+    console.log("On a désormais changé de tour, et le joueur courant est maintenant : " + currentPlayer.id);
 
     var response = moveAI(); // On fait bouger l'IA
     if (response) return response;
