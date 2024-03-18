@@ -1,5 +1,4 @@
-// AuthService.js
-import { API_ENDPOINT } from '../js/config.js'; // Assurez-vous que le chemin est correct
+import { API_ENDPOINT } from '../js/config.js';
 
 export const AuthService = {
     login(username, password) {
@@ -16,6 +15,14 @@ export const AuthService = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),
         })
-            .then(response => response.json());
-    },
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('An error occurred');
+                } else if (response.status === 409) {
+                    throw new Error('Username already exists');
+                } else {
+                    return response.json();
+                }
+            });
+    }
 };

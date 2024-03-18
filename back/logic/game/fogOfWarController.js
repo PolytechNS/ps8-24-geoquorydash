@@ -1,60 +1,85 @@
-const gameManager = require('./gameManager'); // Instance unique de GameManager
+const gameManager = require('./gameManager');
+const { retrieveVisibilityMapFromDatabase } = require('../../models/game/gameDataBaseManager');
 
 class FogOfWar{
-    visibilityMap = [];
-    oldPlayer1AdjacentsCells = [];
-    oldPlayer2AdjacentsCells = [];
+    visibilityMapObjectList = {};
+    // oldPlayer1AdjacentsCells = [];
+    // oldPlayer2AdjacentsCells = [];
 
-    constructor() {
+    constructor() {}
+
+    initializeDefaultFogOfWar(gameStateID) {
+        let visibilityMap = [];
         for (let i = 0; i < (9*9); i++) {
-            this.visibilityMap[i] = [];
             if (i < 36) {
-                this.visibilityMap[i] = 1; // Visibility +1
+                visibilityMap[i] = 1; // Visibility +1
             } else if (i <= 44) {
-                this.visibilityMap[i] = 0; // Visibility 0
+                visibilityMap[i] = 0; // Visibility 0
             } else {
-                this.visibilityMap[i] = -1; // Visibility -1
+                visibilityMap[i] = -1; // Visibility -1
             }
         }
+        let oldPlayer1AdjacentsCells = [];
+        let oldPlayer2AdjacentsCells = [];
 
-        this.updateBoardVisibility();
+        this.visibilityMapObjectList[gameStateID] = {
+            visibilityMap: visibilityMap,
+            oldPlayer1AdjacentsCells: oldPlayer1AdjacentsCells,
+            oldPlayer2AdjacentsCells: oldPlayer2AdjacentsCells
+        };
     }
 
-    updateBoardVisibility() {
+    async resumeVisibilityMap(gameStateID) {
+        try {
+            const visibilityMap = await retrieveVisibilityMapFromDatabase(gameStateID);
+            if (visibilityMap) {
+                this.visibilityMapObjectList[gameStateID].visibilityMap = visibilityMap;
+                return visibilityMap;
+            }
+            return null;
+        } catch (error) {
+            console.error("Error connecting to MongoDB:", error);
+            return null;
+        }
+    }
+
+    updateBoardVisibility(id) {
         // Get the indices of the players cell
-        let gameState = gameManager.gameState;
-        let { i:iP1, j:jP1 } = { i: gameState.players[0].position.x, j: gameState.players[0].position.y}
-        let { i: iP2, j: jP2 } = { i: gameState.players[1].position.x, j: gameState.players[1].position.y}
+        let gameState = gameManager.gameStateList[id];
+        let {i: iP1, j: jP1} = {i: gameState.players[0].position.x, j: gameState.players[0].position.y}
+        let {i: iP2, j: jP2} = {i: gameState.players[1].position.x, j: gameState.players[1].position.y}
 
         // Get the indices of the adjacent cells
         let adjacentPlayer1Cells = this.getAdjacentPlayerCellsIndices(iP1, jP1);
         let adjacentPlayer2Cells = this.getAdjacentPlayerCellsIndices(iP2, jP2);
 
+        let visibilityMapObject = this.visibilityMapObjectList[id];
         // Update the visibility map based on the current adjacent cells
         for (let i = 0; i < adjacentPlayer1Cells.length; i++) {
             let index = adjacentPlayer1Cells[i];
-            this.visibilityMap[index] += 1;
+            visibilityMapObject.visibilityMap[index] += 1;
         }
         for (let i = 0; i < adjacentPlayer2Cells.length; i++) {
             let index = adjacentPlayer2Cells[i];
-            this.visibilityMap[index] -= 1;
+            visibilityMapObject.visibilityMap[index] -= 1;
         }
 
         // Update the visibility map based on the old adjacent cells
-        for (let i = 0; i < this.oldPlayer1AdjacentsCells.length; i++) {
-            let index = this.oldPlayer1AdjacentsCells[i];
-            this.visibilityMap[index] -= 1;
+        for (let i = 0; i < visibilityMapObject.oldPlayer1AdjacentsCells.length; i++) {
+            let index = visibilityMapObject.oldPlayer1AdjacentsCells[i];
+            visibilityMapObject.visibilityMap[index] -= 1;
         }
 
-        for (let i = 0; i < this.oldPlayer2AdjacentsCells.length; i++) {
-            let index = this.oldPlayer2AdjacentsCells[i];
-            this.visibilityMap[index] += 1;
+        for (let i = 0; i < visibilityMapObject.oldPlayer2AdjacentsCells.length; i++) {
+            let index = visibilityMapObject.oldPlayer2AdjacentsCells[i];
+            visibilityMapObject.visibilityMap[index] += 1;
         }
 
         // Update the old adjacent cells
-        this.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
-        this.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
+        visibilityMapObject.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
+        visibilityMapObject.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
 
+        this.displayVisibilityMap(id);
     }
 
     getAdjacentPlayerCellsIndices(i, j) {
@@ -160,33 +185,38 @@ class FogOfWar{
         return adjacentIndices;
     }
 
-    adjustVisibilityForWalls(wall, isVertical) {
+    adjustVisibilityForWalls(wall, isVertical, gameStateID) {
         let { x, y } = wall[0];
         let adjacentBarrierCells = (isVertical) ? this.getAdjacentBarrierCellsIndicesVertical(x, y) : this.getAdjacentBarrierCellsIndicesHorizontal(x, y);
-        let visibilityToAdd = gameManager.getCurrentPlayer().id === 'ia' ? 2 : -2;
-
+        let playersStartingTop = ['ia', 'player1'];
+        let visibilityToAdd = playersStartingTop.includes(gameManager.getCurrentPlayer(gameStateID).id) ? 2 : -2;
+        let visibilityMap = this.visibilityMapObjectList[gameStateID].visibilityMap;
         adjacentBarrierCells.forEach((cellGroup) => {
             cellGroup.forEach(cellIndex => {
-                this.visibilityMap[cellIndex] += visibilityToAdd;
+                visibilityMap[cellIndex] += visibilityToAdd;
             });
-            visibilityToAdd += gameManager.getCurrentPlayer().id === 'ia' ? -1 : 1;
+            visibilityToAdd += playersStartingTop.includes(gameManager.getCurrentPlayer(gameStateID).id) ? -1 : 1;
         });
         // this.displayVisibilityMap();
     }
 
-    displayVisibilityMap() {
+    displayVisibilityMap(id) {
         console.log('');
         for (let i = 0; i < 9; i++) {
             let row = '';
             for (let j = 0; j < 9; j++) {
-                if(this.visibilityMap[i * 9 + j] >= 0) {
-                    row += ' ' + this.visibilityMap[i * 9 + j] + ' ';
+                if(this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] >= 0) {
+                    row += ' ' + this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] + ' ';
                 } else {
-                    row += this.visibilityMap[i * 9 + j] + ' ';
+                    row += this.visibilityMapObjectList[id].visibilityMap[i * 9 + j] + ' ';
                 }
             }
              console.log(row);
         }
+    }
+
+    invertedVisibilityMap(visibilityMap) {
+        return visibilityMap.map((visibility) => visibility * -1);
     }
 
 }
