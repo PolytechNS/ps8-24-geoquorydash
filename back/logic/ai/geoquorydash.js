@@ -15,7 +15,6 @@ async function setup(AIplay) { // AIplay vaut 1 si notre ia joue en premier, et 
     }
     initializeGameState();
     initializeFormerBoard();
-    // initializeGameStateTeacher();
 
     let IAplayer = getIAPlayer();
     let otherPlayer = getOtherPlayer();
@@ -49,7 +48,6 @@ async function nextMove(gameStateTeacher) {
         console.log("La position du joueur adverse est pour l'instant inconue\n");
     }
 
-    // let IAplayer = getIAPlayer();
     let shortestPathForIA = dijkstraAlgorithm(IAplayer.position, IAplayer);
     let shortestPathLengthForIA = shortestPathForIA.length;
 
@@ -75,8 +73,6 @@ async function nextMove(gameStateTeacher) {
         console.log("Je vois l'autre joueur, donc je vais comparer nos plus courts chemins");
 
         // On fait un shortestPath pour l'autre joueur pour savoir s'il atteint la victoire plus rapidement que nous ou pas
-        // let otherPlayer = getOtherPlayer();
-        // let otherPlayerPosition = otherPlayer.position;
         let shortestPathForOtherPlayer = dijkstraAlgorithm(otherPlayer.position, otherPlayer);
         let shortestPathLengthForOtherPlayer = shortestPathForOtherPlayer.length;
 
@@ -173,9 +169,12 @@ async function updateBoard(gameStateTeacher) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-function dijkstraAlgorithm(position, player) {
+function dijkstraAlgorithm(position, player, forbiddenPosition) {
     // Initialisation des variables
     let alreadyVisitedCells = [];
+    if(forbiddenPosition) {
+        alreadyVisitedCells.push(forbiddenPosition);
+    }
     let cellsWithWeights = [];
     /* cellsWithWeights est un tableau de structure de la forme { position: position, pathLength: pathLength, predecessor: predecessor } avec
     position la case concernée, pathLength la distance pour atteindre cette case depuis notre position de base, et predecessor la case qui précède
@@ -186,10 +185,7 @@ function dijkstraAlgorithm(position, player) {
     // On commence à travailler
     let shortestPathFinalPosition = getShortestPathFinalPosition(position, player, alreadyVisitedCells, cellsWithWeights, pathLength);
 
-    //console.log("Le chemin le plus court pour gagner mène à la case de coordonnées x = " + shortestPathFinalPosition.x + " et y = " + shortestPathFinalPosition.y);
-
     let shortestPath = reconstructPath(position, shortestPathFinalPosition, cellsWithWeights);
-    //console.log("Le prochain mouvement à faire est donc de se déplacer en x : " + shortestPath[0].x + ", y : " + shortestPath[0].y);
     return shortestPath;
 }
 
@@ -507,8 +503,6 @@ function chooseWallToInstallToIncreaseShortestPathLengthForOtherPlayer(shortestP
         // La position {interX, interY} représente la position entre les deux cases. Deux murs sont alors possible pour bloquer cette position
 
         let wallsThatCanBeInstalled = getWallsThatCanBeInstalled(interX, interY, isVertical);
-
-        // REPRENDRE ICI, ET FAIRE LE CHEMIN POUR CHACUN DES MURS POSSIBLES POUR SAVOIR LEQUEL EST LE PLUS AVANTAGEUX
 
         if(wallsThatCanBeInstalled) { // Si wallsThatCanBeInstalled n'est pas null, CàD qu'un mur peut être posé via la position {interX, interY}
             wallsThatCanBeInstalled.forEach(wall => {
@@ -1079,18 +1073,30 @@ function manageOtherPlayerOnTargetCell() {
     if(IAplayer.position.x < otherPlayer.position.x) { // Dans ce cas là, le joueur est en dessous de moi
         console.log("Le joueur est en dessous de moi");
         nextPosition = {x: otherPlayer.position.x + 2, y: otherPlayer.position.y};
+        if(nextPosition.x > 16 || checkBarriersBetween(otherPlayer.position, nextPosition)) { // Dans ce cas là, je ne peux pas enjamber le joueur
+            nextPosition = dijkstraAlgorithm(IAplayer.position, IAplayer, otherPlayer.position)[0];
+        }
         return nextPosition;
     } else if(IAplayer.position.x > otherPlayer.position.x) { // Dans ce cas là, le joueur est au dessus de moi
         console.log("Le joueur est au dessus de moi");
         nextPosition = {x: otherPlayer.position.x - 2, y: otherPlayer.position.y};
+        if(nextPosition.x < 0 || checkBarriersBetween(otherPlayer.position, nextPosition)) { // Dans ce cas là, je ne peux pas enjamber le joueur
+            nextPosition = dijkstraAlgorithm(IAplayer.position, IAplayer, otherPlayer.position)[0];
+        }
         return nextPosition;
     } else if(IAplayer.position.y < otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma droite
         console.log("Le joueur est à ma droite");
         nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y + 2};
+        if(nextPosition.y > 16 || checkBarriersBetween(otherPlayer.position, nextPosition)) { // Dans ce cas là, je ne peux pas enjamber le joueur
+            nextPosition = dijkstraAlgorithm(IAplayer.position, IAplayer, otherPlayer.position)[0];
+        }
         return nextPosition;
     } else if(IAplayer.position.y > otherPlayer.position.y) { // Dans ce cas là, le joueur est à ma gauche
         console.log("Le joueur est à ma gauche");
         nextPosition = {x: otherPlayer.position.x, y: otherPlayer.position.y - 2};
+        if(nextPosition.y < 0 || checkBarriersBetween(otherPlayer.position, nextPosition)) { // Dans ce cas là, je ne peux pas enjamber le joueur
+            nextPosition = dijkstraAlgorithm(IAplayer.position, IAplayer, otherPlayer.position)[0];
+        }
         return nextPosition;
     }
     // À noter que ces moves peuvent être illégaux si un mur se trouve derrière l'adversaire, mais tant pis car ils seront corrigés par le random

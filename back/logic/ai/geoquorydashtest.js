@@ -73,7 +73,7 @@ async function main(){
     ];
 
     let opponentWalls3 = [
-        
+        ["57",0]
     ];
     let ownWalls3 = [
         ["15",1],
@@ -92,7 +92,7 @@ async function main(){
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
-        [1,0,0,0,0,0,0,0,2],
+        [0,0,0,0,1,2,0,0,0],
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
         [0,0,0,0,0,0,0,0,0],
@@ -112,9 +112,9 @@ async function main(){
         ownWalls: [],             // Pareil
         board: []
     };
-    gameStateTeacherStruct.opponentWalls = opponentWalls4;
+    gameStateTeacherStruct.opponentWalls = opponentWalls3;
     gameStateTeacherStruct.ownWalls = ownWalls4;
-    gameStateTeacherStruct.board = board4;
+    gameStateTeacherStruct.board = board3;
     printBoard(gameStateTeacherStruct.board);
     //formerPositionOfOtherPlayer = {x: 2, y: 8};
     let start = Date.now();
