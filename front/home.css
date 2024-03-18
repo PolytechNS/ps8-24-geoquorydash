@@ -71,9 +71,9 @@ body {
 
 .modal-content {
     background-image: url('img/home/background_modal.png');
-    background-size: cover;
+    background-size: contain;
     background-repeat: no-repeat;
-    width: 58.2vw;
+    width: 65vw;
     height: 86vh;
     justify-content: center;
     display: flex;
