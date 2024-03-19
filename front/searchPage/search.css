@@ -13,7 +13,38 @@ body {
     margin-bottom: 8vh;
 }
 
-#friendsResults {
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.friend-label {
+    margin-bottom: 3vh;
+}
+
+#searchBlock {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 2vh;
+    align-items: center;
+}
+
+input[type="text"] {
+    width: 85%;
+    height: 8vh;
+    box-sizing: border-box;
+    font-size: 6vh;
+}
+
+#okButton {
+    width: auto;
+    height: 8vh;
+}
+
+#searchResults {
     max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
@@ -24,7 +55,7 @@ body {
     align-items: center;
 }
 
-#friendsResults li {
+#searchResults li {
     background-image: url('../img/friends/liBackground.png');
     background-size: contain;
     background-repeat: no-repeat;
@@ -35,7 +66,7 @@ body {
     width: 70vw;
 }
 
-#friendsResults li a {
+#searchResults li a {
     text-decoration: none;
     color: white !important;
     font-family: 'PUSAB', sans-serif;

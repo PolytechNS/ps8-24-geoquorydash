@@ -24,5 +24,12 @@ export const AuthService = {
                     return response.json();
                 }
             });
+    },
+    username(token) {
+        return fetch(`${API_ENDPOINT}/api/auth/username`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+        })
+            .then(response => response.json());
     }
 };
