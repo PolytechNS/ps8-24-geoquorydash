@@ -35,6 +35,24 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
+    var statModal = document.getElementById("statModal");
+    var openStatPage = document.getElementById("openStatPage");
+    var statFrame = document.getElementById("statFrame");
+
+    openStatPage.addEventListener("click", function(e) {
+        e.preventDefault();
+        statFrame.src = "statPage/stat.html";
+        statModal.style.display = "flex";
+    });
+
+    window.addEventListener("click", function(event) {
+        if (event.target === statModal) {
+            statModal.style.display = "none";
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
     var accountModal = document.getElementById("accountModal");
     var accountFrame = document.getElementById("accountFrame");
 
