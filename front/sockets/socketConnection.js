@@ -1,6 +1,11 @@
 var socket = io('/api/game');
 import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
-import {displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp} from '../gamePage/game.js';
+import {
+    displayPossibleMove,
+    endGame,
+    lockBarrier,
+    ImpossibleWallPlacementPopUp,
+} from '../gamePage/game.js';
 
 socket.on('connect', function() {
     console.log('Connected to /api/game!');
@@ -24,6 +29,10 @@ socket.on('endGame', function(player) {
 
 socket.on('lockWall', function(wall) {
     lockBarrier(wall);
+});
+
+socket.on('toggleAndLockWall', function(wall) {
+    lockBarrier(wall, true);
 });
 
 socket.on('ImpossibleWallPosition', function() {

@@ -1,7 +1,5 @@
-// const { computeMove, computeMoveForAI } = require("../ai/ai.js")
 const { nextMove } = require("../ai/geoquorydash.js");
 const { setup } = require("../ai/geoquorydash.js");
-//const fogOfWarInstance = require("./fogOfWarController.js");
 const { retrieveGameStateFromDB } = require("../../models/game/gameDataBaseManager.js");
 
 class GameManager {
@@ -18,6 +16,7 @@ class GameManager {
         ]
     };
 
+    gameStateTeacherList = {};
     gameStateTeacher = {
         opponentWalls: [],    // Contient un tableau de tableau, eux même contenant une position et un isVertical
         ownWalls: [],         // Pareil
@@ -45,7 +44,7 @@ class GameManager {
         this.gameStateList[id] = {
             players: [
                 {
-                    id: "ia",
+                    id: "player1",
                     position: {x: 0, y: 8},
                     walls: [],
                     isCurrentPlayer: false
@@ -58,6 +57,11 @@ class GameManager {
                 }
             ],
             isGameActive: true
+        };
+        this.gameStateTeacherList[id] = {
+            opponentWalls: [],
+            ownWalls: [],
+            board: []
         };
     }
 
@@ -105,37 +109,37 @@ class GameManager {
         };
     }
 
-    convertGameStateToGameStateTeacher(fogOfWar) {
+    convertGameStateToGameStateTeacher(visibilityMap, id) {
         // Dans cette partie, nous sommes l'ia, donc les murs de l'ia seront ownWalls
-        let IAplayer = this.gameState.players.find(player => player.id === "ia");
+        let IAplayer = this.gameStateList[id].players.find(player => player.id === "player1");
         let IAplayerWalls = IAplayer.walls;
-        this.gameStateTeacher.ownWalls = [];
-        this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacher.ownWalls);
+        this.gameStateTeacherList[id].ownWalls = [];
+        this.addWallsToAPlayer(IAplayerWalls, this.gameStateTeacherList[id].ownWalls);
 
         // Le joueur local p2 est le joueur adverse par rapport à l'ia, donc ses murs seront dans opponentWalls
-        let localPlayer = this.gameState.players.find(player => player.id === "p2");
+        let localPlayer = this.gameStateList[id].players.find(player => player.id === "player2");
         let localPlayerWalls = localPlayer.walls;
-        this.gameStateTeacher.opponentWalls = [];
-        this.addWallsToAPlayer(localPlayerWalls, this.gameStateTeacher.opponentWalls);
+        this.gameStateTeacherList[id].opponentWalls = [];
+        this.addWallsToAPlayer(localPlayerWalls, this.gameStateTeacherList[id].opponentWalls);
 
-        this.gameStateTeacher.board = [];
-        this.gameStateTeacher.board = this.rearrangeVisibilityMapToBoard(fogOfWar.visibilityMap);
+        this.gameStateTeacherList[id].board = [];
+        this.gameStateTeacherList[id].board = this.rearrangeVisibilityMapToBoard(visibilityMap);
         let convertedIAplayerPosition = this.convertMyPositionToTeacherPosition(IAplayer.position);
-        this.gameStateTeacher.board[parseInt(convertedIAplayerPosition[0]) - 1][parseInt(convertedIAplayerPosition[1]) - 1] = 1;
+        this.gameStateTeacherList[id].board[parseInt(convertedIAplayerPosition[0]) - 1][parseInt(convertedIAplayerPosition[1]) - 1] = 1;
         let convertedLocalPlayerPosition = this.convertMyPositionToTeacherPosition(localPlayer.position);
         // On regarde si notre ia est censée voir le joueur local via la visibilityMap
-        if(this.gameStateTeacher.board[parseInt(convertedLocalPlayerPosition[0]) - 1][parseInt(convertedLocalPlayerPosition[1]) - 1] >= 0) {
+        if(this.gameStateTeacherList[id].board[parseInt(convertedLocalPlayerPosition[0]) - 1][parseInt(convertedLocalPlayerPosition[1]) - 1] >= 0) {
             // Si oui, on met le joueur
-            this.gameStateTeacher.board[parseInt(convertedLocalPlayerPosition[0]) - 1][parseInt(convertedLocalPlayerPosition[1]) - 1] = 2;
+            this.gameStateTeacherList[id].board[parseInt(convertedLocalPlayerPosition[0]) - 1][parseInt(convertedLocalPlayerPosition[1]) - 1] = 2;
         }
     }
 
     convertGameStateTeacherToGameState() {
-        let IAplayer = this.gameState.players.find(player => player.id === "ia");
+        let IAplayer = this.gameState.players.find(player => player.id === "player1");
         IAplayer.walls = [];
         IAplayer.walls = reconstructWallsListWithTopLeftCorners(this.gameStateTeacher.ownWalls);
 
-        let localPlayer = this.gameState.players.find(player => player.id === "p2");
+        let localPlayer = this.gameState.players.find(player => player.id === "player2");
         localPlayer.walls = [];
         localPlayer.walls = reconstructWallsListWithTopLeftCorners(this.gameStateTeacher.opponentWalls);
 
@@ -228,29 +232,30 @@ class GameManager {
     }
 
     // Methods to manage the game
-    computeMoveForAI(fogOfWar){
-        console.log("\n");
-        console.log("On va tenter de convertir le gameState en gameStateTeacher");
+    computeMoveForAI(visibilityMap, id){
+        console.log(this.gameStateList[id].players[0].walls);
+        // console.log("\n");
+        // console.log("On va tenter de convertir le gameState en gameStateTeacher");
 
-        console.log("Affichage de la visibility map : ");
+        // console.log("Affichage de la visibility map : ");
         let result = [];
         for (let i = 0; i < 9; i++) {
             let intermediateArray = [];
             let start = 81 - 9 + i;
             for(let j = 0; j < 9; j++) {
-                intermediateArray.push(fogOfWar.visibilityMap[start - 9*j]);
+                intermediateArray.push(visibilityMap[start - 9*j]);
             }
             result.push(intermediateArray);
         }
-        this.printBoard(result);
+        // this.printBoard(result);
 
-        this.convertGameStateToGameStateTeacher(fogOfWar);
-        console.log("Nombre de mur de l'adversaire : " + this.gameStateTeacher.opponentWalls.length);
-        console.log("Nombre de mur du joueur courant (ia) : " + this.gameStateTeacher.ownWalls.length);
-        console.log("Affichage du board : ");
-        this.printBoard(this.gameStateTeacher.board);
-        console.log("Fin de la conversion du gameState en gameStateTeacher\n");
-        return nextMove(this.gameStateTeacher);
+        this.convertGameStateToGameStateTeacher(visibilityMap, id);
+        // console.log("Nombre de mur de l'adversaire : " + this.gameStateTeacherList[id].opponentWalls.length);
+        // console.log("Nombre de mur du joueur courant (ia) : " + this.gameStateTeacherList[id].ownWalls.length);
+        // console.log("Affichage du board : ");
+        this.printBoard(this.gameStateTeacherList[id].board);
+        // console.log("Fin de la conversion du gameState en gameStateTeacher\n");
+        return nextMove(this.gameStateTeacherList[id], this.gameStateList[id].players);
     }
 
     async computeNextMoveForAI(getAdjacentCellsPositionsWithWalls) {

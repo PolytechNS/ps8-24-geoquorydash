@@ -30,57 +30,66 @@ function movePlayer(targetPosition, gameStateId) {
 
     const gameState = gameManager.gameStateList[gameStateId];
     const currentPlayer = gameManager.getCurrentPlayer(gameStateId);
-
     currentPlayer.position = targetPosition;
-
     if (currentPlayer === gameState.players[0] && targetPosition.x === 16) {
-        console.log("Player 1 wins");
+        // console.log("Player 1 wins");
+        // console.log(currentPlayer);
+
         endGame(gameStateId);
         return currentPlayer;
     } else if (currentPlayer === gameState.players[1] && targetPosition.x === 0) {
-        console.log("Player 2 wins");
+        // console.log("Player 2 wins");
         endGame(gameStateId);
         return currentPlayer;
     }
 }
 
-async function moveAI() {
+function moveAI(id) {
     // Quand on fait ce move, nous sommes l'ia, donc le joueur local correspond au joueur adverse
-    currentPlayer = gameManager.getCurrentPlayer();
-    console.log("Id du joueur : " + currentPlayer.id);
-    const iaMove = await gameManager.computeMoveForAI(fogOfWar);
-    console.log(iaMove);
-    console.log("Nature du move de " + currentPlayer.id + " : " + iaMove.action);
+    let currentPlayer = gameManager.getCurrentPlayer(id);
+    // console.log("Id du joueur : " + currentPlayer.id);
+    const iaMove = gameManager.computeMoveForAI(fogOfWar.visibilityMapObjectList[id].visibilityMap, id);
+    // console.log(iaMove);
+    // console.log("Nature du move de " + currentPlayer.id + " : " + iaMove.action);
     if(iaMove.action === "move") {
-        console.log("Le joueur " + currentPlayer.id + " a decidé d'avancer");
         let targetPosition = convertTeacherPositionToMyPosition(iaMove.value);
-        return movePlayer(targetPosition);
+        return movePlayer(targetPosition, id) ?
+            "endGame" :
+            {
+                action : iaMove.action,
+                value: targetPosition
+            };
     } else if(iaMove.action === "wall") {
-        console.log("Le joueur " + currentPlayer.id + " a decidé de poser un mur");
-        let wallToInstall = convertTopLeftCornerWallToOurWall(iaMove.value[0], iaMove.value[1]);
+        let topLeftCornerPosition = convertTeacherPositionToMyPosition(iaMove.value[0]);
+        let wallToInstall = convertTopLeftCornerWallToOurWall(topLeftCornerPosition, iaMove.value[1]);
         let isVertical = true;
         if(iaMove.value[1] === 0) {
             isVertical = false;
         }
-        return toggleWall(wallToInstall, isVertical);
+        return toggleWall(wallToInstall, isVertical, false, id) ?
+            {   action : iaMove.action,
+                value: wallToInstall,
+                isVertical: isVertical
+            }
+            : "wallNotToggled";
     }
 }
 
-function toggleWall(wall, isVertical, onlineGameOption, gameStateID) {
-    if (!gameManager.isGameActive(gameStateID)) return;
-
-    var walls = gameManager.getBoardWalls(gameStateID);
+function toggleWall(wall, isVertical, onlineGameOption, id) {
+    if (!gameManager.isGameActive(id)) return;
+    console.log("JE PRINT LE MUR ",wall);
+    var walls = gameManager.getBoardWalls(id);
     for (const wallCell of wall) {
-        console.log("Je push une case en mur");
+        // console.log("Je push une case en mur");
         walls.push(wallCell);
     }
 
-    if(canPlayerReachArrival(walls, gameStateID)) {
-        var response = updateWalls(wall, isVertical, onlineGameOption, gameStateID);
-        if (response) {
-            console.log("Mon mur a bien été posé");
-            return response;
-        }
+    if(canPlayerReachArrival(walls, id)) {
+        console.log("Mon mur a bien été posé");
+        updateWalls(wall, isVertical, onlineGameOption, id);
+        // if (response) {
+        //     return response;
+        // }
         return 1;
     }
     return 0;
@@ -89,9 +98,9 @@ function toggleWall(wall, isVertical, onlineGameOption, gameStateID) {
 function updateWalls(wall, isVertical, onlineGameOption, gameStateID) {
     gameManager.getCurrentPlayer(gameStateID).walls.push(wall);
     fogOfWar.adjustVisibilityForWalls(wall, isVertical, gameStateID);
-    if (!onlineGameOption) {
-        return turn(gameStateID);
-    }
+    // if (!onlineGameOption) {
+    //     return turn(gameStateID);
+    // }
 }
 
 function checkBarriersBetween(startPosition, targetPosition, object) {
@@ -172,12 +181,15 @@ function getAdjacentCellsPositionsWithWalls(cellPosition, object) {
     return adjacentCellsPositionsWithWalls;
 }
 
-function canPlayerReachArrival(walls, gameStateID) {
+function canPlayerReachArrival(walls, id) {
+    // console.log(gameManager.gameStateList[id].players[1]);
+
     let alreadyVisitedCell = []; // La liste des cases que l'on va visiter
     let canReach = false;
-    let canReachPlayer1 = checkPathToReachTheEnd(gameManager.gameStateList[gameStateID].players[0].position, alreadyVisitedCell, "player1", walls);
+    let canReachPlayer1 = checkPathToReachTheEnd(gameManager.gameStateList[id].players[0].position, alreadyVisitedCell, "player1", walls);
     alreadyVisitedCell = [];
-    let canReachPlayer2 = checkPathToReachTheEnd(gameManager.gameStateList[gameStateID].players[1].position, alreadyVisitedCell, "player2", walls);
+    // console.log(gameManager.gameStateList[id].players[1]);
+    let canReachPlayer2 = checkPathToReachTheEnd(gameManager.gameStateList[id].players[1].position, alreadyVisitedCell, "player2", walls);
     canReach = canReachPlayer1 && canReachPlayer2;
 
     return canReach;
@@ -224,25 +236,26 @@ function convertTopLeftCornerWallToOurWall(topLeftCornerPosition, isVertical) {
     return wall;
 }
 
-function turn(id) {
+async function turn(id) {
     if (!gameManager.isGameActive(id)) return;
 
     // On change le joueur courant car on change de tour
     for (let player of gameManager.gameStateList[id].players) {
         player.isCurrentPlayer = !player.isCurrentPlayer;
     }
-    let otherPlayer = gameManager.getOtherPlayer(id);
-    let currentPlayer = gameManager.getCurrentPlayer(id);
 
-    var response = moveAI(id); // On fait bouger l'IA
+    // let otherPlayer = gameManager.getOtherPlayer(id);
+    // let currentPlayer = gameManager.getCurrentPlayer(id);
+
+    var response = await moveAI(id); // On fait bouger l'IA
     if (response) return response;
 
     // On change le joueur courant car on change de tour
     for (let player of gameManager.gameStateList[id].players) {
         player.isCurrentPlayer = !player.isCurrentPlayer;
     }
-    otherPlayer = gameManager.getOtherPlayer(id);
-    currentPlayer = gameManager.getCurrentPlayer(id);
+    // otherPlayer = gameManager.getOtherPlayer(id);
+    // currentPlayer = gameManager.getCurrentPlayer(id);
 }
 
 function changeCurrentPlayer(gameStateID) {
@@ -258,4 +271,4 @@ function endGame(id) {
     gameManager.endGame(id);
 }
 
-module.exports = {getPossibleMove, movePlayer, toggleWall, moveIA: moveAI, turn, initializeGame, changeCurrentPlayer};
+module.exports = {getPossibleMove, movePlayer, toggleWall, moveAI, turn, initializeGame, changeCurrentPlayer};
