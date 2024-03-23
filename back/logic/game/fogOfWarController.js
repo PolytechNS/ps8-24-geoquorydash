@@ -79,7 +79,7 @@ class FogOfWar{
         visibilityMapObject.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
         visibilityMapObject.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
 
-        this.displayVisibilityMap(id);
+        // this.displayVisibilityMap(id);
     }
 
     getAdjacentPlayerCellsIndices(i, j) {
