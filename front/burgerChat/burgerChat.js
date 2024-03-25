@@ -1,3 +1,6 @@
+import {AuthService} from "../Services/authService";
+import {FriendsService} from "../Services/friendsService";
+
 const burgerChatButton = document.getElementById('burger-chat-button');
 const burgerChatContainer = document.getElementById('burger-chat-container');
 let burgerChatLoaded = false;
@@ -18,24 +21,39 @@ async function loadBurgerChat() {
     const html = await response.text();
     burgerChatContainer.innerHTML = html;
 
-    const deconnexionButton = document.getElementById('deconnexionButton');
-    const connexionButton = document.getElementById('connexionButton');
-    if (localStorage.getItem('token')) {
-        deconnexionButton.style.display = 'block';
-        connexionButton.style.display = 'none';
-    } else {
-        deconnexionButton.style.display = 'none';
-        connexionButton.style.display = 'block';
+    const friendsResults = document.getElementById('friendsResults');
+    const token = localStorage.getItem('token');
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getFriends(authUsername)
+                    .then(friends => {
+                        displayFriendsResults(friends);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching requests:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching username:', error);
+            });
+
     }
+    function displayFriendsResults(results) {
+        friendsResults.innerHTML = '';
 
-    deconnexionButton.addEventListener('click', function(event) {
-        event.preventDefault();
+        const ul= document.createElement('ul');
 
-        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
-            localStorage.clear();
-            alert('Vous êtes déconnecté');
-            window.location.href = '../home.html';
-        }
-    });
+        results.forEach(result => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result}`;
+            link.textContent = result;
+            link.target = "_blank";
+            li.appendChild(link);
+            ul.appendChild(li);
+        });
+
+        friendsResults.appendChild(ul);
+    }
 }
-

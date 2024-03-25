@@ -10,35 +10,43 @@
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.burger-chat ul {
-    list-style-type: none;
-    padding-top: 10vh;
-    margin: 0;
-}
-
-.burger-chat ul li {
-    margin-bottom: 5vh;
-}
-
-.burger-chat ul li a {
-    text-decoration: none;
-    color: #fff;
-    font-size: 18px;
-    display: block;
-}
-
-.burger-chat ul li img {
-    width: 10vw;
-}
-
-#accueilButton img {
-    height: 4vh;
-}
-
-#deconnexionButton img {
-    height: 3vh;
-}
-
 .show {
     display: block;
+}
+
+#friendsResults {
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 70vw;
+    list-style-type: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#friendsResults li {
+    background-image: url('../img/friends/liBackground.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-left: 5vw;
+    margin-bottom: 3vh;
+    margin-left: 6vw;
+    list-style-type: none;
+    width: 70vw;
+}
+
+#friendsResults li a {
+    text-decoration: none;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+@font-face {
+    font-family: 'PUSAB';
+    src: url('../img/game/PUSAB___.otf');
 }
