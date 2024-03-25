@@ -117,6 +117,86 @@ body {
     max-width: calc(65vw - 200px);
 }
 
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+}
+
+.buttons img {
+    width: 100%;
+    height: auto;
+}
+
+.account-image {
+    width: 100%;
+    height: auto;
+    max-width: calc(65vw - 260px);
+}
+
+.account-text-container {
+    width: 80%;
+}
+
+#account-elements, #loginForm, #signupForm {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.credentials {
+    width: 80%;
+}
+
+#usernameBlock,
+#passwordBlock {
+    width: 100%;
+    margin-bottom: 3vh;
+}
+
+#validationBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 2vw;
+}
+
+#signUpButton, #loginButton {
+    width: 25vw;
+    height: auto;
+}
+
+#validationBlock img {
+    width: 20vw;
+    height: auto;
+}
+
+label {
+    display: block;
+    height: 35%;
+    width: 100%;
+}
+
+label img {
+    height: 7vh;
+    max-width: 100%;
+}
+
+#usernameInput,
+#passwordInput {
+    width: 100%;
+    height: 40%;
+    font-size: 5vh;
+}
+
 .stat-image {
     width: auto;
     height: 4.5vh;
@@ -155,6 +235,9 @@ body {
 }
 
 .stat-item span {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
     height: 4.5vw;
     font-size: 3.5vw;
     font-family: 'Pusab', sans-serif;

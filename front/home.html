@@ -23,7 +23,70 @@
 
     <div id="accountModal" class="modal">
         <div class="modal-content">
-            <iframe id="accountFrame" src="accountPage/account.html"></iframe>
+            <img src="../img/account/title_account.png" alt="title" class="title-page-image">
+
+            <div id="account-elements">
+                <div class="account-text-container">
+                    <img src="../img/account/first_account.png" alt="sentence" class="account-image">
+                    <img src="../img/account/second_account.png" alt="sentence" class="account-image">
+                </div>
+                
+
+                <div class="buttons">
+                    <img src="../img/account/button_signup.png" alt="signup" id="openSignupPage">
+                    <img src="../img/account/button_login.png" alt="login" id="openLoginPage">
+                    <img src="../img/account/button_logout.png" alt="logout" id="logout-btn" style="display: none;">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="signupModal" class="modal">
+        <div class="modal-content">
+            <img src="../img/account/title_signup.png" alt="title" class="title-page-image">
+
+            <form id="signupForm">
+                <div class="credentials">
+                    <div id="usernameBlock">
+                        <label for="usernameInput"><img src="../img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInput" name="username">
+                    </div>
+                    <div id="passwordBlock">
+                        <label for="passwordInput"><img src="../img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInput" name="password">
+
+                    </div>
+                </div>
+                
+                <div id="validationBlock">
+                    <input type="image" src="../img/account/button_signup.png" alt="Signup" id="signUpButton">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <img src="../img/account/title_login.png" alt="title" class="title-page-image">
+
+            <form id="loginForm">
+                <div class="credentials">
+                    <div id="usernameBlock">
+                        <label for="usernameInput"><img src="../img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInput" name="username">
+                    </div>
+                    <div id="passwordBlock">
+                        <label for="passwordInput"><img src="../img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInput" name="password">
+
+                    </div>
+                </div>
+                
+                <div id="validationBlock">
+                    <input type="image" src="../img/account/button_login.png" alt="Login" id="loginButton">
+                    <img src="../img/account/title_signup.png" alt="signup" id="signupButton">
+                </div>
+            </form>
         </div>
     </div>
 
@@ -67,6 +130,6 @@
         </div>
     </div>
 
-    <script src="home.js"></script>
+    <script type="module" src="home.js"></script>
 </body>
 </html>
