@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="home.css">
-    <link rel="stylesheet" href="chatPage/chat.css">
 </head>
 <body>
     <img src="img/home/title.png" alt="Title" class="top-image">
@@ -33,19 +32,6 @@
             <iframe id="friendsFrame" src="friendsPage/friends.html"></iframe>
         </div>
     </div>
-
-    <div class="chat-box">
-        <div class="chat-header">
-            <h2>Chat</h2>
-            <button class="close-btn" onclick="toggleChat()">X</button>
-        </div>
-        <div class="chat-messages" id="chatMessages"></div>
-        <input type="text" id="messageInput" placeholder="Type a message...">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-    <div class="tab" onclick="toggleChat()">Chat</div>
-
-    <script src="chatPage/chat.js"></script>
 
     <script src="home.js"></script>
 </body>

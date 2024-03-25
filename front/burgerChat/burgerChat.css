@@ -1,0 +1,44 @@
+.burger-chat {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 15vw;
+    background-color: rgba(0, 0, 0, 0.8);
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.burger-chat ul {
+    list-style-type: none;
+    padding-top: 10vh;
+    margin: 0;
+}
+
+.burger-chat ul li {
+    margin-bottom: 5vh;
+}
+
+.burger-chat ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
+    display: block;
+}
+
+.burger-chat ul li img {
+    width: 10vw;
+}
+
+#accueilButton img {
+    height: 4vh;
+}
+
+#deconnexionButton img {
+    height: 3vh;
+}
+
+.show {
+    display: block;
+}
