@@ -28,7 +28,7 @@ function manageRequest(request, response) {
     if (request.url.startsWith('/api/profile')) {
         profileRouter(request, response).then();
     }
-    if (request.url.startsWith('/api/profile')) {
+    if (request.url.startsWith('/api/chat')) {
         chatRouter(request, response).then();
     }
 
