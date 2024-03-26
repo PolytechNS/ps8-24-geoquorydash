@@ -1,5 +1,6 @@
 import { AuthService } from '../Services/authService.js';
 import { FriendsService } from '../Services/friendsService.js';
+import { ChatService } from '../Services/chatService.js';
 
 const burgerChatButton = document.getElementById('burger-chat-button');
 const burgerChatContainer = document.getElementById('burger-chat-container');
@@ -68,32 +69,40 @@ async function loadBurgerChat() {
         friendsResults.appendChild(ul);
     }
 
-    function openChatWindow(friendName) {
-        // Masquer tous les friendsResults
+    async function openChatWindow(friendName) {
         friendsResults.style.display = 'none';
 
-        // Créer une section de chat
-        const chatSection = document.createElement('div');
-        chatSection.classList.add('chat-section');
-        burgerChatContainer.appendChild(chatSection);
+        const chatSection = document.getElementById('chatSection');
+        chatSection.style.display = 'flex';
+        chatSection.innerHTML = '';
 
-        // Afficher le nom de l'ami en haut à droite
         const friendNameHeader = document.createElement('div');
         friendNameHeader.classList.add('friend-name-header');
         friendNameHeader.textContent = friendName;
         chatSection.appendChild(friendNameHeader);
 
-        // Créer une zone de chat prenant toute la hauteur de la fenêtre
         const chatArea = document.createElement('div');
         chatArea.classList.add('chat-area');
         chatSection.appendChild(chatArea);
 
-        // Créer des messages pour l'ami et pour vous-même
-        // Ajouter une barre de saisie de texte avec un bouton d'envoi
-        // (non implémenté ici)
-
-        // Vous pouvez ajouter la logique pour la barre de saisie de texte
-        // et le bouton d'envoi ici
+        AuthService.username(token)
+            .then(authUsername => {
+                ChatService.getMessages(authUsername, friendName)
+                    .then(messages => {
+                        messages.forEach(message => {
+                            const messageElement = document.createElement('div');
+                            messageElement.classList.add('message');
+                            messageElement.textContent = message;
+                            chatArea.appendChild(messageElement);
+                        });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching messages:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching username:', error);
+            });
     }
 
 }

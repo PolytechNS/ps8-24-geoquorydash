@@ -26,7 +26,7 @@
 }
 
 #friendsResults li div {
-    position: relative; /* Assurez-vous que le conteneur est positionné */
+    position: relative;
 }
 
 #friendsResults li {
@@ -66,6 +66,37 @@
     height: 6vh;
     cursor: pointer;
     border-radius: 50%;
+}
+
+#chatSection {
+    display: none;
+    height: 100%;
+    width: 30vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.friend-name-header {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    margin-left: 3vw;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+.chat-area {
+    height: 80vh;
+    width: 27vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border: white 1px solid;
 }
 
 @font-face {

@@ -27,6 +27,9 @@ body {
 
 .burger-menu-button.open {
     left: 33vw;
+    .burger-chat-button {
+        left: 33vw;
+    }
 }
 
 .burger-chat-button {
@@ -45,6 +48,9 @@ body {
 
 .burger-chat-button.open {
     left: 33vw;
+    .burger-menu-button {
+        left: 33vw;
+    }
 }
 
 .buttons{
