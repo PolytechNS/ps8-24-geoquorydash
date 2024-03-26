@@ -10,7 +10,8 @@ const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, 
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 const {createGameStateInDatabase} = require("./models/game/gameState");
-const { getTextToIndex, retrieveTextInGameInteraction} = require('./logic/chat/chatManager');
+const {retrieveConfigurationFromDatabase} = require("./models/users/configuration");
+
 const setupSocket = (server) => {
     const io = socketIo(server);
 
@@ -303,17 +304,28 @@ const setupSocket = (server) => {
         }
 
         socket.on('askTextButtonInteraction', async (token) => {
-            console.log('ON askTextButtonInteraction ');
-
             const userId = verifyAndValidateUserID(token);
             if (!userId) {
                 socket.emit('tokenInvalid');
                 return;
             }
             const text = await chatManager.retrieveTextInGameInteraction(userId)
-            console.log('EMIT askTextButtonInteraction ', text);
-
             socket.emit('answerTextButtonInteraction', text);
+        });
+
+        socket.on('askInteractionConfiguration', async (token) => {
+            console.log('ON askInteractionConfiguration ');
+
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            const configurationPossible = chatManager.textToDisplay["default"];
+            const configuration = await retrieveConfigurationFromDatabase(userId);
+            console.log('EMIT answerTextButtonInteraction ', configurationPossible, configuration);
+
+            socket.emit('answerTextButtonInteraction', configurationPossible, configuration);
         });
 
         socket.on('displayText', (roomId, text) => {

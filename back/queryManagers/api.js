@@ -3,6 +3,7 @@ const authRouter = require('../logic/authentification/authRouter');
 const gameRouter = require('../logic/game/gameRouter');
 const friendsRouter = require('../logic/friends/friendsRouter');
 const profileRouter = require('../logic/profile/profileRouter');
+const configurationRouter = require('../logic/configuration/configurationRouter');
 
 function manageRequest(request, response) {
     addCors(response);
@@ -26,6 +27,9 @@ function manageRequest(request, response) {
     }
     if (request.url.startsWith('/api/profile')) {
         profileRouter(request, response).then();
+    }
+    if (request.url.startsWith('/api/configuration')) {
+        configurationRouter(request, response).then();
     }
 
     response.statusCode = 200;

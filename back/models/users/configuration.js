@@ -44,4 +44,18 @@ async function retrieveTextInGameInteractionFromDatabase(userId){
     }
 }
 
-module.exports = { createDefaultConfiguration, retrieveTextInGameInteractionFromDatabase };
+async function retrieveConfigurationFromDatabase(userId){
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const configurationCollection = database.collection('configuration');
+        const configuration = await configurationCollection.findOne({ userId: new ObjectId(userId) });
+        return configuration;
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError();
+    }
+}
+
+module.exports = { createDefaultConfiguration, retrieveConfigurationFromDatabase, retrieveTextInGameInteractionFromDatabase };
