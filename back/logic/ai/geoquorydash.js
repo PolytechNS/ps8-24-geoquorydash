@@ -672,8 +672,8 @@ function canWallBeInstalledOnBoard(wallToInstall, gameState) {
     // Étape 2 : si aucun mur n'est posé sur le plateau, true
     let boardWallsInWallsList = getBoardWallsInWallsList(gameState);
     // //console.log("Actuellement, il y a " + boardWallsInWallsList.length + " murs sur le terrain");
-    if(boardWallsInWallsList.length === 0) { // Il n'y a pour l'instant aucun mur sur le terrain, tous les murs peuvent être posés
-        // //console.log("On rentre dans le cas où le nombre de murs est de 0");
+    // Il n'y a pour l'instant aucun mur sur le terrain, tous les murs peuvent être posés
+    if(boardWallsInWallsList.length === 0) {
         return true;
     }
 
@@ -725,7 +725,7 @@ function checkPathToReachTheEnd(currentPosition, alreadyVisitedCell, playerID, b
         return false;
     }
 
-    if(playerID === "ia") {
+    if(playerID === "player1") {
         if((firstToPlay && currentPosition.x === 0) || (!firstToPlay && currentPosition.x === 16)) {
             return true;
         }
