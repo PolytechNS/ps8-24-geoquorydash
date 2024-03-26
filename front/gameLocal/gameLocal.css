@@ -13,8 +13,8 @@ body {
 
 .burger-menu-button {
     position: fixed;
-    top: 20px;
-    left: 20px;
+    top: 3vh;
+    left: 2vw;
     z-index: 999;
     width: 4vw;
     height: 8vh;
@@ -26,13 +26,13 @@ body {
 }
 
 .burger-menu-button.open {
-    left: 17vw;
+    left: 33vw;
 }
 
 .burger-chat-button {
     position: fixed;
-    top: 100px;
-    left: 20px;
+    top: 15vh;
+    left: 2vw;
     z-index: 999;
     width: 4vw;
     height: 8vh;
@@ -44,7 +44,7 @@ body {
 }
 
 .burger-chat-button.open {
-    left: 17vw;
+    left: 33vw;
 }
 
 .buttons{

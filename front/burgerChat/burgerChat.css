@@ -4,10 +4,10 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 15vw;
+    width: 30vw;
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
 }
 
 .show {
@@ -18,25 +18,31 @@
     max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
-    width: 70vw;
+    width: 30vw;
     list-style-type: none;
     display: flex;
-    justify-content: center;
+    justify-content: left;
     align-items: center;
+}
+
+#friendsResults li div {
+    position: relative; /* Assurez-vous que le conteneur est positionné */
 }
 
 #friendsResults li {
     background-image: url('../img/friends/liBackground.png');
-    background-size: contain;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
-    padding-left: 5vw;
+    background-position: center;
+    padding-left: 3vw;
     margin-bottom: 3vh;
-    margin-left: 6vw;
+    margin-left: 0;
     list-style-type: none;
-    width: 70vw;
+    width: 15vw;
 }
 
 #friendsResults li a {
+    margin-top: 0;
     text-decoration: none;
     color: white !important;
     font-family: 'PUSAB', sans-serif;
@@ -44,6 +50,22 @@
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
+}
+
+#friendsResults li button.chat {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-image: url('../img/friends/accept.png');
+    right: -4vw;
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    width: 6vh;
+    height: 6vh;
+    cursor: pointer;
+    border-radius: 50%;
 }
 
 @font-face {

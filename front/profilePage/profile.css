@@ -63,8 +63,9 @@ body {
     position: absolute;
     top: 5vh;
     right: 5vw;
-    background-size: contain;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
+    background-position: center;
     height: 15vh;
     width: 25vw;
     border-radius: 15px;
@@ -86,9 +87,10 @@ body {
 
 #friendsResults li {
     background-image: url('../img/friends/liBackground.png');
-    background-size: contain;
+    background-size: 100% 100%;
     background-repeat: no-repeat;
-    padding-left: 1vw;
+    background-position: center;
+    padding-left: 3vw;
     margin-bottom: 1vh;
     list-style-type: none;
     width: 20vw;
