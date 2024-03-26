@@ -49,7 +49,7 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
         Array.from(barrierCells).forEach(barrierCell => {
             let barrierCellId = barrierCell.id;
             let { i, j } = getIndicesFromId(barrierCellId);
-            activateBarrierCellListeners(barrierCell, i, j);
+            activateBarrierCellListeners(barrierCell, i, j, player.id);
         });
         askPossibleMove();
     } else {
@@ -91,8 +91,8 @@ function displayWalls(gameState) {
     gameState.players.forEach(player => {
         player.walls.forEach(wall => {
             let cell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`);
-            handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier');
-            lockBarrier(wall);
+            // handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier', player.id);
+            lockBarrier(wall, true, player.id);
         });
     })
 }
