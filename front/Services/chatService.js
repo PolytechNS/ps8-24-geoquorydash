@@ -8,5 +8,13 @@ export const ChatService = {
             body: JSON.stringify({ username1, username2 })
         })
             .then(response => response.json());
+    },
+    sendMessage(sender, receiver, message) {
+        return fetch(`${API_ENDPOINT}/api/chat/send`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sender, receiver, message })
+        })
+            .then(response => response.json());
     }
 };

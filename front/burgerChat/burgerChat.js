@@ -72,7 +72,7 @@ async function loadBurgerChat() {
     async function openChatWindow(friendName) {
         friendsResults.style.display = 'none';
 
-        const chatSection = document.getElementById('chatSection');
+        const chatSection = document.getElementById('chatSection')
         chatSection.style.display = 'flex';
         chatSection.innerHTML = '';
 
@@ -84,6 +84,91 @@ async function loadBurgerChat() {
         const chatArea = document.createElement('div');
         chatArea.classList.add('chat-area');
         chatSection.appendChild(chatArea);
+
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                AuthService.username(token)
+                    .then(authUsername => {
+                        ChatService.getMessages(authUsername, friendName)
+                        ChatService.getMessages(authUsername, friendName)
+                            .then(messages => {
+                                messages.forEach(message => {
+                                    const messageElement = document.createElement('div');
+                                    messageElement.textContent = message.content;
+
+                                    if (message.sender === authUsername) {
+                                        messageElement.classList.add('own-message');
+                                    } else {
+                                        messageElement.classList.add('friend-message');
+                                    }
+
+                                    chatArea.appendChild(messageElement);
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error fetching messages:', error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching username:', error);
+                    });
+            } catch (error) {
+                console.error('Error fetching username:', error);
+            }
+        } else {
+            console.error('Token not found');
+        }
+
+        const messageInput = document.createElement('input');
+        messageInput.setAttribute('type', 'text');
+        messageInput.setAttribute('placeholder', 'Type your message...');
+        chatSection.appendChild(messageInput);
+
+        const sendButton = document.createElement('button');
+        sendButton.textContent = '>';
+        sendButton.addEventListener('click', () => {
+            const message = messageInput.value.trim();
+            if (message !== '') {
+                sendMessage(friendName, message);
+                messageInput.value = '';
+                refreshChatArea(friendName);
+            }
+        });
+
+        chatSection.appendChild(sendButton);
+    }
+
+
+    async function sendMessage(receiver, message) {
+        const token = localStorage.getItem('token');
+        if (token) {
+            try {
+                AuthService.username(token)
+                    .then(sender => {
+                        ChatService.sendMessage(sender, receiver, message)
+                            .then(response => {
+                                console.log('Message sent:', response);
+                                refreshChatArea(receiver);
+                            })
+                            .catch(error => {
+                                console.error('Error sending message:', error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching sender username:', error);
+                    });
+            } catch (error) {
+                console.error('Error fetching sender username:', error);
+            }
+        } else {
+            console.error('Token not found');
+        }
+    }
+
+    function refreshChatArea(friendName) {
+        const chatArea = document.querySelector('.chat-area');
+        chatArea.innerHTML = '';
 
         AuthService.username(token)
             .then(authUsername => {

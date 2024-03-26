@@ -99,6 +99,27 @@
     border: white 1px solid;
 }
 
+.chat-area div {
+    margin: 1vh;
+    padding: 1vh;
+    border-radius: 1vh;
+}
+
+.chat-area div.own-message {
+    text-align: right;
+    background-color: cornflowerblue;
+    opacity: 0.9;
+    color: white;
+}
+
+.chat-area div.friend-message {
+    text-align: left;
+    background-color: dimgrey;
+    opacity: 0.9;
+    color: white;
+}
+
+
 @font-face {
     font-family: 'PUSAB';
     src: url('../img/game/PUSAB___.otf');
