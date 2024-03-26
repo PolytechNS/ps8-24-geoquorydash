@@ -36,6 +36,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadGame(gameStateId) {
+    console.log('AZY1');
     localStorage.setItem('gameStateID', gameStateId);
     window.location.href = '../gamePage/gamePage.html?resumeGame=true';
 }

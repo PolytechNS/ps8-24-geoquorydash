@@ -1,5 +1,5 @@
 .burger-menu {
-    display: none;
+    display: block;
     position: fixed;
     top: 0;
     left: 0;
@@ -8,6 +8,37 @@
     background-color: rgba(0, 0, 0, 0.8);
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+.show {
+    transform: translateX(0);
+}
+
+.rotate-image {
+    transform: rotate(180deg);
+    transition: transform 0.5s ease;
+}
+
+.rotate-image-reverse {
+    transform: rotate(0deg);
+    transition: transform 0.5s ease;
+}
+
+.burger-menu-button {
+    position: fixed;
+    top: 20px;
+    left: 20px; /* Position de départ */
+    z-index: 999;
+    width: 4vw;
+    height: 8vh;
+    transition: left 0.5s ease; /* Transition appliquée à la propriété 'left' */
+}
+
+.burger-menu-button img {
+    width: 100%;
+    height: 100%;
 }
 
 .burger-menu ul {
@@ -37,8 +68,4 @@
 
 #deconnexionButton img {
     height: 3vh;
-}
-
-.show {
-    display: block;
 }

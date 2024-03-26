@@ -1,0 +1,60 @@
+import { API_ENDPOINT } from '../js/config.js';
+
+export const FriendsService = {
+    searchUsers(username) {
+        return fetch(`${API_ENDPOINT}/api/friends/search`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+        })
+            .then(response => response.json());
+    },
+    addFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/add`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    cancel(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/cancel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    getRequests(currentUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/requests`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser }),
+        })
+            .then(response => response.json());
+    },
+    acceptFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/accept`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    deniedFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/denied`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
+    getFriends(currentUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/friends`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser }),
+        })
+            .then(response => response.json());
+    }
+};
