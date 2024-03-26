@@ -42,6 +42,7 @@ async function saveConfiguration(req, res) {
         console.error("Invalid token");
         throw new InvalidTokenError("Invalid token");
     }
+
     let dataChunks = [];
 
     req.on('data', chunk => {
@@ -53,7 +54,7 @@ async function saveConfiguration(req, res) {
         if (!configurationManager.isConfigurationValid(configuration.textInGameInteraction)) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid configuration');
-            return; // Important de retourner ici pour éviter de continuer l'exécution
+            return;
         }
 
         await saveConfigurationToDatabase(userId, configuration.textInGameInteraction);

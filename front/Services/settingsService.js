@@ -26,6 +26,8 @@ export const SettingsService = {
             body: JSON.stringify(configuration)
         }).then(response => {
             if (!response.ok) {
+                alert('Invalid configuration');
+                window.location.reload();
                 throw new Error('Réponse réseau non ok');
             }
         });
