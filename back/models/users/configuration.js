@@ -59,7 +59,6 @@ async function retrieveConfigurationFromDatabase(userId){
 }
 
 async function saveConfigurationToDatabase(userId, configuration){
-    console.log(configuration);
     const client = new MongoClient(uri);
     try {
         await client.connect();

@@ -42,20 +42,21 @@ async function saveConfiguration(req, res) {
         console.error("Invalid token");
         throw new InvalidTokenError("Invalid token");
     }
+    let dataChunks = [];
 
-    let body = '';
     req.on('data', chunk => {
-        if (!configurationManager.isConfigurationValid(chunk.toString())) {
+        dataChunks.push(chunk);
+    }).on('end', async () => {
+        const bodyString = Buffer.concat(dataChunks).toString();
+        const configuration = JSON.parse(bodyString);
+
+        if (!configurationManager.isConfigurationValid(configuration.textInGameInteraction)) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid configuration');
-            return;
+            return; // Important de retourner ici pour éviter de continuer l'exécution
         }
-        body += chunk.toString();
-    });
 
-    req.on('end', async () => {
-        const configuration = JSON.parse(body);
-        await saveConfigurationToDatabase(userId, configuration);
+        await saveConfigurationToDatabase(userId, configuration.textInGameInteraction);
         res.writeHead(200, { 'Content-Type': 'text/plain' });
         res.end('Configuration saved');
     });

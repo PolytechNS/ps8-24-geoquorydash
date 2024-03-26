@@ -47,9 +47,7 @@ function setupSaveButton(token){
             textInGameInteraction.push(button.innerHTML);
         });
 
-        console.log(textInGameInteraction);
-
-        SettingsService.saveConfiguration(token, { textInGameInteraction }).then(() => {
+        SettingsService.saveConfiguration(token, { textInGameInteraction: textInGameInteraction }).then(() => {
             alert('Configuration enregistrée');
         });
     }

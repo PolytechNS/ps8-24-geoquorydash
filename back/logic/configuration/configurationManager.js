@@ -16,13 +16,9 @@ class ConfigurationManager {
     constructor() {}
 
     isConfigurationValid(configuration) {
-        try {
-            this.allTextInteraction.includes(configuration);
-            return true;
-        } catch (error) {
-            return false;
-        }
+        return configuration.every(element => this.allTextInteraction.includes(element));
     }
+
 }
 
 const configurationManager = new ConfigurationManager();
