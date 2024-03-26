@@ -14,6 +14,15 @@ class ConfigurationManager {
         "C'est triste !"
     ]
     constructor() {}
+
+    isConfigurationValid(configuration) {
+        try {
+            this.allTextInteraction.includes(configuration);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
 }
 
 const configurationManager = new ConfigurationManager();

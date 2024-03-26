@@ -3,11 +3,12 @@ import { SettingsService } from '../Services/settingsService.js';
 window.onload = function() {
     const token = localStorage.getItem('token');
     if (token) {
-        SettingsService.configuration(token).then(data => {
+        SettingsService.getConfiguration(token).then(data => {
             const configurationPossible = data.genericConfiguration;
             const personalConfiguration = data.personalConfiguration;
             setupConfiguration(configurationPossible, personalConfiguration);
         });
+        setupSaveButton(token);
     }
 }
 
@@ -34,6 +35,23 @@ function setupConfiguration(configurationPossible, personalConfiguration){
             });
         }
         buttonContainer.appendChild(button);
+    }
+}
+
+function setupSaveButton(token){
+    const saveButton = document.getElementById('save-button');
+    saveButton.onclick = function() {
+        const buttons = document.querySelectorAll('#interaction-container button');
+        const textInGameInteraction = [];
+        buttons.forEach(button => {
+            textInGameInteraction.push(button.innerHTML);
+        });
+
+        console.log(textInGameInteraction);
+
+        SettingsService.saveConfiguration(token, { textInGameInteraction }).then(() => {
+            alert('Configuration enregistrée');
+        });
     }
 }
 

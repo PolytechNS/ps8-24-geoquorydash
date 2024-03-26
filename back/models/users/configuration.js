@@ -58,4 +58,18 @@ async function retrieveConfigurationFromDatabase(userId){
     }
 }
 
-module.exports = { createDefaultConfiguration, retrieveConfigurationFromDatabase, retrieveTextInGameInteractionFromDatabase };
+async function saveConfigurationToDatabase(userId, configuration){
+    console.log(configuration);
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const configurationCollection = database.collection('configuration');
+        await configurationCollection.updateOne({ userId: new ObjectId(userId) }, { $set: { textInGameInteraction: configuration } });
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError();
+    }
+}
+
+module.exports = { createDefaultConfiguration, retrieveConfigurationFromDatabase, retrieveTextInGameInteractionFromDatabase, saveConfigurationToDatabase };
