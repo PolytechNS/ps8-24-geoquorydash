@@ -72,4 +72,5 @@ socket.on('matchFound', function(roomId) {
     alert('Match trouvé! Vous allez être redirigé vers la partie.');
     localStorage.setItem('roomId', roomId);
 });
+
 export default socket;

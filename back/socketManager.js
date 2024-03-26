@@ -2,6 +2,7 @@ const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const gameOnlineManager = require('./logic/game/gameOnlineManager');
+const chatManager = require('./logic/chat/chatManager');
 const { movePlayer, getPossibleMove, toggleWall, initializeGame, changeCurrentPlayer, moveAI} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
@@ -9,7 +10,7 @@ const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, 
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 const {createGameStateInDatabase} = require("./models/game/gameState");
-
+const { getTextToIndex, retrieveTextInGameInteraction} = require('./logic/chat/chatManager');
 const setupSocket = (server) => {
     const io = socketIo(server);
 
@@ -300,6 +301,24 @@ const setupSocket = (server) => {
             changeCurrentPlayer(id);
             socket.emit('updateBoard', gameManager.gameStateList[id], fogOfWar.visibilityMapObjectList[id].visibilityMap, id);
         }
+
+        socket.on('askTextButtonInteraction', async (token) => {
+            console.log('ON askTextButtonInteraction ');
+
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            const text = await chatManager.retrieveTextInGameInteraction(userId)
+            console.log('EMIT askTextButtonInteraction ', text);
+
+            socket.emit('answerTextButtonInteraction', text);
+        });
+
+        socket.on('displayText', (roomId, text) => {
+            io.of('/api/game').to(roomId).emit('displayText', text);
+        });
 
     });
 }
