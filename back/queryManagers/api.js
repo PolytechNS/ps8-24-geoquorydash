@@ -1,4 +1,5 @@
 // Main method, exported at the end of the file. It's the one that will be called when a REST request is received.
+const statRouter = require('../logic/stat/statRouter');
 const authRouter = require('../logic/authentification/authRouter');
 const gameRouter = require('../logic/game/gameRouter');
 const friendsRouter = require('../logic/friends/friendsRouter');
@@ -13,6 +14,9 @@ function manageRequest(request, response) {
         return;
     }
 
+    if (request.url.startsWith('/api/stat')) {
+        statRouter(request, response).then();
+    }
     if (request.url.startsWith('/api/auth')) {
         authRouter(request, response).then();
     }

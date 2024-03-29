@@ -1,4 +1,5 @@
 import { AuthService } from './Services/authService.js';
+import { StatService } from "./Services/statService.js";
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -111,8 +112,20 @@ document.addEventListener("DOMContentLoaded", function() {
     var openStatPage = document.getElementById("openStatPage");
 
     openStatPage.addEventListener("click", function(e) {
-        e.preventDefault();
-        statModal.style.display = "flex";
+        if (token){
+            e.preventDefault();
+            statModal.style.display = "flex";
+            StatService.numberOfPlayedGames(token)
+                .then(data => {
+                    console.log("Nombre de game effectuées " + data);
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des données:', error);
+                    alert('Erreur lors de la récupération des données');
+                });
+        } else {
+            alert('Vous devez être connecté pour consulter vos statistiques');
+        }
     });
 
     window.addEventListener("click", function(event) {
@@ -132,6 +145,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = signupForm.querySelector('[name="password"]').value;
         AuthService.signUp(username, password)
             .then(data => {
+                console.log("On vient de se signup");
+                StatService.associateStatToNewUser(username)
+                .then(data2 => {
+                    console.log("L'association s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
                 signupModal.style.display = "none";
                 loginModal.style.display= "flex";
                 alert('Inscription effectuée');
