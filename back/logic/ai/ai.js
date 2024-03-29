@@ -10,3 +10,5 @@ function computeMoveForAI(gameState, getPossibleMove) {
 }
 
 module.exports = { computeMoveForAI };
+
+// CETTE FONCTION N'EST JAMAIS APPELÉE DANS L'ÉTAT ACTUEL DES CHOSES

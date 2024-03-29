@@ -1,9 +1,13 @@
 const {ObjectId} = require("mongodb");
 
-async function createVisibilityMapInDatabase(database, gameStateId, visibilityMap) {
-    const visibilityMapCollection = database.collection('visibilityMaps');
-    const result = await visibilityMapCollection.insertOne({ gameStateId, visibilityMap });
-    return result;
+async function createVisibilityMapInDatabase(database, gameStateId, visibilityMap){
+    if (visibilityMap) {
+        const visibilityMapCollection = database.collection('visibilityMaps');
+        const result = await visibilityMapCollection.insertOne({gameStateId, visibilityMap});
+        return result;
+    } else {
+        throw new Error("Visibility map is undefined");
+    }
 }
 
 async function changeVisibilityMapInDatabase(database, gameStateId, visibilityMap) {

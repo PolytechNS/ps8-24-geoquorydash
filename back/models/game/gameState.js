@@ -1,10 +1,21 @@
-const {ObjectId} = require("mongodb");
+const {ObjectId, MongoClient} = require("mongodb");
+const {uri} = require("../../bdd");
+const {DatabaseConnectionError} = require("../../utils/errorTypes");
 
-async function createGameStateInDatabase(database) {
-    const gameCollection = database.collection('gameStates');
-    const result = await gameCollection.insertOne({gameFinished: false});
-    const newGameStateId = result.insertedId;
-    return newGameStateId;
+async function createGameStateInDatabase() {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const gameCollection = database.collection('gameStates');
+        const result = await gameCollection.insertOne({gameFinished: false});
+        const newGameStateId = result.insertedId;
+        return newGameStateId;
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+
+    }
 }
 
 async function setGameStateToFinishedInDatabase(database, gameStateID) {
