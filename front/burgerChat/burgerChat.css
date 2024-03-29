@@ -92,11 +92,11 @@
 }
 
 .chat-area {
-    height: 80vh;
+    height: 70vh;
     width: 27vw;
     overflow-y: auto;
     overflow-x: hidden;
-    border: white 1px solid;
+    margin-bottom: 5vh;
 }
 
 .chat-area div {
@@ -107,7 +107,7 @@
 
 .chat-area div.own-message {
     text-align: right;
-    background-color: cornflowerblue;
+    background-color: #fec32c;
     opacity: 0.9;
     color: white;
 }
@@ -119,6 +119,25 @@
     color: white;
 }
 
+.message-input-container {
+    display: flex;
+    width: 100%;
+}
+
+.message-input-container input[type="text"] {
+    width: 75%;
+    height: 6vh;
+    margin-right: 5%;
+}
+
+.message-input-container button {
+    width: 20%;
+    height: 6vh;
+    background-image: url('../img/friends/accept.png');
+    background-size: 100% 100%;
+    border: none;
+    cursor: pointer;
+}
 
 @font-face {
     font-family: 'PUSAB';

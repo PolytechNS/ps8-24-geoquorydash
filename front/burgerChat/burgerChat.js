@@ -120,13 +120,27 @@ async function loadBurgerChat() {
             console.error('Token not found');
         }
 
+        const messageInputContainer = document.createElement('div');
+        messageInputContainer.classList.add('message-input-container');
+        messageInputContainer.style.display = 'flex';
+        messageInputContainer.style.width = '27vw';
+
         const messageInput = document.createElement('input');
         messageInput.setAttribute('type', 'text');
         messageInput.setAttribute('placeholder', 'Type your message...');
-        chatSection.appendChild(messageInput);
+        messageInput.style.width = '75%';
+        messageInput.style.height = '6vh';
+        messageInput.style.marginRight = '5%';
+        messageInputContainer.appendChild(messageInput);
 
         const sendButton = document.createElement('button');
         sendButton.textContent = '>';
+        sendButton.style.width = '20%';
+        sendButton.style.height = '6vh';
+        sendButton.style.backgroundImage = "url('../img/friends/accept.png')";
+        sendButton.style.backgroundSize = '100% 100%';
+        sendButton.style.border = 'none';
+        sendButton.style.cursor = 'pointer';
         sendButton.addEventListener('click', () => {
             const message = messageInput.value.trim();
             if (message !== '') {
@@ -135,8 +149,9 @@ async function loadBurgerChat() {
                 refreshChatArea(friendName);
             }
         });
+        messageInputContainer.appendChild(sendButton);
 
-        chatSection.appendChild(sendButton);
+        chatSection.appendChild(messageInputContainer);
     }
 
 
