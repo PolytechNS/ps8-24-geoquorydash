@@ -115,9 +115,23 @@ document.addEventListener("DOMContentLoaded", function() {
         if (token){
             e.preventDefault();
             statModal.style.display = "flex";
-            StatService.numberOfPlayedGames(token)
+            const statItems = document.querySelectorAll('.stat-item span');
+            StatService.getStat(token)
                 .then(data => {
-                    console.log("Nombre de game effectuées " + data);
+                    if(statItems.length === 6) { // On vérifie qu'on bien récupéré le bon nombre de stats
+                        statItems[0].textContent = data.numberOfPlayedGames;
+                        if (data.playingTimeDuration >= 60) {
+                            const hours = Math.floor(data.playingTimeDuration / 60);
+                            const minutes = data.playingTimeDuration % 60;
+                            statItems[1].textContent = hours + "h" + minutes;
+                        } else {
+                            statItems[1].textContent = data.playingTimeDuration + "min";
+                        }
+                        statItems[2].textContent = data.numberOfVictory;
+                        statItems[3].textContent = data.numberOfMoves;
+                        statItems[4].textContent = data.numberOfWallsInstalled;
+                        statItems[5].textContent = data.numberOfTurnsOfClosestGame;
+                    }
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des données:', error);
@@ -137,7 +151,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // MODULE D'INSCRIPTION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST");
     const signupForm = document.getElementById('signupForm');
     signupForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -173,7 +186,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // MODULE DE CONNEXION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST 2");
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -202,7 +214,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateDeconnexionVisibility() {
     const deconnexionButton = document.getElementById('logout-btn');
     if (token) {
-        console.log("TEST 3")
         document.getElementById('openSignupPage').style.display = 'none';
         document.getElementById('openLoginPage').style.display = 'none';
 

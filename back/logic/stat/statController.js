@@ -1,4 +1,4 @@
-const { createStatInDatabase, retrieveNumberOfPlayedGamesFromDatabaseForAUser } = require("../../models/users/stat");
+const { createStatInDatabase, retrieveStatFromDatabaseForAUser } = require("../../models/users/stat");
 const createUserCollection = require('../../models/users/users');
 const { parseJSON } = require('../../utils/utils.js');
 
@@ -51,7 +51,6 @@ async function associateStatToNewUser(req, res) {
             const userByUsername = await usersCollection.findOne({ username });
             
             if (userByUsername) {
-                console.log("ID de l'utilisateur trouvé :", userByUsername._id);
                 await createStatInDatabase(userByUsername._id);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Statistics associated successfully' }));
@@ -68,7 +67,7 @@ async function associateStatToNewUser(req, res) {
     });
 }
 
-async function retrieveNumberOfPlayedGames(req, res) {
+async function retrieveStat(req, res) {
     const authHeader = req.headers.authorization;
     let token;
 
@@ -77,11 +76,9 @@ async function retrieveNumberOfPlayedGames(req, res) {
     }
 
     try {
-        console.log("Pour l'instant, tout va bien");
-        const numberOfGames = await retrieveNumberOfPlayedGamesFromDatabaseForAUser(token);
-        console.log("Nombre de games : " + numberOfGames);
+        const stat = await retrieveStatFromDatabaseForAUser(token);
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ numberOfGames }));
+        res.end(JSON.stringify({ stat }));
     } catch (error) {
         console.error("Error retrieving game history:", error);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
@@ -89,4 +86,4 @@ async function retrieveNumberOfPlayedGames(req, res) {
     }
 }
 
-module.exports = { associateStatToNewUser, retrieveNumberOfPlayedGames };
+module.exports = { associateStatToNewUser, retrieveStat };
