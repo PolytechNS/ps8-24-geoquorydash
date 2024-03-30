@@ -80,7 +80,7 @@ class GameManager {
                     id: "player2",
                     position: {x: 16, y: 8},
                     walls: [],
-                    isCurrentPlayer: true
+                    isCurrentPlayer: !randomBoolean
                 }
             ],
             isGameActive: true

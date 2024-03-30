@@ -303,14 +303,15 @@ const setupSocket = (server) => {
             socket.emit('updateBoard', gameManager.gameStateList[id], fogOfWar.visibilityMapObjectList[id].visibilityMap, id);
         }
 
-        socket.on('askTextButtonInteraction', async (token) => {
+        socket.on('askTextButtonInteraction', async (token, roomId, socketId) => {
             const userId = verifyAndValidateUserID(token);
             if (!userId) {
                 socket.emit('tokenInvalid');
                 return;
             }
             const text = await chatManager.retrieveTextInGameInteraction(userId)
-            socket.emit('answerTextButtonInteraction', text);
+            const playerId = gameOnlineManager.gameInSession[roomId][0].id === socketId ? 'player1' : 'player2'
+            socket.emit('answerTextButtonInteraction', text, playerId);
         });
 
         socket.on('askInteractionConfiguration', async (token) => {
@@ -328,8 +329,8 @@ const setupSocket = (server) => {
             socket.emit('answerTextButtonInteraction', configurationPossible, configuration);
         });
 
-        socket.on('displayText', (roomId, text) => {
-            io.of('/api/game').to(roomId).emit('displayText', text);
+        socket.on('displayText', (roomId, text, position) => {
+            io.of('/api/game').to(roomId).emit('displayText', text, position);
         });
 
     });
