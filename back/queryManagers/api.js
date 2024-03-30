@@ -3,6 +3,7 @@ const authRouter = require('../logic/authentification/authRouter');
 const gameRouter = require('../logic/game/gameRouter');
 const friendsRouter = require('../logic/friends/friendsRouter');
 const profileRouter = require('../logic/profile/profileRouter');
+const chatRouter = require('../logic/chat/chatRouter');
 const configurationRouter = require('../logic/configuration/configurationRouter');
 
 function manageRequest(request, response) {
@@ -28,12 +29,14 @@ function manageRequest(request, response) {
     if (request.url.startsWith('/api/profile')) {
         profileRouter(request, response).then();
     }
+    if (request.url.startsWith('/api/chat')) {
+        chatRouter(request, response).then();
+    }
     if (request.url.startsWith('/api/configuration')) {
         configurationRouter(request, response).then();
     }
 
     response.statusCode = 200;
-    //response.end(`Thanks for calling ${request.url}`);
 }
 
 /* This method is a helper in case you stumble upon CORS problems. It shouldn't be used as-is:

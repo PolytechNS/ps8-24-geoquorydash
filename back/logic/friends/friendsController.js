@@ -1,5 +1,6 @@
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
+const createNewChat = require('../chat/chatController').createNewChat;
 
 async function searchUsers(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -131,6 +132,7 @@ async function acceptFriend(req, res) {
                 { $pull: { friendRequests: currentUser }, $addToSet: { friends: currentUser } }
             );
             if (result.modifiedCount > 0 && result2.modifiedCount > 0) {
+                await createNewChat(currentUser, targetUser);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend added successfully' }));
             } else {
