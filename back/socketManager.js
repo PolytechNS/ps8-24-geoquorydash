@@ -9,7 +9,7 @@ const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, 
 } = require('./models/game/gameDataBaseManager');
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
-const {createGameStateInDatabase} = require("./models/game/gameState");
+const {createGameStateInDatabase, setGameStateInProgressBoolean, getGameStateInProgress} = require("./models/game/gameState");
 const {retrieveConfigurationFromDatabase} = require("./models/users/configuration");
 
 const setupSocket = (server) => {
@@ -55,54 +55,17 @@ const setupSocket = (server) => {
                 socket.emit('tokenInvalid');
                 return;
             }
+            const gameStateInProgress = await getGameStateInProgress();
+            if (gameStateInProgress) {
+                socket.emit('gameAlreadyInProgress', gameStateInProgress._id.toString());
+                return;
+            }
 
-            // try {
-            //     var gameState = await gameManager.resumeGame(gameStateID);
-            // } catch (error) {
-            //     throw error;
-            // }
-            // try {
-            //     var visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
-            // } catch (error) {
-            //     throw error;
-            // }
-            // const defaultOption = false;
-            // initializeGame({defaultOption, id: gameStateID});
+            await setGameStateInProgressBoolean(gameStateID, true);
             const gameState = gameManager.gameStateList[gameStateID];
             const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
             socket.emit("updateBoard", gameState, visibilityMap, gameStateID);
         });
-
-        // socket.on('startOnlineGame', async (token) => {
-        //     console.log('ON startOnlineGame');
-        //     const userId = verifyAndValidateUserID(token);
-        //     if (!userId) {
-        //         socket.emit('tokenInvalid');
-        //         return;
-        //     }
-        //
-        //     try {
-        //         const verificationResult = verifyAndValidateUserID(token);
-        //         if (!verificationResult) {
-        //             socket.emit('tokenInvalid');
-        //             return;
-        //         }
-        //         const userObjectID = verificationResult;
-        //         const defaultOption = true;
-        //         initializeGame(defaultOption);
-        //         fogOfWar.updateBoardVisibility();
-        //         const gamestatePlayers = gameManager.gameState.players;
-        //         const gameStateID = await createGameInDatabase(gamestatePlayers, fogOfWar.visibilityMap, userObjectID);
-        //         socket.emit("updateBoard", gameManager.gameState, fogOfWar.visibilityMap, gameStateID);
-        //     } catch (error) {
-        //         if (error instanceof DatabaseConnectionError) {
-        //             socket.emit('databaseConnectionError');
-        //         } else {
-        //             console.log("Une erreur inattendue est survenue : ", error.message);
-        //         }
-        //     }
-        // });
-
 
         socket.on('disconnect', () => {
             console.log('Client disconnected');
@@ -113,6 +76,8 @@ const setupSocket = (server) => {
         });
 
         socket.on('movePlayer', async (targetPosition, id, token, roomId) => {
+            if (token) await setGameStateInProgressBoolean(id, true);
+
             var response = movePlayer(targetPosition, id);
 
             try {
@@ -176,15 +141,15 @@ const setupSocket = (server) => {
             }
         });
 
-
         socket.on('possibleMoveRequest', (id) => {
             let possibleMove = getPossibleMove(id);
             socket.emit('possibleMoveList', possibleMove);
         });
 
-
         socket.on('toggleWall', async (wall, isVertical, gameStateID, token, roomId) => {
             console.log('ON toggleWall');
+            if (token) await setGameStateInProgressBoolean(gameStateID, true);
+
             const onlineGameOption = !!roomId;
             var response = toggleWall(wall, isVertical, onlineGameOption, gameStateID);
             if (response === 1) {
@@ -232,7 +197,6 @@ const setupSocket = (server) => {
                 socket.emit('ImpossibleWallPosition');
             }
         });
-
 
         socket.on('findMatch', (token) => {
             console.log('ON joinGameRoom');
@@ -333,7 +297,20 @@ const setupSocket = (server) => {
             io.of('/api/game').to(roomId).emit('displayText', text, position);
         });
 
+        socket.on('quitGame', async (token, gameStateID) => {
+            console.log('ON quitGame');
+            if (token){
+                const verificationResult = verifyAndValidateUserID(token);
+                if (!verificationResult) {
+                    socket.emit('tokenInvalid');
+                    return;
+                }
+                await setGameStateInProgressBoolean(gameStateID, false);
+            }
+        });
     });
+
+
 }
 
 

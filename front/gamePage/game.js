@@ -304,19 +304,16 @@ function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-/*    const messageElement = document.getElementById('message');
-    messageElement.innerText = 'Placement de barrière impossible';
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);*/
-
     alert("Placement de barrière impossible");
 }
 
 function endGame(player) {
     alert("Le joueur " + player.id + " a gagne !");
     window.location.href = '/gameType/gameType.html';
+}
+
+window.onbeforeunload = function() {
+    socket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
 }
 
 export { askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
