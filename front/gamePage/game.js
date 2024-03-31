@@ -6,6 +6,8 @@ const player2 = createPlayer('player2', 'red');
 let currentPlayer = player2;
 let currentPlayerID = 'player2';
 
+console.log("LA PARTIE SE LANCE");
+
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
         const cell = document.createElement('div');

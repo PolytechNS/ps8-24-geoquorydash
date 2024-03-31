@@ -9,12 +9,15 @@ const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, 
 const { verifyAndValidateUserID } = require('./logic/authentification/authController');
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 const {createGameStateInDatabase} = require("./models/game/gameState");
+const {createTemporaryStat, updateStatInDatabase} = require("./models/users/stat");
 
 const setupSocket = (server) => {
     const io = socketIo(server);
 
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
+
+        var temporaryStatArray = [];
 
         socket.on('startNewGame', async (token) => {
             console.log('ON startNewGame');
@@ -41,6 +44,10 @@ const setupSocket = (server) => {
                 const gameState = gameManager.gameStateList[gameStateId];
                 await createGameInDatabase(gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, {userId1: userObjectID}, gameStateIdObject);
                 socket.emit("updateBoard", gameState, fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap, gameStateId);
+
+                var temporaryStat = await createTemporaryStat(gameStateId);
+                temporaryStatArray.push(temporaryStat);
+                console.log("Des stats temporaire viennent d'être ajoutées");
             }
 
         });
@@ -127,8 +134,18 @@ const setupSocket = (server) => {
                 }
             }
 
+            var temporaryStat = temporaryStatArray.find(stat => stat.gameId === id);
+            temporaryStat.numberOfMoves++;
+            console.log("Un mouvement a été effectué, le nombre de mouvements est de : ", temporaryStat.numberOfMoves);
+            // Il est possible que l'ia et le joueur courant tape dans les mêmes méthodes, donc il faudra peut être vérifier l'id du joueur
+
             if (response) {
                 await endGameInDatabase(id, token);
+                var temporaryStat = temporaryStatArray.find(stat => stat.gameId === id);
+                var gameEndTime = Date.now();
+                temporaryStat.playingTimeDuration = gameEndTime - temporaryStat.playingTimeDuration;
+                await updateStatInDatabase(token, temporaryStat, "player2", "player2", response.id); // response.id est l'id du joueur qui a gagné
+
                 console.log('EMIT endGame');
                 roomId ?
                     io.of('/api/game').to(roomId).emit("endGame", response) :
@@ -229,6 +246,10 @@ const setupSocket = (server) => {
             } else {
                 socket.emit('ImpossibleWallPosition');
             }
+
+            var temporaryStat = temporaryStatArray.find(stat => stat.gameId === gameStateID);
+            temporaryStat.numberOfWallsInstalled++;
+            console.log("Un mur a été installé, le nombre de murs installés est de : ", temporaryStat.numberOfWallsInstalled);
         });
 
 
