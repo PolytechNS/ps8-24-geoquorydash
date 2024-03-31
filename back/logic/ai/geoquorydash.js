@@ -60,7 +60,7 @@ function nextMove(gameStateTeacher, gameState) {
     if(!canPlayerStillInstallWall(IAplayer.id, gameState)) {
         console.log("Je ne peux plus poser de murs, donc je dois forcément avancer en " + printPosition(nextPositionToGo));
         if(isOtherPlayerOnTargetCell(nextPositionToGo, gameState)) {
-            nextPositionToGo = manageOtherPlayerOnTargetCell();
+            nextPositionToGo = manageOtherPlayerOnTargetCell(gameState);
             stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
         }
         IAplayer.position = nextPositionToGo;
@@ -106,7 +106,7 @@ function nextMove(gameStateTeacher, gameState) {
 
         console.log("J'ai un chemin plus court que celui de mon adversaire pour gagner");
         if(isOtherPlayerOnTargetCell(nextPositionToGo, gameState)) {
-            nextPositionToGo = manageOtherPlayerOnTargetCell();
+            nextPositionToGo = manageOtherPlayerOnTargetCell(gameState);
             stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
         }
         console.log("J'avance donc sur la case " + printPosition(nextPositionToGo));
@@ -148,7 +148,7 @@ function nextMove(gameStateTeacher, gameState) {
             return {action: "wall", value: wallToInstallToSeeOtherPlayerForTeacher};
         } else {
             if(isOtherPlayerOnTargetCell(nextPositionToGo, gameState)) {
-                nextPositionToGo = manageOtherPlayerOnTargetCell();
+                nextPositionToGo = manageOtherPlayerOnTargetCell(gameState);
                 stringNextPositionToGo = convertMyPositionToTeacherPosition(nextPositionToGo);
             }
             IAplayer.position = nextPositionToGo;
