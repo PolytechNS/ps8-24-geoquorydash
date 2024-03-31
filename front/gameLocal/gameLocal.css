@@ -35,7 +35,7 @@ body {
 .burger-chat-button {
     position: fixed;
     top: 15vh;
-    left: 2vw;
+    left: 1vw;
     z-index: 999;
     width: 4vw;
     height: 8vh;
