@@ -105,6 +105,9 @@ async function loadBurgerChat() {
 
                                     chatArea.appendChild(messageElement);
                                 });
+
+                                // Défilement automatique vers le bas après avoir ajouté les messages
+                                chatArea.scrollTop = chatArea.scrollHeight;
                             })
                             .catch(error => {
                                 console.error('Error fetching messages:', error);
@@ -132,16 +135,16 @@ async function loadBurgerChat() {
         sendButton.addEventListener('click', () => {
             const message = messageInput.value.trim();
             if (message !== '') {
-                sendMessage(friendName, message);
-                messageInput.value = '';
-                refreshChatArea(friendName);
+                sendMessage(friendName, message)
+                    .then(() => {
+                        messageInput.value = '';
+                        openChatWindow(friendName);
+                    })
             }
         });
         messageInputContainer.appendChild(sendButton);
-
         chatSection.appendChild(messageInputContainer);
     }
-
 
     async function sendMessage(receiver, message) {
         const token = localStorage.getItem('token');
@@ -152,7 +155,11 @@ async function loadBurgerChat() {
                         ChatService.sendMessage(sender, receiver, message)
                             .then(response => {
                                 console.log('Message sent:', response);
-                                refreshChatArea(receiver);
+                                const chatArea = document.querySelector('.chat-area');
+                                const messageElement = document.createElement('div');
+                                messageElement.textContent = message;
+                                messageElement.classList.add('own-message');
+                                chatArea.appendChild(messageElement);
                             })
                             .catch(error => {
                                 console.error('Error sending message:', error);
@@ -169,29 +176,6 @@ async function loadBurgerChat() {
         }
     }
 
-    function refreshChatArea(friendName) {
-        const chatArea = document.querySelector('.chat-area');
-        chatArea.innerHTML = '';
-
-        AuthService.username(token)
-            .then(authUsername => {
-                ChatService.getMessages(authUsername, friendName)
-                    .then(messages => {
-                        messages.forEach(message => {
-                            const messageElement = document.createElement('div');
-                            messageElement.classList.add('message');
-                            messageElement.textContent = message;
-                            chatArea.appendChild(messageElement);
-                        });
-                    })
-                    .catch(error => {
-                        console.error('Error fetching messages:', error);
-                    });
-            })
-            .catch(error => {
-                console.error('Error fetching username:', error);
-            });
-    }
 
 }
 

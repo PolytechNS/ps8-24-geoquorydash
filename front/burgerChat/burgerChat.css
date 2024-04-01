@@ -58,6 +58,7 @@
     transform: translateY(-50%);
     background-image: url('../img/chat/chat.png');
     right: -4vw;
+    background-color: transparent;
     background-position: center;
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -65,7 +66,6 @@
     width: 6vh;
     height: 6vh;
     cursor: pointer;
-    border-radius: 50%;
 }
 
 #chatSection {
@@ -103,9 +103,11 @@
     margin: 1vh;
     padding: 1vh;
     border-radius: 1vh;
+    word-wrap: break-word;
 }
 
 .chat-area div.own-message {
+    margin-left: 10vw;
     text-align: right;
     background-color: #19B3E6;
     opacity: 0.9;
@@ -113,7 +115,7 @@
 }
 
 .chat-area div.friend-message {
-    text-align: left;
+    margin-right: 10vw;
     background-color: dimgrey;
     opacity: 0.9;
     color: white;
@@ -128,6 +130,7 @@
     width: 80%;
     height: 6vh;
     margin-right: 5%;
+    font-size: 4vh;
 }
 
 .message-input-container button {
