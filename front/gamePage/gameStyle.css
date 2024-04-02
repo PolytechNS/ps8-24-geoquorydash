@@ -129,3 +129,13 @@ body {
 .hidden {
     display: none;
 }
+
+@keyframes blinkingEffect {
+    0% { background-color: rgba(255, 255, 255, 0.2); }
+    50% { background-color: rgba(255, 255, 255, 0.7); }
+    100% { background-color: rgba(255, 255, 255, 0.2); }
+}
+
+.blinking {
+    animation: blinkingEffect 1s linear infinite;
+}

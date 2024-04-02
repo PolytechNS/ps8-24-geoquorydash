@@ -3,7 +3,7 @@ import {askPossibleMove, handleCellAction, lockBarrier, activateBarrierCellListe
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
-        playerCells[i].style.backgroundColor = '';
+        playerCells[i].classList.remove('blinking');
     }
 }
 
