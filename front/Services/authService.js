@@ -31,5 +31,13 @@ export const AuthService = {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(response => response.json());
+    },
+    logout(username) {
+        return fetch(`${API_ENDPOINT}/api/auth/logout`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username }),
+        })
+            .then(response => response.json());
     }
 };
