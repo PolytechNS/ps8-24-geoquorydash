@@ -5,6 +5,7 @@ const fileQuery = require('./queryManagers/front.js')
 const apiQuery = require('./queryManagers/api.js')
 const {PORT} = require('./utils/constants')
 const setupSocket = require('./socketManager');
+const userSetupSocket = require("./userSocketManager");
 const { run, uri } = require('./bdd');
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
@@ -34,6 +35,7 @@ const server = http.createServer(function (request, response) {
 });
 
 setupSocket(server);
+userSetupSocket(server);
 
 server.listen(PORT, function() {
     console.log(`Server is listening on port ${PORT}`);
