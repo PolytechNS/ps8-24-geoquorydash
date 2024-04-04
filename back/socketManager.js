@@ -213,6 +213,17 @@ const setupSocket = (server) => {
             gameOnlineManager.tryMatchmaking(io);
         });
 
+        socket.on('gameRequest', async (token) => {
+            console.log('ON gameRequest');
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            const gameStateID = await gameOnlineManager.joinGameRequestWaitingRoom(socket);
+            socket.emit('gameRequestAndRoomCreated', gameStateID);
+        });
+
         async function handleAIMove(id, token) {
             let responseAI = moveAI(id);
             if (responseAI.action === 'wall') {

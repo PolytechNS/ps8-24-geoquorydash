@@ -1,5 +1,5 @@
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users/users');
+const {createUserCollection} = require('../../models/users/users');
 
 async function getPicture(req, res) {
     parseJSON(req, async (err, { username }) => {

@@ -6,6 +6,7 @@ const {createGameStateInDatabase} = require("../../models/game/gameState");
 
 class GameOnlineManager {
     waitingPlayers = {};
+    gameRequestsWaitingRooms = {};
     gameInSession = {};
     constructor() {}
 
@@ -71,6 +72,13 @@ class GameOnlineManager {
             this.gameInSession[roomId][1].emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1]);
         }
     };
+
+    async joinGameRequestWaitingRoom(socket){
+        const gameStateId = await createGameStateInDatabase();
+        this.gameRequestsWaitingRooms[gameStateId] = [socket];
+        // this.gameRequestsWaitingRooms[gameStateId].push(socket);
+        return gameStateId;
+    }
 
     emitUpdateBoard(gameStateID, roomId){
         const socket1 = this.gameInSession[roomId][0];

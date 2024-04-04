@@ -6,9 +6,13 @@ const bottomPopup = document.getElementById('bottom-popup');
 let canClick = false; // Variable pour suivre si le bouton est cliquable
 
 window.onload = function() {
-    localStorage.setItem('gameStateID', 'waitingForMatch');
-    gameSocket.emit('findMatch', localStorage.getItem('token'));
+    const token = localStorage.getItem('token');
+    gameSocket.emit('gameRequest', token);
 }
+
+gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
+    localStorage.setItem('gameStateID', gameStateId);
+});
 
 gameSocket.on('matchFound', () => {
     askTextButtonInteraction();

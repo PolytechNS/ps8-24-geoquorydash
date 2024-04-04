@@ -11,6 +11,7 @@
         <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
         <h1 class="username" id="username-friend"></h1>
         <button id="add-friend-btn" class="custom-button"></button>
+        <button id="game-request-btn">Game Request</button>
     </div>
 
     <div class="profile-container-me" style="display: none;">
@@ -20,5 +21,7 @@
     </div>
     
     <script src="profile.js" type="module"></script>
+    <script src="../sockets/socket.io.js"></script>
+    <script type="module" src="../sockets/userSocketConnection.js"></script>
 </body>
 </html>

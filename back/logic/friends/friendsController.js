@@ -1,5 +1,5 @@
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users/users');
+const {createUserCollection} = require('../../models/users/users');
 const createNewChat = require('../chat/chatController').createNewChat;
 
 async function searchUsers(req, res) {
