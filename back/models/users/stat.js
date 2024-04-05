@@ -11,7 +11,6 @@ async function createStatInDatabase(userId) {
         await client.connect();
         const database = client.db('myapp_db');
         const statCollection = database.collection('stat');
-        console.log("userId: ", userId);
         const newStat = {
             userId : userId,
             numberOfPlayedGames : 0,
@@ -19,7 +18,7 @@ async function createStatInDatabase(userId) {
             numberOfVictory : 0,
             numberOfMoves : 0,
             numberOfWallsInstalled : 0,
-            numberOfTurnsOfClosestGame : 0
+            fastestWinNumberOfMoves : 0 // Cette statistique concerne le nombre de coups joués uniquement par le joueur gagnant
         };
         const result = await statCollection.insertOne(newStat);
         return result;
@@ -29,24 +28,8 @@ async function createStatInDatabase(userId) {
     }
 }
 
-async function createTemporaryStat(gameId) {
-    console.log("On rentre dans la méthode de création temporaire de stats");
-    try {
-        const temporaryStat = {
-            gameId : gameId,
-            playingTimeDuration : Date.now(),
-            numberOfMoves : 0,
-            numberOfWallsInstalled : 0
-        };
-        return temporaryStat;
-    } catch (error) {
-        console.error("Error while creating temporary stat:", error);
-    }
-}
-
-async function updateStatInDatabase(token, temporaryStat, playerId, firstPlayerId, winnerId) {
+async function updateStatInDatabase(userId, temporaryStat, winnerId) {
     console.log("On rentre dans la méthode de mise à jour de stats");
-    var userId = verifyAndValidateUserID(token);
     if (!userId) {
         console.error("Invalid token");
         throw new InvalidTokenError("Invalid token");
@@ -57,31 +40,25 @@ async function updateStatInDatabase(token, temporaryStat, playerId, firstPlayerI
         const database = client.db('myapp_db');
         const statCollection = database.collection('stat');
         userId = new ObjectId(userId);
-        console.log("userId: ", userId);
         const statistics = await statCollection.findOne({ userId: userId });
         if(statistics) {
+            const playerId = temporaryStat.playerId;
+
             statistics.numberOfPlayedGames += 1;
             if(playerId === winnerId) {
                 statistics.numberOfVictory += 1;
+
+                // fastestWinNumberOfMoves représente le nombre de décisions prises par les deux joueurs cumulées (mur posé ou déplacement)
+                // Étant donné que c'est une victoire, le nombre de tours
+                var tmpFastestWinNumberOfMoves = temporaryStat.numberOfMoves + temporaryStat.numberOfWallsInstalled;
+                if(statistics.fastestWinNumberOfMoves > tmpFastestWinNumberOfMoves || statistics.fastestWinNumberOfMoves === 0) {
+                    statistics.fastestWinNumberOfMoves = tmpFastestWinNumberOfMoves;
+                }
             }
-            statistics.playingTimeDuration += Math.round(temporaryStat.playingTimeDuration / 60000); // Conversion de millisecondes en minutes
+            statistics.playingTimeDuration += Math.ceil(temporaryStat.playingTimeDuration / 60000); // Conversion de millisecondes en minutes
             statistics.numberOfMoves += temporaryStat.numberOfMoves;
             statistics.numberOfWallsInstalled += temporaryStat.numberOfWallsInstalled;
-            var tmpNumberOfTurnsOfClosestGame = temporaryStat.numberOfMoves + temporaryStat.numberOfWallsInstalled;
-            if(playerId === firstPlayerId) {
-                if(playerId !== winnerId) {
-                    tmpNumberOfTurnsOfClosestGame += 1;
-                }
-            } else if(playerId !== firstPlayerId) {
-                if(playerId === winnerId) {
-                    tmpNumberOfTurnsOfClosestGame += 1;
-                } else {
-                    tmpNumberOfTurnsOfClosestGame += 2;
-                }
-            }
-            if(statistics.numberOfTurnsOfClosestGame < tmpNumberOfTurnsOfClosestGame) {
-                statistics.numberOfTurnsOfClosestGame = tmpNumberOfTurnsOfClosestGame;
-            }
+
             await statCollection.updateOne({ userId: userId }, { $set: statistics });
         } else {
             throw new Error('No statistics found for this user');
@@ -95,7 +72,7 @@ async function updateStatInDatabase(token, temporaryStat, playerId, firstPlayerI
 }
 
 async function retrieveStatFromDatabaseForAUser(token) {
-    console.log("On rentre dans la méthode de création de stats");
+    console.log("On rentre dans la méthode de récupération de stats");
     var userId = verifyAndValidateUserID(token);
     if (!userId) {
         console.error("Invalid token");
@@ -119,4 +96,4 @@ async function retrieveStatFromDatabaseForAUser(token) {
     }
 }
 
-module.exports = { createStatInDatabase, retrieveStatFromDatabaseForAUser, createTemporaryStat, updateStatInDatabase };
+module.exports = { createStatInDatabase, retrieveStatFromDatabaseForAUser, updateStatInDatabase };

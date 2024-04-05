@@ -10,6 +10,7 @@ updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
+    console.log('Token:', token);
 }
 
 // PAGE HOME -> PAGE ACCOUNT
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         statItems[2].textContent = data.numberOfVictory;
                         statItems[3].textContent = data.numberOfMoves;
                         statItems[4].textContent = data.numberOfWallsInstalled;
-                        statItems[5].textContent = data.numberOfTurnsOfClosestGame;
+                        statItems[5].textContent = data.fastestWinNumberOfMoves + " coups";
                     }
                 })
                 .catch(error => {
