@@ -1,32 +1,18 @@
 .burger-menu {
-    display: block;
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
     width: 30vw;
     background-color: rgba(0, 0, 0, 0.8);
-    padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-<<<<<<< HEAD
     z-index: 1000;
-=======
-    transform: translateX(-100%);
-    transition: transform 0.5s ease;
 }
 
 .show {
+    display: block;
     transform: translateX(0);
-}
-
-.rotate-image {
-    transform: rotate(180deg);
-    transition: transform 0.5s ease;
-}
-
-.rotate-image-reverse {
-    transform: rotate(0deg);
-    transition: transform 0.5s ease;
 }
 
 .burger-menu-button {
@@ -36,7 +22,6 @@
     z-index: 999;
     width: 4vw;
     height: 8vh;
-    transition: left 0.5s ease;
 }
 
 .burger-menu-button img {
@@ -46,9 +31,6 @@
 
 .burger-menu-button.open {
     left: 33vw;
-    .burger-chat-button {
-        left: 33vw;
-    }
 }
 
 .burger-menu ul {
@@ -80,7 +62,4 @@
     height: 6vh;
 }
 
-.show {
-    display: block;
-}
 
