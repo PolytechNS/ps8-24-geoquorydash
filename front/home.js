@@ -1,4 +1,5 @@
 import { AuthService } from './Services/authService.js';
+import { StatService } from "./Services/statService.js";
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -9,6 +10,7 @@ updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
+    console.log('Token:', token);
 }
 
 // PAGE HOME -> PAGE ACCOUNT
@@ -111,8 +113,34 @@ document.addEventListener("DOMContentLoaded", function() {
     var openStatPage = document.getElementById("openStatPage");
 
     openStatPage.addEventListener("click", function(e) {
-        e.preventDefault();
-        statModal.style.display = "flex";
+        if (token){
+            e.preventDefault();
+            statModal.style.display = "flex";
+            const statItems = document.querySelectorAll('.stat-item span');
+            StatService.getStat(token)
+                .then(data => {
+                    if(statItems.length === 6) { // On vérifie qu'on bien récupéré le bon nombre de stats
+                        statItems[0].textContent = data.numberOfPlayedGames;
+                        if (data.playingTimeDuration >= 60) {
+                            const hours = Math.floor(data.playingTimeDuration / 60);
+                            const minutes = data.playingTimeDuration % 60;
+                            statItems[1].textContent = hours + "h" + minutes;
+                        } else {
+                            statItems[1].textContent = data.playingTimeDuration + "min";
+                        }
+                        statItems[2].textContent = data.numberOfVictory;
+                        statItems[3].textContent = data.numberOfMoves;
+                        statItems[4].textContent = data.numberOfWallsInstalled;
+                        statItems[5].textContent = data.fastestWinNumberOfMoves + " coups";
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des données:', error);
+                    alert('Erreur lors de la récupération des données');
+                });
+        } else {
+            alert('Vous devez être connecté pour consulter vos statistiques');
+        }
     });
 
     window.addEventListener("click", function(event) {
@@ -124,7 +152,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // MODULE D'INSCRIPTION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST");
     const signupForm = document.getElementById('signupForm');
     signupForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -132,6 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = signupForm.querySelector('[name="password"]').value;
         AuthService.signUp(username, password)
             .then(data => {
+                console.log("On vient de se signup");
+                StatService.associateStatToNewUser(username)
+                .then(data2 => {
+                    console.log("L'association s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
                 signupModal.style.display = "none";
                 loginModal.style.display= "flex";
                 alert('Inscription effectuée');
@@ -152,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // MODULE DE CONNEXION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST 2");
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -181,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function updateDeconnexionVisibility() {
     const deconnexionButton = document.getElementById('logout-btn');
     if (token) {
-        console.log("TEST 3")
         document.getElementById('openSignupPage').style.display = 'none';
         document.getElementById('openLoginPage').style.display = 'none';
 
