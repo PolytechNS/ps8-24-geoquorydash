@@ -9,8 +9,6 @@ async function handleAuthRoutes(req, res) {
         await authController.login(req, res);
     } else if (url.pathname === '/api/auth/username' && req.method === 'POST') {
         await authController.username(req, res);
-    } else if (url.pathname === '/api/auth/logout' && req.method === 'POST') {
-        await authController.logout(req, res);
     } else {
         // Not Found
         res.writeHead(404, {'Content-Type': 'text/plain'});

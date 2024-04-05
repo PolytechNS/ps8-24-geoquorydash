@@ -27,7 +27,6 @@ async function signup(req, res) {
                 username,
                 password,
                 profilePicture: null,
-                state: 'offline',
                 friends: [],
                 friendRequests: []
             };
@@ -59,7 +58,6 @@ async function login(req, res) {
             if (user) {
                 const token = generateToken(user._id);
                 await setUserOnline(user._id);
-                console.log('User logged in:', user.state);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ token }));
             } else {
@@ -139,34 +137,5 @@ async function setUserOnline(userId) {
     }
 }
 
-async function logout(req, res) {
-    console.log('logout');
-    parseJSON(req, async (err, { username }) => {
-        if (err) {
-            res.writeHead(400, { 'Content-Type': 'text/plain' });
-            res.end('Invalid JSON');
-            return;
-        }
-        try {
-            const usersCollection = await createUserCollection();
-            const user = await usersCollection.findOne({
-                username: username
-            });
-            if (user) {
-                await usersCollection.updateOne({ username }, { $set: { state: 'offline' } });
-                console.log('User logged off:', user.state);
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'User logged out successfully' }));
-            } else {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
-                res.end('User not found');
-            }
-        } catch (error) {
-            console.error('Error during logout:', error);
-            res.writeHead(500, { 'Content-Type': 'text/plain' });
-            res.end('Internal server error');
-        }
-    });
-}
 
 module.exports = { signup, login, username, verifyAndValidateUserID, logout };
