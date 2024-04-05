@@ -4,10 +4,13 @@
     top: 0;
     left: 0;
     bottom: 0;
-    width: 15vw;
+    width: 30vw;
     background-color: rgba(0, 0, 0, 0.8);
     padding: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+<<<<<<< HEAD
+    z-index: 1000;
+=======
     transform: translateX(-100%);
     transition: transform 0.5s ease;
 }
@@ -39,6 +42,7 @@
 .burger-menu-button img {
     width: 100%;
     height: 100%;
+>>>>>>> a9e19853176a73c3a1ac64c65afbea203daa0236
 }
 
 .burger-menu ul {
@@ -54,18 +58,27 @@
 .burger-menu ul li a {
     text-decoration: none;
     color: #fff;
-    font-size: 18px;
+    font-size: 8vh;
     display: block;
 }
 
 .burger-menu ul li img {
-    width: 10vw;
+    width: 20vw;
 }
 
 #accueilButton img {
-    height: 4vh;
+    height: 8vh;
 }
 
 #deconnexionButton img {
+<<<<<<< HEAD
+    height: 6vh;
+}
+
+.show {
+    display: block;
+}
+=======
     height: 3vh;
 }
+>>>>>>> a9e19853176a73c3a1ac64c65afbea203daa0236

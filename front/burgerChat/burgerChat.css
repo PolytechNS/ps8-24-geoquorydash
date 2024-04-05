@@ -1,0 +1,145 @@
+.burger-chat {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 30vw;
+    background-color: rgba(0, 0, 0, 0.8);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.show {
+    display: block;
+}
+
+#friendsResults {
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 30vw;
+    list-style-type: none;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+#friendsResults li div {
+    position: relative;
+}
+
+#friendsResults li {
+    background-image: url('../img/friends/liBackground.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-left: 3vw;
+    margin-bottom: 3vh;
+    margin-left: 0;
+    list-style-type: none;
+    width: 15vw;
+}
+
+#friendsResults li a {
+    margin-top: 0;
+    text-decoration: none;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+#friendsResults li button.chat {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-image: url('../img/friends/accept.png');
+    right: -4vw;
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    width: 6vh;
+    height: 6vh;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#chatSection {
+    display: none;
+    height: 100%;
+    width: 30vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.friend-name-header {
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    margin-left: 3vw;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+.chat-area {
+    height: 70vh;
+    width: 27vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 5vh;
+}
+
+.chat-area div {
+    margin: 1vh;
+    padding: 1vh;
+    border-radius: 1vh;
+}
+
+.chat-area div.own-message {
+    text-align: right;
+    background-color: #fec32c;
+    opacity: 0.9;
+    color: white;
+}
+
+.chat-area div.friend-message {
+    text-align: left;
+    background-color: dimgrey;
+    opacity: 0.9;
+    color: white;
+}
+
+.message-input-container {
+    display: flex;
+    width: 100%;
+}
+
+.message-input-container input[type="text"] {
+    width: 75%;
+    height: 6vh;
+    margin-right: 5%;
+}
+
+.message-input-container button {
+    width: 20%;
+    height: 6vh;
+    background-image: url('../img/friends/accept.png');
+    background-size: 100% 100%;
+    border: none;
+    cursor: pointer;
+}
+
+@font-face {
+    font-family: 'PUSAB';
+    src: url('../img/game/PUSAB___.otf');
+}

@@ -166,12 +166,15 @@ function displayPossibleMove(possibleMove) {
         if (cell.moveEventListener) {
             cell.removeEventListener('click', cell.moveEventListener);
             cell.moveEventListener = null;
+            cell.classList.remove('blinking');
         }
     });
 
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
-        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        // cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        cell.classList.add('blinking');
+
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
         cell.moveEventListener = callback;
@@ -303,19 +306,16 @@ function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-/*    const messageElement = document.getElementById('message');
-    messageElement.innerText = 'Placement de barrière impossible';
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);*/
-
     alert("Placement de barrière impossible");
 }
 
 function endGame(player) {
     alert("Le joueur " + player.id + " a gagne !");
     window.location.href = '/gameType/gameType.html';
+}
+
+window.onbeforeunload = function() {
+    socket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
 }
 
 export { askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

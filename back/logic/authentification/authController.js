@@ -1,6 +1,7 @@
 const { generateToken, verifyToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
 const createUserCollection = require('../../models/users/users');
+const { createDefaultConfiguration } = require('../../models/users/configuration.js');
 const { ObjectId } = require('mongodb');
 
 async function signup(req, res) {
@@ -29,7 +30,10 @@ async function signup(req, res) {
                 friends: [],
                 friendRequests: []
             };
-            await usersCollection.insertOne(newUser);
+
+            let usersCollectionResponse = await usersCollection.insertOne(newUser);
+            await createDefaultConfiguration(usersCollectionResponse.insertedId.toString());
+
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ message: 'User created successfully' }));
         } catch (err) {

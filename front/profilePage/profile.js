@@ -96,6 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Error fetching profile data:', error);
             });
+        FriendsService.getFriends(username)
+            .then(friends => {
+                displayFriendsResults(friends);
+            })
+            .catch(error => {
+                console.error('Error fetching requests:', error);
+            });
     }
 
     addFriendBtn.addEventListener('click', () => {
@@ -129,5 +136,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     });
+
+    function displayFriendsResults(results) {
+        const friendsResults = document.getElementById('friendsResults');
+        friendsResults.innerHTML = '';
+
+        const ul= document.createElement('ul');
+
+        results.forEach(result => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result}`;
+            link.textContent = result;
+            link.target = "_blank";
+            li.appendChild(link);
+            ul.appendChild(li);
+        });
+
+        friendsResults.appendChild(ul);
+    }
 
 });

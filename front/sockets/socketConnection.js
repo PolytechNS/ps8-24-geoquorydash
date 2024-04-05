@@ -45,6 +45,9 @@ window.onload = function() {
     const resumeGame = urlParams.get('resumeGame');
 
     if (newGame === 'true') {
+        if (localStorage.getItem('gameStateID')){
+            socket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
+        }
         socket.emit('startNewGame', localStorage.getItem('token'));
     } else if (resumeGame === 'true') {
         const gameStateID = localStorage.getItem('gameStateID');
@@ -72,4 +75,11 @@ socket.on('matchFound', function(roomId) {
     alert('Match trouvé! Vous allez être redirigé vers la partie.');
     localStorage.setItem('roomId', roomId);
 });
+
+socket.on('gameAlreadyInProgress', function(gameStateId) {
+    alert('Une partie est déjà en cours.');
+    window.location.href = '/gameLocal/gameLocal.html';
+    localStorage.setItem('gameStateID', gameStateId);
+});
+
 export default socket;
