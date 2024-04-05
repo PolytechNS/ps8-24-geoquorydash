@@ -147,3 +147,24 @@
     font-family: 'PUSAB';
     src: url('../img/game/PUSAB___.otf');
 }
+
+.burger-chat-button {
+    position: fixed;
+    top: 15vh;
+    left: 1vw;
+    z-index: 999;
+    width: 4vw;
+    height: 8vh;
+}
+
+.burger-chat-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.burger-chat-button.open {
+    left: 33vw;
+    .burger-menu-button {
+        left: 33vw;
+    }
+}

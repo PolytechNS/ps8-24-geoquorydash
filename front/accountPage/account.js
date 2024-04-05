@@ -1,5 +1,3 @@
-import { AuthService } from '../Services/authService.js';
-
 const token = localStorage.getItem('token');
 
 if (token) {

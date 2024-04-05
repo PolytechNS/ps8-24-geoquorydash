@@ -57,7 +57,6 @@ async function login(req, res) {
             const user = await usersCollection.findOne({ username, password });
             if (user) {
                 const token = generateToken(user._id);
-                await setUserOnline(user._id);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ token }));
             } else {
@@ -127,15 +126,5 @@ function verifyAndValidateUserID(token) {
     return userID;
 }
 
-async function setUserOnline(userId) {
-    try {
-        const usersCollection = await createUserCollection();
-        await usersCollection.updateOne({ _id: new ObjectId(userId) }, { $set: { state: 'online' } });
-    } catch (error) {
-        console.error('Error setting user online:', error);
-        throw error;
-    }
-}
 
-
-module.exports = { signup, login, username, verifyAndValidateUserID, logout };
+module.exports = { signup, login, username, verifyAndValidateUserID };
