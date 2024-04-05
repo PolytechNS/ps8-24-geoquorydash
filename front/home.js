@@ -13,6 +13,18 @@ function updateToken() {
     console.log('Token:', token);
 }
 
+var handleDeconnexionClick = function(event) {
+    event.preventDefault();
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+        localStorage.clear();
+        updateToken();
+        alert('Vous êtes déconnecté');
+        const modal = window.parent.document.querySelector('.modal');
+        modal.style.display = 'none';
+        // Assurez-vous de réinitialiser les boutons d'inscription et de connexion ici également, si nécessaire
+    }
+};
+
 // PAGE HOME -> PAGE ACCOUNT
 document.addEventListener("DOMContentLoaded", function() {
     var openAccountPage = document.getElementById("openAccountPage");
@@ -20,6 +32,31 @@ document.addEventListener("DOMContentLoaded", function() {
     openAccountPage.addEventListener("click", function(e) {
         e.preventDefault();
         accountModal.style.display = "flex";
+        
+        const deconnexionButton = document.getElementById('logout-btn');
+        if (token) {
+            console.log('On a un token');
+            document.getElementById('openSignupPage').style.display = 'none';
+            document.getElementById('openLoginPage').style.display = 'none';
+            document.getElementById('connect_text_1').style.display = 'none';
+            document.getElementById('connect_text_2').style.display = 'none';
+
+            deconnexionButton.style.display = 'block';
+            document.getElementById('deconnect_text_1').style.display = 'block';
+            document.getElementById('deconnect_text_2').style.display = 'block';
+            deconnexionButton.removeEventListener('click', handleDeconnexionClick);
+            deconnexionButton.addEventListener('click', handleDeconnexionClick);
+        } else {
+            // Assurez-vous de gérer correctement le cas où le token n'existe pas
+            document.getElementById('openSignupPage').style.display = 'block';
+            document.getElementById('openLoginPage').style.display = 'block';
+            document.getElementById('connect_text_1').style.display = 'block';
+            document.getElementById('connect_text_2').style.display = 'block';
+    
+            deconnexionButton.style.display = "none";
+            document.getElementById('deconnect_text_1').style.display = 'none';
+            document.getElementById('deconnect_text_2').style.display = 'none';
+        }
     });
 
     window.addEventListener("click", function(event) {
@@ -201,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
                 updateToken();
-                updateDeconnexionVisibility();
             })
             .catch(error => {
                 console.error('Login error:', error);
@@ -211,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
     });
 });
-
+/*
 function updateDeconnexionVisibility() {
     const deconnexionButton = document.getElementById('logout-btn');
     if (token) {
@@ -238,4 +274,4 @@ function updateDeconnexionVisibility() {
 
         deconnexionButton.style.display = "none";
     }
-}
+}*/
