@@ -282,6 +282,13 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const username = signupForm.querySelector('[name="username"]').value;
         const password = signupForm.querySelector('[name="password"]').value;
+        if (username === '') {
+            alert('Veuillez renseigner un nom d’utilisateur');
+            return;
+        } else if (password === '') {
+            alert('Veuillez renseigner un mot de passe');
+            return;
+        }
         AuthService.signUp(username, password)
             .then(data => {
                 console.log("On vient de se signup");
@@ -336,6 +343,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+/**************** FONCTIONS DE GESTION DES AMIS ****************/
 function displayFriendsListTab(friendsResults, addFriendsText) {
     console.log('On affiche les amis');
     if (token) {
