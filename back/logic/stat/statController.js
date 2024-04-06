@@ -81,12 +81,27 @@ async function getAllRanking(req, res) {
     try {
         const stats = await retrieveAllStatsFromDatabase();
         const rankedPlayers = calculateHybridRanking(stats);
+        const rankedPlayersWithUsername = await Promise.all(rankedPlayers.map(async playerId => {
+            const user = await getUserById(playerId);
+            return { userId: playerId, username: user.username };
+        }));
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ ranking: rankedPlayers }));
+        res.end(JSON.stringify({ ranking: rankedPlayersWithUsername }));
     } catch (error) {
         console.error("Error retrieving ranking:", error);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Internal Server Error');
+    }
+}
+
+async function getUserById(userId) {
+    try {
+        const usersCollection = await createUserCollection();
+        const user = await usersCollection.findOne({ _id: new ObjectId(userId) });
+        return user;
+    } catch (error) {
+        console.error("Error fetching user by ID:", error);
+        throw error;
     }
 }
 

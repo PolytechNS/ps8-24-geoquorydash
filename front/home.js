@@ -4,13 +4,13 @@ import { StatService } from "./Services/statService.js";
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
+var rankModal = document.getElementById("rankModal");
 
 var token;
 updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
-    console.log('Token:', token);
 }
 
 var handleDeconnexionClick = function(event) {
@@ -21,7 +21,6 @@ var handleDeconnexionClick = function(event) {
         alert('Vous êtes déconnecté');
         const modal = window.parent.document.querySelector('.modal');
         modal.style.display = 'none';
-        // Assurez-vous de réinitialiser les boutons d'inscription et de connexion ici également, si nécessaire
     }
 };
 
@@ -247,31 +246,41 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
     });
 });
-/*
-function updateDeconnexionVisibility() {
-    const deconnexionButton = document.getElementById('logout-btn');
-    if (token) {
-        document.getElementById('openSignupPage').style.display = 'none';
-        document.getElementById('openLoginPage').style.display = 'none';
 
-        deconnexionButton.style.display = 'block';
+// PAGE HOME -> PAGE RANK
+document.addEventListener("DOMContentLoaded", function() {
+    var openRankPage = document.getElementById("openRankPage");
 
-        deconnexionButton.addEventListener('click', function(event) {
-            event.preventDefault();
+    openRankPage.addEventListener("click", function (e) {
+        e.preventDefault();
+        rankModal.style.display = "flex";
+    });
 
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
-                localStorage.clear();
-                alert('Vous êtes déconnecté');
-                const modal = window.parent.document.querySelector('.modal');
-                modal.style.display = 'none';
-                updateToken();
-                updateDeconnexionVisibility();
-            }
+    const rankResults = document.getElementById('rankResults');
+    StatService.getAllRanking()
+        .then(rank => {
+            displayRankResults(rank.ranking);
+        })
+        .catch(error => {
+            console.error('Error fetching rank:', error);
         });
-    } else {
-        document.getElementById('openSignupPage').style.display = 'block';
-        document.getElementById('openLoginPage').style.display = 'block';
 
-        deconnexionButton.style.display = "none";
+    function displayRankResults(results) {
+        rankResults.innerHTML = '';
+
+        const ul= document.createElement('ul');
+
+        results.forEach(result => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result}`;
+            link.textContent = result.username;
+            link.target = "_blank";
+            li.appendChild(link);
+            ul.appendChild(li);
+        });
+
+        rankResults.appendChild(ul);
     }
-}*/
+
+});
