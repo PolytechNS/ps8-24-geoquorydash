@@ -232,14 +232,6 @@ const setupSocket = (io) => {
             } else {
                 gameOnlineManager.addPlayerToWaitList(userId, socket);
             }
-            // var numberOfPlayersInWaitingRoom = Object.keys(gameOnlineManager.waitingPlayers).length;
-            // // Le player qui arrive en premier dans la waiting room sera toujours player1, et le deuxième player2
-            // if (numberOfPlayersInWaitingRoom === 2) {
-            //     var firstPlayerId = Object.keys(gameOnlineManager.waitingPlayers)[0];
-            //     var secondPlayerId = Object.keys(gameOnlineManager.waitingPlayers)[1];
-            //     statManager.createTemporaryStat(firstPlayerId, secondPlayerId, "online", "player1");
-            //     statManager.createTemporaryStat(secondPlayerId, firstPlayerId, "online", "player2");
-            // }
             await gameOnlineManager.tryMatchmaking(io);
         });
 
