@@ -5,8 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home</title>
     <link rel="stylesheet" href="home.css">
+    <link rel="stylesheet" href="../burgerChat/burgerChat.css">
 </head>
 <body>
+
+    <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
+    <div id="burger-chat-container"></div>
+
     <img src="img/home/title.png" alt="Title" class="top-image">
 
     <div class="main">
@@ -135,5 +140,7 @@
     <script type="module" src="home.js"></script>
     <script src="sockets/socket.io.js"></script>
     <script type="module" src="sockets/userSocketConnection.js"></script>
+    <script src="../burgerChat/burgerChat.js" type="module"></script>
+
 </body>
 </html>
