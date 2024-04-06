@@ -146,6 +146,9 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             friendsModal.style.display = "flex";
             friendsListTab.style.display = "flex";
+            openFriendsSearchTab.style.opacity = "0.5";
+            openFriendsRequestTab.style.opacity = "0.5";
+            openFriendsListTab.style.opacity = "1";
             
             displayFriendsListTab(friendsResults, addFriendsText);
         } else {
@@ -159,6 +162,9 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsListTab.style.display = "flex";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "1";
 
         displayFriendsListTab(friendsResults, addFriendsText);
     });
@@ -168,6 +174,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsSearchTab.style.display = "flex";
+        
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "1";
 
         const searchForm = document.getElementById('friendsForm');
         const searchResults = document.getElementById('searchResults');
@@ -190,6 +200,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "flex";
+
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "1";
 
         if (token) {
             AuthService.username(token)
