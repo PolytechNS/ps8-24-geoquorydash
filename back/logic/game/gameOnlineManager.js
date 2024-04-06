@@ -4,6 +4,7 @@ const gameManager = require("./gameManager");
 const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
 const {createGameStateInDatabase} = require("../../models/game/gameState");
 const usersConnected = require("../../usersConnected");
+const statManager = require("../stat/statManager");
 
 class GameOnlineManager {
     waitingPlayers = {};
@@ -40,12 +41,13 @@ class GameOnlineManager {
     }
 
     async setupGameMatch(io, player1, player2, socket1, socket2) {
+        statManager.createTemporaryStat(player1, player2, "online", "player1");
+        statManager.createTemporaryStat(player2, player1, "online", "player2");
         const gameStateId = await createGameStateInDatabase();
         const defaultOption = true;
         const onlineGameOption = true;
         initializeGame({defaultOption, onlineGameOption, id: gameStateId});
         fogOfWar.updateBoardVisibility(gameStateId);
-        console.log(gameManager.gameStateList[gameStateId]);
 
         const gameState = gameManager.gameStateList[gameStateId];
         const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateId].visibilityMap;
@@ -82,7 +84,6 @@ class GameOnlineManager {
     };
     async tryMatchmakingFriend(io, gameRequestWaitingRoomId) {
         const usersData = this.gameRequestsWaitingRooms[gameRequestWaitingRoomId];
-        console.log(usersData);
         while (usersData.length >= 2) {
             const player1Data = usersData.shift();
             const player2Data = usersData.shift();
@@ -90,7 +91,7 @@ class GameOnlineManager {
             const socket1 = player1Data.socket;
             const socket2 = player2Data.socket;
 
-            await this.setupGameMatch(io, player1Data.user, player2Data.userId, socket1, socket2);
+            await this.setupGameMatch(io, player1Data.userId, player2Data.userId, socket1, socket2);
 
             delete this.gameRequestsWaitingRooms[gameRequestWaitingRoomId];
         }
@@ -105,7 +106,6 @@ class GameOnlineManager {
             }];
             return waitingRoomId;
         } else {
-            console.log(`Joining waiting room ${data.waitingRoomId} with user ${data.userIdReceiver} with socket ${socket.id}`);
             this.gameRequestsWaitingRooms[data.waitingRoomId].push({
                 userId : data.userIdReceiver,
                 socket : socket
