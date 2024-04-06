@@ -7,6 +7,7 @@ const {PORT} = require('./utils/constants')
 const setupSocket = require('./socketManager');
 const userSetupSocket = require("./userSocketManager");
 const { run, uri } = require('./bdd');
+const socketIo = require("socket.io");
 
 /* The http module contains a createServer function, which takes one argument, which is the function that
 ** will be called whenever a new request arrives to the server.
@@ -34,8 +35,9 @@ const server = http.createServer(function (request, response) {
 // For the server to be listening to request, it needs a port, which is set thanks to the listen function.
 });
 
-setupSocket(server);
-userSetupSocket(server);
+const io = socketIo(server);
+userSetupSocket(io);
+setupSocket(io);
 
 server.listen(PORT, function() {
     console.log(`Server is listening on port ${PORT}`);

@@ -6,52 +6,6 @@ const profileRouter = require('../logic/profile/profileRouter');
 const chatRouter = require('../logic/chat/chatRouter');
 const configurationRouter = require('../logic/configuration/configurationRouter');
 
-// Vous aurez besoin d'un stockage pour garder les requêtes de long-polling en attente
-// Cette structure peut être une simple liste ou une structure plus complexe, selon vos besoins
-let pendingNotifications = [];
-
-// Fonction pour gérer les notifications
-function notificationRouter(request, response) {
-    if (request.url.endsWith('/send-notification')) {
-        let body = [];
-        request.on('data', (chunk) => {
-            body.push(chunk);
-        }).on('end', () => {
-            body = Buffer.concat(body).toString();
-            const notification = JSON.parse(body);
-
-            // Envoie la notification à tous les clients en attente
-            pendingNotifications.forEach((res) => {
-                res.writeHead(200, {'Content-Type': 'application/json'});
-                res.end(JSON.stringify(notification));
-            });
-
-            // Réinitialise la liste des notifications en attente après l'envoi
-            pendingNotifications = [];
-
-            response.writeHead(200);
-            response.end('Notification envoyée à tous les clients en attente.');
-        });
-    } else if (request.url.endsWith('/listen-for-notifications')) {
-        pendingNotifications.push(response);
-
-        request.on('close', () => {
-            // Retire la réponse de la liste si le client ferme la connexion
-            pendingNotifications = pendingNotifications.filter((res) => res !== response);
-        });
-
-        // Configure la réponse pour éviter de fermer la connexion immédiatement
-        response.on('finish', () => {
-            pendingNotifications = pendingNotifications.filter((res) => res !== response);
-        });
-    } else {
-        // Gère les routes non reconnues dans le router de notification
-        response.writeHead(404);
-        response.end('Notification route not found');
-    }
-}
-
-
 function manageRequest(request, response) {
     addCors(response);
 
@@ -81,10 +35,6 @@ function manageRequest(request, response) {
     if (request.url.startsWith('/api/configuration')) {
         configurationRouter(request, response).then();
     }
-    if (request.url.startsWith('/api/send-notification') || request.url.startsWith('/api/listen-for-notifications')) {
-        notificationRouter(request, response);
-    }
-
 
     response.statusCode = 200;
 }

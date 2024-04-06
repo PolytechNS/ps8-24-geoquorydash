@@ -76,8 +76,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         gameRequestBtn.addEventListener('click', () => {
-            console.log('game request', userSocket.userId, username);
-            userSocket.emit('gameRequest', username);
+            window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?toUsername=${username}`;
+            //
         });
     }
 

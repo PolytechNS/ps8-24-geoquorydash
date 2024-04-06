@@ -1,4 +1,8 @@
-var gameSocket = io('/api/game');
+var gameSocket = io('/api/game', {
+    query: {
+        token: localStorage.getItem('token'),
+    }
+});
 import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
 import {
     displayPossibleMove,

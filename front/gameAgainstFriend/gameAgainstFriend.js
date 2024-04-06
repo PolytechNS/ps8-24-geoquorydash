@@ -1,4 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
+import userSocket from "../sockets/userSocketConnection.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -7,11 +8,21 @@ let canClick = false; // Variable pour suivre si le bouton est cliquable
 
 window.onload = function() {
     const token = localStorage.getItem('token');
-    gameSocket.emit('gameRequest', token);
+
+    const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
+    if (usernameToRequest){
+        gameSocket.emit('gameRequest', token, usernameToRequest);
+        return;
+    }
+
+    const usernameFromRequest = new URLSearchParams(window.location.search).get('fromUsername');
+    if (usernameFromRequest){
+        gameSocket.emit('gameRequestAccepted', token, usernameFromRequest);
+    }
 }
 
 gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
-    localStorage.setItem('gameStateID', gameStateId);
+    localStorage.setItem('gameStateID', 'waitingForMatch');
 });
 
 gameSocket.on('matchFound', () => {
