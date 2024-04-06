@@ -1,6 +1,7 @@
 const { parseJSON } = require('../../utils/utils.js');
-const {createUserCollection} = require('../../models/users/users');
+const {createUserCollection, findUserIdByUsername} = require('../../models/users/users');
 const createNewChat = require('../chat/chatController').createNewChat;
+const usersConnected = require('../../usersConnected');
 
 async function searchUsers(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -177,7 +178,7 @@ async function deniedFriend(req, res) {
 }
 
 async function getFriends(req, res) {
-parseJSON(req, async (err, { currentUser }) => {
+    parseJSON(req, async (err, { currentUser }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid JSON');
@@ -189,7 +190,38 @@ parseJSON(req, async (err, { currentUser }) => {
             const user = await usersCollection.findOne({ username: currentUser });
             if (user) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(user.friends));
+
+                console.log(user.friends);
+
+                let friends = [];
+                for (const friendUsername of user.friends) {
+                    const friendId = await findUserIdByUsername(friendUsername);
+                    friends.push({
+                        id: friendId.toString(),
+                        username: friendUsername
+                    });
+                }
+
+                console.log(friends);
+
+                let response  = [];
+                friends.forEach(friend => {
+                    if (usersConnected.usersConnected[friend.id]){
+                        response.push({
+                            username: friend.username,
+                            status: 'online'
+                        });
+                    } else {
+                        response.push({
+                            username: friend.username,
+                            status: 'offline'
+                        });
+                    }
+                });
+
+                console.log(response);
+
+                res.end(JSON.stringify(response));
             } else {
                 console.log('User not found');
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
