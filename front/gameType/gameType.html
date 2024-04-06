@@ -13,10 +13,12 @@
     <div id="burger-menu-container"></div>
 
     <div class="buttons">
-        <a href="../gameLocal/gameLocal.html" id="newGameButton">Local Game</a>
-        <a href="../gameOnline/gameOnline.html" id="gameHistoryButton">Online Game</a>
+        <button id="game-local-btn">Local Game</button>
+        <button id="game-online-btn">Online Game</button>
+        <button id="game-friend-btn">Game Against Friend</button>
     </div>
 
+    <script src="./gameType.js" type="module"></script>
     <script src="../burgerMenu/burgerMenu.js" type="module"></script>
     <script src="../sockets/socket.io.js"></script>
     <script type="module" src="../sockets/userSocketConnection.js"></script>

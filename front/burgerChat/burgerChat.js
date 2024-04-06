@@ -50,8 +50,8 @@ async function loadBurgerChat() {
             const li = document.createElement('li');
             const container = document.createElement('div');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result}`;
-            link.textContent = result;
+            link.href = `../profilePage/profile.html?username=${result.username}`;
+            link.textContent = result.username;
             link.target = "_blank";
 
             const chatButton = document.createElement('button');

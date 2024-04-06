@@ -191,8 +191,6 @@ async function getFriends(req, res) {
             if (user) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
 
-                console.log(user.friends);
-
                 let friends = [];
                 for (const friendUsername of user.friends) {
                     const friendId = await findUserIdByUsername(friendUsername);
@@ -201,8 +199,6 @@ async function getFriends(req, res) {
                         username: friendUsername
                     });
                 }
-
-                console.log(friends);
 
                 let response  = [];
                 friends.forEach(friend => {
@@ -218,8 +214,6 @@ async function getFriends(req, res) {
                         });
                     }
                 });
-
-                console.log(response);
 
                 res.end(JSON.stringify(response));
             } else {

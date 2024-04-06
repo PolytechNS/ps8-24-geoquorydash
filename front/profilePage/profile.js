@@ -1,7 +1,6 @@
 import { ProfileService } from '../Services/profileService.js';
 import { AuthService }  from "../Services/authService.js";
 import { FriendsService } from "../Services/friendsService.js";
-import  userSocket  from "../sockets/userSocketConnection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const myProfile = document.querySelector('.profile-container-me');
@@ -76,8 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         gameRequestBtn.addEventListener('click', () => {
-            window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?toUsername=${username}`;
-            //
+            window.location.href = `../gameAgainstFriend/gameFriend/gameAgainstFriend.html`;
         });
     }
 
@@ -153,8 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
         results.forEach(result => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result}`;
-            link.textContent = result;
+            link.href = `../profilePage/profile.html?username=${result.username}`;
+            link.textContent = result.username;
             link.target = "_blank";
             li.appendChild(link);
             ul.appendChild(li);
