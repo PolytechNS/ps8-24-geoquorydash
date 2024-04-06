@@ -129,7 +129,7 @@ body {
     height: auto;
 }
 
-.account-image {
+.information-image {
     width: 100%;
     height: auto;
     max-width: calc(65vw - 260px);
@@ -139,7 +139,7 @@ body {
     width: 80%;
 }
 
-#account-elements, #loginForm, #signupForm {
+#account-elements, #loginForm, #signupForm, #friends-elements {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
@@ -190,8 +190,7 @@ label img {
     max-width: 100%;
 }
 
-#usernameInput,
-#passwordInput {
+#usernameInput, #passwordInput, #searchInput {
     width: 100%;
     height: 40%;
     font-size: 5vh;
@@ -249,6 +248,144 @@ label img {
          1px -1px 0 #000,
         -1px  1px 0 #000,
          1px  1px 0 #000; /* Effet de bordure noire */
+}
+
+.friendsTab {
+    display: none;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 0;
+    overflow-y: auto;
+    /*overflow-x: hidden;
+    list-style-type: none;*/
+}
+
+#friendsResults, #requestResults, #searchResults {
+    box-sizing: border-box;
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    flex-direction: column;
+    padding: 0;
+}
+
+#friendsResults, #requestResults {
+    height: 100%;
+}
+
+#searchResults {
+    height: 50%;
+    max-height: 50%;
+}
+
+#friendsResults li, #requestResults li, #searchResults li {
+    background-image: url('./img/friends/liBackground.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    margin-bottom: 1vh;
+    list-style-type: none;
+    width: 80%;
+    height: 10vh;
+    display: flex;
+    align-items: center;
+}
+
+#friendsResults li a, #requestResults li a, #searchResults li a {
+    text-decoration: none;
+    color: white !important;
+    font-family: 'Pusab', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+#friendsButtonContainer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#friendsButtonContainer img {
+    width: calc(100% * 1/3);
+    height: auto;
+    cursor: pointer;
+}
+
+/* #friends-form-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 40%;
+    width: 80%;
+} */
+
+#friendsForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 40%;
+    width: 80%;
+}
+
+/* #searchBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+} */
+
+#okButton {
+    height: 30%;
+    width: auto;
+}
+
+#searchInput {
+    margin-bottom: 2vh;
+}
+
+#requestResults li button {
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    width: 7vh;
+    height: 7vh;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+#requestResults li button.accept {
+    background-image: url('./img/friends/accept.png');
+    background-position: center;
+}
+
+#requestResults li button.denied {
+    background-image: url('./img/friends/denied.png');
+    background-position: center;
+}
+
+#requestResults li {
+    justify-content: space-between;
+}
+
+.accept-denied-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
+    gap: 1vw;
 }
 
 @font-face {
