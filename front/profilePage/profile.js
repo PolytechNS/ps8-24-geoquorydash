@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         gameRequestBtn.addEventListener('click', () => {
-            window.location.href = `../gameAgainstFriend/gameFriend/gameAgainstFriend.html`;
+            window.location.href = `../gameAgainstFriend/gameAgainstFriend.html`;
         });
     }
 

@@ -1,5 +1,5 @@
-import gameSocket from "../../sockets/gameSocketConnection.js";
-import userSocket from "../../sockets/userSocketConnection.js";
+import gameSocket from "../sockets/gameSocketConnection.js";
+import userSocket from "../sockets/userSocketConnection.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');

@@ -17,7 +17,7 @@ userSocket.on('updateSocket', function(data) {
 
 userSocket.on('gameRequest', function(payload) {
     if (window.confirm("Game request from " + payload.fromUsername + "\nDo you accept?")){
-        window.location.href = `../gameAgainstFriend/gameFriend/gameAgainstFriend.html`
+        window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?fromUsername=${payload.fromUsername}`;
     } else {
         userSocket.emit('gameRequestDeclined', payload.fromUserId);
     }

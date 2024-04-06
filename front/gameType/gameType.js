@@ -12,5 +12,5 @@ gameOnlineBtn.addEventListener('click', () => {
 });
 
 gameRequestBtn.addEventListener('click', () => {
-    window.location.href = '../gameAgainstFriend/friendSelection/friendSelection.html';
+    window.location.href = '../friendSelection/friendSelection.html';
 });

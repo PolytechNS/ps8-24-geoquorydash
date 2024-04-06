@@ -1,6 +1,6 @@
-import { AuthService } from "../../Services/authService.js";
-import { FriendsService } from "../../Services/friendsService.js";
-import userSocket from "../../sockets/userSocketConnection.js";
+import { AuthService } from "../Services/authService.js";
+import { FriendsService } from "../Services/friendsService.js";
+import userSocket from "../sockets/userSocketConnection.js";
 
 var friendsList = [];
 
@@ -17,7 +17,7 @@ AuthService.username(localStorage.getItem('token')).then(authUsername => {
             if (friend.status === 'online') {
                 friendElement.classList.add('online');
                 friendElement.onclick = function() {
-                    console.log(`Ouvrir le chat avec ${friend.username}`);
+                    window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?toUsername=${friend.username}`
                 };
             } else {
                 friendElement.classList.add('offline');
@@ -35,7 +35,7 @@ userSocket.on('updateStatus', ({username, status}) => {
         friendElement.classList.remove('offline');
         friendElement.classList.add('online');
         friendElement.onclick = function() {
-            console.log(`Ouvrir le chat avec ${username}`);
+            window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?toUsername${username}`;
         };
     } else {
         friendElement.classList.remove('online');
