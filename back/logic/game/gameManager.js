@@ -80,28 +80,6 @@ class GameManager {
                     id: "player2",
                     position: {x: 16, y: 8},
                     walls: [],
-                    isCurrentPlayer: true
-                }
-            ],
-            isGameActive: true
-        };
-    }
-
-    initializeDefaultOnlineGameState(id) {
-        // genere un booleen aleatoire pour savoir qui commence
-        let randomBoolean = Math.random() >= 0.5;
-        this.gameStateList[id] = {
-            players: [
-                {
-                    id: "player1",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: randomBoolean
-                },
-                {
-                    id: "player2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
                     isCurrentPlayer: !randomBoolean
                 }
             ],

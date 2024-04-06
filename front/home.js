@@ -1,4 +1,5 @@
 import { AuthService } from './Services/authService.js';
+import { StatService } from "./Services/statService.js";
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -9,7 +10,20 @@ updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
+    console.log('Token:', token);
 }
+
+var handleDeconnexionClick = function(event) {
+    event.preventDefault();
+    if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+        localStorage.clear();
+        updateToken();
+        alert('Vous êtes déconnecté');
+        const modal = window.parent.document.querySelector('.modal');
+        modal.style.display = 'none';
+        // Assurez-vous de réinitialiser les boutons d'inscription et de connexion ici également, si nécessaire
+    }
+};
 
 // PAGE HOME -> PAGE ACCOUNT
 document.addEventListener("DOMContentLoaded", function() {
@@ -18,6 +32,31 @@ document.addEventListener("DOMContentLoaded", function() {
     openAccountPage.addEventListener("click", function(e) {
         e.preventDefault();
         accountModal.style.display = "flex";
+        
+        const deconnexionButton = document.getElementById('logout-btn');
+        if (token) {
+            console.log('On a un token');
+            document.getElementById('openSignupPage').style.display = 'none';
+            document.getElementById('openLoginPage').style.display = 'none';
+            document.getElementById('connect_text_1').style.display = 'none';
+            document.getElementById('connect_text_2').style.display = 'none';
+
+            deconnexionButton.style.display = 'block';
+            document.getElementById('deconnect_text_1').style.display = 'block';
+            document.getElementById('deconnect_text_2').style.display = 'block';
+            deconnexionButton.removeEventListener('click', handleDeconnexionClick);
+            deconnexionButton.addEventListener('click', handleDeconnexionClick);
+        } else {
+            // Assurez-vous de gérer correctement le cas où le token n'existe pas
+            document.getElementById('openSignupPage').style.display = 'block';
+            document.getElementById('openLoginPage').style.display = 'block';
+            document.getElementById('connect_text_1').style.display = 'block';
+            document.getElementById('connect_text_2').style.display = 'block';
+    
+            deconnexionButton.style.display = "none";
+            document.getElementById('deconnect_text_1').style.display = 'none';
+            document.getElementById('deconnect_text_2').style.display = 'none';
+        }
     });
 
     window.addEventListener("click", function(event) {
@@ -111,8 +150,34 @@ document.addEventListener("DOMContentLoaded", function() {
     var openStatPage = document.getElementById("openStatPage");
 
     openStatPage.addEventListener("click", function(e) {
-        e.preventDefault();
-        statModal.style.display = "flex";
+        if (token){
+            e.preventDefault();
+            statModal.style.display = "flex";
+            const statItems = document.querySelectorAll('.stat-item span');
+            StatService.getStat(token)
+                .then(data => {
+                    if(statItems.length === 6) { // On vérifie qu'on bien récupéré le bon nombre de stats
+                        statItems[0].textContent = data.numberOfPlayedGames;
+                        if (data.playingTimeDuration >= 60) {
+                            const hours = Math.floor(data.playingTimeDuration / 60);
+                            const minutes = data.playingTimeDuration % 60;
+                            statItems[1].textContent = hours + "h" + minutes;
+                        } else {
+                            statItems[1].textContent = data.playingTimeDuration + "min";
+                        }
+                        statItems[2].textContent = data.numberOfVictory;
+                        statItems[3].textContent = data.numberOfMoves;
+                        statItems[4].textContent = data.numberOfWallsInstalled;
+                        statItems[5].textContent = data.fastestWinNumberOfMoves + " coups";
+                    }
+                })
+                .catch(error => {
+                    console.error('Erreur lors de la récupération des données:', error);
+                    alert('Erreur lors de la récupération des données');
+                });
+        } else {
+            alert('Vous devez être connecté pour consulter vos statistiques');
+        }
     });
 
     window.addEventListener("click", function(event) {
@@ -124,7 +189,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // MODULE D'INSCRIPTION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST");
     const signupForm = document.getElementById('signupForm');
     signupForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -132,6 +196,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = signupForm.querySelector('[name="password"]').value;
         AuthService.signUp(username, password)
             .then(data => {
+                console.log("On vient de se signup");
+                StatService.associateStatToNewUser(username)
+                .then(data2 => {
+                    console.log("L'association s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
                 signupModal.style.display = "none";
                 loginModal.style.display= "flex";
                 alert('Inscription effectuée');
@@ -152,7 +224,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // MODULE DE CONNEXION
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("TEST 2");
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -167,7 +238,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
                 updateToken();
-                updateDeconnexionVisibility();
             })
             .catch(error => {
                 console.error('Login error:', error);
@@ -177,11 +247,10 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
     });
 });
-
+/*
 function updateDeconnexionVisibility() {
     const deconnexionButton = document.getElementById('logout-btn');
     if (token) {
-        console.log("TEST 3")
         document.getElementById('openSignupPage').style.display = 'none';
         document.getElementById('openLoginPage').style.display = 'none';
 
@@ -205,4 +274,4 @@ function updateDeconnexionVisibility() {
 
         deconnexionButton.style.display = "none";
     }
-}
+}*/

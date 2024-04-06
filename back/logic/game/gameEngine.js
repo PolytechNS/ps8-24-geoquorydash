@@ -5,7 +5,6 @@ const { arrayOfPositionContainsPosition, arePositionsEquals } = require('../../u
 // let player1, player2, currentPlayer, otherPlayer, gameActive = true;
 
 function initializeGame(options) {
-    // gameActive = true;
     if (options.defaultOption) {
         fogOfWar.initializeDefaultFogOfWar(options.id);
         if (options.onlineGameOption) {
@@ -14,15 +13,6 @@ function initializeGame(options) {
             gameManager.initializeDefaultGameState(options.id);
         }
     }
-    // try {
-    //     player1 = gameManager.gameStateList[options.id].players[0];
-    //     player2 = gameManager.gameStateList[options.id].players[1];
-    // } catch (error) {
-    //     console.error("Error initializing game:", error);
-    // }
-    // // print all the keys
-    // currentPlayer = player1.isCurrentPlayer ? player1 : player2;
-    // otherPlayer = currentPlayer === player1 ? player2 : player1;
 }
 
 function movePlayer(targetPosition, gameStateId) {

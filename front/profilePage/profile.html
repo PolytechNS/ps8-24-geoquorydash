@@ -4,20 +4,45 @@
     <meta charset="UTF-8">
     <title>Profile</title>
     <link rel="stylesheet" href="profile.css">
+    <link rel="stylesheet" href="../burgerChat/burgerChat.css">
+    <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
 </head>
 <body>
+    <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
+    <div id="burger-menu-container"></div>
+
+    <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
+    <div id="burger-chat-container"></div>
 
     <div class="profile-container">
-        <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
-        <h1 class="username" id="username-friend"></h1>
+        <div class="sub-container">
+            <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
+            <h1 class="username" id="username-friend"></h1>
+            <div class="rank">
+                <h2><img src="../img/profile/rank.png" alt="Rank"></h2>
+                <p class="ranking" id="ranking-friend">/</p>
+            </div>
+        </div>
         <button id="add-friend-btn" class="custom-button"></button>
     </div>
 
     <div class="profile-container-me" style="display: none;">
-        <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-me">
-        <h1 class="username" id="username-me"></h1>
+        <div class="sub-container-me">
+            <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-me">
+            <h1 class="username" id="username-me"></h1>
+            <div class="rank">
+                <h2><img src="../img/profile/rank.png" alt="Rank"></h2>
+                <p class="ranking" id="ranking-me">/</p>
+            </div>
+        </div>
+        <ul id="friendsResults"></ul>
     </div>
     
     <script src="profile.js" type="module"></script>
+    <script src="../burgerChat/burgerChat.js" type="module"></script>
+    <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+
+    <script src="../sockets/socket.io.js"></script>
+    <script type="module" src="../sockets/userSocketConnection.js"></script>
 </body>
 </html>

@@ -1,5 +1,7 @@
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users/users');
+const {createUserCollection, findUserIdByUsername} = require('../../models/users/users');
+const createNewChat = require('../chat/chatController').createNewChat;
+const usersConnected = require('../../usersConnected');
 
 async function searchUsers(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -131,6 +133,7 @@ async function acceptFriend(req, res) {
                 { $pull: { friendRequests: currentUser }, $addToSet: { friends: currentUser } }
             );
             if (result.modifiedCount > 0 && result2.modifiedCount > 0) {
+                await createNewChat(currentUser, targetUser);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend added successfully' }));
             } else {
@@ -175,7 +178,7 @@ async function deniedFriend(req, res) {
 }
 
 async function getFriends(req, res) {
-parseJSON(req, async (err, { currentUser }) => {
+    parseJSON(req, async (err, { currentUser }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
             res.end('Invalid JSON');
@@ -187,7 +190,32 @@ parseJSON(req, async (err, { currentUser }) => {
             const user = await usersCollection.findOne({ username: currentUser });
             if (user) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify(user.friends));
+
+                let friends = [];
+                for (const friendUsername of user.friends) {
+                    const friendId = await findUserIdByUsername(friendUsername);
+                    friends.push({
+                        id: friendId.toString(),
+                        username: friendUsername
+                    });
+                }
+
+                let response  = [];
+                friends.forEach(friend => {
+                    if (usersConnected.usersConnected[friend.id]){
+                        response.push({
+                            username: friend.username,
+                            status: 'online'
+                        });
+                    } else {
+                        response.push({
+                            username: friend.username,
+                            status: 'offline'
+                        });
+                    }
+                });
+
+                res.end(JSON.stringify(response));
             } else {
                 console.log('User not found');
                 res.writeHead(404, { 'Content-Type': 'text/plain' });

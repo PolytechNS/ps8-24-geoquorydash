@@ -29,14 +29,12 @@ async function createDefaultConfiguration(userId){
 }
 
 async function retrieveTextInGameInteractionFromDatabase(userId){
-    console.log('retrieve with userId:', userId);
     const client = new MongoClient(uri);
     try {
         await client.connect();
         const database = client.db('myapp_db');
         const configurationCollection = database.collection('configuration');
         const configuration = await configurationCollection.findOne({ userId: new ObjectId(userId) });
-        console.log('configuration:', configuration);
         return configuration.textInGameInteraction;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
