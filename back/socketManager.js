@@ -147,7 +147,7 @@ const setupSocket = (io) => {
         });
 
         socket.on('toggleWall', async (wall, isVertical, gameStateID, token, roomId) => {
-            console.log('ON toggleWall');
+            console.log('ON toggleWall', wall, isVertical, gameStateID, token, roomId);
             if (token) await setGameStateInProgressBoolean(gameStateID, true);
 
             const onlineGameOption = !!roomId;

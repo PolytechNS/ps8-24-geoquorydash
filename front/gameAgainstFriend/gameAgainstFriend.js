@@ -11,8 +11,8 @@ window.onload = function() {
 
     const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
     if (usernameToRequest){
+        localStorage.setItem('gameStateID', 'waitingForMatch');
         gameSocket.emit('gameRequest', token, usernameToRequest);
-        return;
     }
 
     const usernameFromRequest = new URLSearchParams(window.location.search).get('fromUsername');

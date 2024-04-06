@@ -6,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const myProfile = document.querySelector('.profile-container-me');
     const profile = document.querySelector('.profile-container');
     const addFriendBtn = document.getElementById('add-friend-btn');
-    const gameRequestBtn = document.getElementById('game-request-btn');
 
     const params = new URLSearchParams(window.location.search);
     let username = params.get('username');
@@ -72,10 +71,6 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
             console.error('Error fetching current user:', error);
-        });
-
-        gameRequestBtn.addEventListener('click', () => {
-            window.location.href = `../gameAgainstFriend/gameAgainstFriend.html`;
         });
     }
 

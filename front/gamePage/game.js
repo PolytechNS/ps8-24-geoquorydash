@@ -17,7 +17,8 @@ for (let i = 0; i < 17; i++) {
         } else {
             cell.classList.add('barrier-cell');
             //check url in js
-            if (!window.location.href.includes('gameOnline') && localStorage.getItem('gameStateID') !== 'waitingForMatch')
+            if ((!window.location.href.includes('gameOnline') && !window.location.href.includes('gameAgainstFriend'))
+                && localStorage.getItem('gameStateID') !== 'waitingForMatch')
                 activateBarrierCellListeners(cell, i, j, currentPlayerID);
         }
 

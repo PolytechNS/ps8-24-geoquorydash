@@ -90,7 +90,7 @@ class GameOnlineManager {
             const socket1 = player1Data.socket;
             const socket2 = player2Data.socket;
 
-            await this.setupGameMatch.call(this, io, player1Data.user, player2Data.userId, socket1, socket2);
+            await this.setupGameMatch(io, player1Data.user, player2Data.userId, socket1, socket2);
 
             delete this.gameRequestsWaitingRooms[gameRequestWaitingRoomId];
         }
