@@ -283,4 +283,10 @@ document.addEventListener("DOMContentLoaded", function() {
         rankResults.appendChild(ul);
     }
 
+    window.addEventListener("click", function(event) {
+        if (event.target === rankModal) {
+            rankModal.style.display = "none";
+        }
+    });
+
 });
