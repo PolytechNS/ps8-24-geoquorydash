@@ -96,4 +96,19 @@ async function retrieveStatFromDatabaseForAUser(token) {
     }
 }
 
-module.exports = { createStatInDatabase, retrieveStatFromDatabaseForAUser, updateStatInDatabase };
+async function retrieveAllStatsFromDatabase() {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const statCollection = database.collection('stat');
+        return await statCollection.find().toArray();
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    } finally {
+        await client.close();
+    }
+}
+
+module.exports = { createStatInDatabase, retrieveStatFromDatabaseForAUser, updateStatInDatabase, retrieveAllStatsFromDatabase };
