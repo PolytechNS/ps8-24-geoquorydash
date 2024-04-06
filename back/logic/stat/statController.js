@@ -1,4 +1,4 @@
-const { createStatInDatabase, retrieveStatFromDatabaseForAUser } = require("../../models/users/stat");
+const { createStatInDatabase, retrieveStatFromDatabaseForAUser, retrieveAllStatsFromDatabase } = require("../../models/users/stat");
 const {createUserCollection} = require('../../models/users/users');
 const { parseJSON } = require('../../utils/utils.js');
 const {verifyAndValidateUserID} = require("../authentification/authController");
