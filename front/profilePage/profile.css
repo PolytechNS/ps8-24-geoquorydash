@@ -12,14 +12,11 @@ body {
 }
 
 .profile-container {
-    display: flex;
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
     height: 100%;
     align-items: flex-start;
-    margin: 8vh 3vw 5vh;
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 .profile-container-me {
@@ -28,6 +25,20 @@ body {
     width: 100%;
     height: 100%;
     align-items: flex-start;
+}
+
+.sub-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    position: absolute;
+    top: 3vh;
+    left: 10vw;
+    width: 50vw;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+    height: 25vh;
 }
 
 .sub-container-me {
