@@ -10,26 +10,7 @@ body {
     background-repeat: no-repeat;
 }
 
-.burger-menu-button {
-    position: fixed;
-    top: 20px;
-    left: 20px;
-    z-index: 999;
-    width: 4vw;
-    height: 8vh;
-}
-
-.burger-menu-button img {
-    width: 100%;
-    height: 100%;
-}
-
-.burger-menu-button.open {
-    left: 17vw;
-}
-
-
-.container {
+.game-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -130,8 +111,12 @@ body {
     display: none;
 }
 
-#playerTurn {
-    font-size: 2vw;
-    justify-content: center;
-    color: white;
+@keyframes blinkingEffect {
+    0% { background-color: rgba(255, 255, 255, 0.2); }
+    50% { background-color: rgba(255, 255, 255, 0.7); }
+    100% { background-color: rgba(255, 255, 255, 0.2); }
+}
+
+.blinking {
+    animation: blinkingEffect 1s linear infinite;
 }

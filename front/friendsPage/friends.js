@@ -1,33 +1,41 @@
-import { SearchService } from '../Services/searchService.js';
+import { FriendsService } from '../Services/friendsService.js';
+import {AuthService} from "../Services/authService.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    const searchForm = document.getElementById('friendsForm');
-    const searchResults = document.getElementById('searchResults');
-
-    searchForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const username = searchForm.querySelector('[name="search"]').value;
-        SearchService.searchUsers(username)
-            .then(data => {
-                displaySearchResults(data);
+    const friendsResults = document.getElementById('friendsResults');
+    const token = localStorage.getItem('token');
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getFriends(authUsername)
+                    .then(friends => {
+                        displayFriendsResults(friends);
+                    })
+                    .catch(error => {
+                        console.error('Error fetching requests:', error);
+                    });
             })
             .catch(error => {
-                console.error(error);
+                console.error('Error fetching username:', error);
             });
-    });
 
-    function displaySearchResults(results) {
-        searchResults.innerHTML = '';
+    }
+    function displayFriendsResults(results) {
+        friendsResults.innerHTML = '';
 
-        const ul = document.createElement('ul');
+        const ul= document.createElement('ul');
 
         results.forEach(result => {
             const li = document.createElement('li');
-            li.textContent = result.username;
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result.username}`;
+            link.textContent = result.username;
+            link.target = "_blank";
+            li.appendChild(link);
             ul.appendChild(li);
         });
 
-        searchResults.appendChild(ul);
+        friendsResults.appendChild(ul);
     }
 
 });

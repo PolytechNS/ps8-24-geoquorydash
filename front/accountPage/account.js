@@ -6,8 +6,7 @@ if (token) {
 
     const deconnexionButton = document.getElementById('logout-btn');
     deconnexionButton.style.display = 'block';
-
-    deconnexionButton.addEventListener('click', function(event) {
+    deconnexionButton.addEventListener('click', function (event) {
         event.preventDefault();
 
         if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {

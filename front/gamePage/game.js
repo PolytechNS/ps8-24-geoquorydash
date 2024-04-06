@@ -1,9 +1,12 @@
-import socket from "../sockets/socketConnection.js";
+import gameSocket from "../sockets/gameSocketConnection.js";
 
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
 let currentPlayer = player2;
+let currentPlayerID = 'player2';
+
+console.log("LA PARTIE SE LANCE");
 
 for (let i = 0; i < 17; i++) {
     for (let j = 0; j < 17; j++) {
@@ -16,9 +19,9 @@ for (let i = 0; i < 17; i++) {
         } else {
             cell.classList.add('barrier-cell');
             //check url in js
-
-            if (!window.location.href.includes('gameOnline') && localStorage.getItem('gameStateID') !== 'waitingForMatch')
-                activateBarrierCellListeners(cell, i, j);
+            if ((!window.location.href.includes('gameOnline') && !window.location.href.includes('gameAgainstFriend'))
+                && localStorage.getItem('gameStateID') !== 'waitingForMatch')
+                activateBarrierCellListeners(cell, i, j, currentPlayerID);
         }
 
         cell.id = `cell-${i}-${j}`;
@@ -74,25 +77,28 @@ function updatePlayerBarrierCounts() {
 }
 
 
-function activateBarrierCellListeners(cell, i, j) {
+function activateBarrierCellListeners(cell, i, j, playerID) {
     cell.eventHandlers = {
         mouseenter: function(event) {
             event.preventDefault();
-            handleCellAction(cell, i, j, 'displayBarrier');
+            gameSocket.emit('getCurrentPlayerID', localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : gameSocket.id);
+            handleCellAction(cell, i, j, 'displayBarrier', currentPlayerID);
         },
         mouseleave: function(event) {
             event.preventDefault();
-            handleCellAction(cell, i, j, 'hideBarrier');
+            handleCellAction(cell, i, j, 'hideBarrier', currentPlayerID);
         },
         click: function(event) {
             event.preventDefault();
-            handleCellAction(cell, i, j, 'lockBarrier');
+            handleCellAction(cell, i, j, 'lockBarrier', currentPlayerID);
         }
     };
 
     Object.keys(cell.eventHandlers).forEach(eventType => {
         cell.addEventListener(eventType, cell.eventHandlers[eventType]);
     });
+
+    currentPlayerID = playerID;
 }
 
 function deactivateBarrierCellListeners(cell) {
@@ -105,7 +111,7 @@ function deactivateBarrierCellListeners(cell) {
     delete cell.eventHandlers; // Supprimez les références pour nettoyer
 }
 
-function handleCellAction(cell, i, j, actionType) {
+function handleCellAction(cell, i, j, actionType, playerID) {
     if (cell.classList.contains('locked')) return;
 
     let cell2, cell3;
@@ -137,7 +143,7 @@ function handleCellAction(cell, i, j, actionType) {
 
     if (cell2 && cell3) {
         if (actionType === 'displayBarrier') {
-            displayPossibleToggleBarrier(cell, cell2, cell3, isVertical);
+            displayPossibleToggleBarrier(cell, cell2, cell3, isVertical, playerID);
         } else if (actionType === 'hideBarrier') {
             hidePossibleToggleBarrier(cell, cell2, cell3);
         } else if (actionType === 'lockBarrier' && cell.classList.contains('previewMode')) {
@@ -151,8 +157,8 @@ function handleCellAction(cell, i, j, actionType) {
 }
 
 function askPossibleMove() {
-    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
-    socket.emit('possibleMoveRequest', id);
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : gameSocket.id;
+    gameSocket.emit('possibleMoveRequest', id);
 }
 
 function displayPossibleMove(possibleMove) {
@@ -161,20 +167,23 @@ function displayPossibleMove(possibleMove) {
         if (cell.moveEventListener) {
             cell.removeEventListener('click', cell.moveEventListener);
             cell.moveEventListener = null;
+            cell.classList.remove('blinking');
         }
     });
 
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);
-        cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        // cell.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        cell.classList.add('blinking');
+
         let callback = () => socketMovePlayer(move.x, move.y);
         cell.addEventListener('click', callback);
         cell.moveEventListener = callback;
     });
 }
 
-function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical) {
-    toggleBarrier(targetCell, targetCell2, targetCell3, isVertical);
+function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical, playerID) {
+    toggleBarrier(targetCell, targetCell2, targetCell3, isVertical, playerID);
 }
 
 function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
@@ -204,14 +213,17 @@ function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
     wall.push({x: targetCell2x, y: targetCell2y});
     wall.push({x: targetCell3x, y: targetCell3y});
 
-    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
-    socket.emit('toggleWall', wall, isVertical, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : gameSocket.id;
+    gameSocket.emit('toggleWall', wall, isVertical, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
-function lockBarrier(wall) {
+function lockBarrier(wall, withToggle, playerID) {
     var targetCell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`)
     var targetCell2 = document.getElementById(`cell-${wall[1].x}-${wall[1].y}`)
     var targetCell3 = document.getElementById(`cell-${wall[2].x}-${wall[2].y}`)
 
+    if (withToggle) {
+        handleCellAction(targetCell, wall[0].x, wall[0].y, 'displayBarrier', playerID);
+    }
     targetCell.classList.add('locked');
     targetCell2.classList.add('locked');
     targetCell3.classList.add('locked');
@@ -222,8 +234,8 @@ function lockBarrier(wall) {
 
 function socketMovePlayer(i, j) {
     let targetPosition = {x: i, y: j};
-    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : socket.id;
-    socket.emit('movePlayer', targetPosition, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
+    const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : gameSocket.id;
+    gameSocket.emit('movePlayer', targetPosition, id, localStorage.getItem('token'), localStorage.getItem('roomId'));
 }
 
 function canToggleBarrier() {
@@ -234,7 +246,7 @@ function canToggleBarrier() {
     return true;
 }
 
-function toggleBarrier(cell, cell2, cell3, isVertical) {
+function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
     if (!cell.querySelector('.barrier') && (!cell2.querySelector('.barrier') || !cell2) && (!cell3.querySelector('.barrier') || !cell3)) {
         const barrier = document.createElement('div');
         barrier.className = 'barrier';
@@ -250,7 +262,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
             barrier.style.backgroundImage = 'url("../img/Barriere.png")';
             barrier.style.backgroundPosition = 'left';
         }
-        barrier.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+        barrier.style.filter = playerID === 'player2' ? 'url(#svgTintGreen)' : 'url(#svgTintRed)';
         cell.appendChild(barrier);
         cell.classList.add('previewMode');
         if (cell2) {
@@ -268,7 +280,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier2.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier2.style.backgroundPosition = 'center';
             }
-            barrier2.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier2.style.filter = playerID === 'player2' ? 'url(#svgTintGreen)' : 'url(#svgTintRed)';
             cell2.appendChild(barrier2);
             cell2.classList.add('previewMode');
         }
@@ -287,7 +299,7 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
                 barrier3.style.backgroundImage = 'url("../img/Barriere.png")';
                 barrier3.style.backgroundPosition = 'right';
             }
-            barrier3.style.filter = currentPlayer.id === 'player1' ? 'url(#svgTintRed)' : 'url(#svgTintGreen)';
+            barrier3.style.filter = playerID === 'player2' ? 'url(#svgTintGreen)' : 'url(#svgTintRed)';
             cell3.appendChild(barrier3);
             cell3.classList.add('previewMode');
         }
@@ -295,13 +307,6 @@ function toggleBarrier(cell, cell2, cell3, isVertical) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-/*    const messageElement = document.getElementById('message');
-    messageElement.innerText = 'Placement de barrière impossible';
-    messageElement.classList.add('visible');
-    setTimeout(function() {
-        messageElement.classList.remove('visible');
-    }, 2000);*/
-
     alert("Placement de barrière impossible");
 }
 
@@ -310,4 +315,8 @@ function endGame(player) {
     window.location.href = '/gameType/gameType.html';
 }
 
-export { askPossibleMove, displayPossibleMove, endGame, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
+window.onbeforeunload = function() {
+    gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
+}
+
+export { askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

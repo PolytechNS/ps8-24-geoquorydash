@@ -70,19 +70,211 @@ body {
 
 
 .modal-content {
-    background-image: url('img/home/background_modal.png');
-    background-size: cover;
-    background-repeat: no-repeat;
-    width: 58.2vw;
+    box-sizing: border-box;
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+    top: 10vw;
+    left: 25vw;
+
+    width: 65vw;
     height: 86vh;
-    justify-content: center;
-    display: flex;
-    flex-direction: row;
+    
+    padding: 0 80px 100px 80px;
+
+    background: 
+    /* top-left corner */
+    url("img/home/top_left_corner.png") top left/100px 100px no-repeat,
+    /* top-right corner */
+    url("img/home/top_right_corner.png") top right/100px 100px no-repeat,
+    /* bottom-left corner */
+    url("img/home/bottom_left_corner.png") bottom 50px left/100px 50px no-repeat,
+    /* bottom-right corner */
+    url("img/home/bottom_right_corner.png") bottom 50px right/100px 50px no-repeat,
+    /* bottom-middle corner */
+    url("img/home/bottom_middle_block.png") bottom/130px 100px no-repeat,
+    /* top wall */
+    url("img/home/top_bar.png") top left 95px/calc(65vw - 190px) 100px no-repeat,
+    /* bottom wall */
+    url("img/home/bottom_bar.png") bottom 20px left 95px/calc(65vw - 190px) 80px no-repeat,
+    /* left wall */
+    url("img/home/left_bar.png") top 90px left 30px/50px calc(86vh - 150px) no-repeat,
+    /* right wall */
+    url("img/home/right_bar.png") top 90px right 30px/50px calc(86vh - 150px) no-repeat;
+    /*top 100px -> à 100px du haut de l'élément / right -> à droite / 100px -> largeur de l'image / calc… -> hauteur de l'image*/
 }
 
-.modal-content iframe {
+.title-page-image {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    height: 85px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    max-width: calc(65vw - 200px);
+}
+
+.buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 70%;
+}
+
+.buttons img {
     width: 100%;
     height: auto;
-    border: none;
 }
 
+.account-image {
+    width: 100%;
+    height: auto;
+    max-width: calc(65vw - 260px);
+}
+
+.account-text-container {
+    width: 80%;
+}
+
+#account-elements, #loginForm, #signupForm, #rank-elements {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.credentials {
+    width: 80%;
+}
+
+#usernameBlock,
+#passwordBlock {
+    width: 100%;
+    margin-bottom: 3vh;
+}
+
+#validationBlock {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 2vw;
+}
+
+#signUpButton, #loginButton {
+    width: 25vw;
+    height: auto;
+}
+
+#validationBlock img {
+    width: 20vw;
+    height: auto;
+}
+
+label {
+    display: block;
+    height: 35%;
+    width: 100%;
+}
+
+label img {
+    height: 7vh;
+    max-width: 100%;
+}
+
+#usernameInput,
+#passwordInput {
+    width: 100%;
+    height: 40%;
+    font-size: 5vh;
+}
+
+.stat-image {
+    width: auto;
+    height: 3.5vh;
+    max-width: calc(65vw - 260px);
+}
+
+.stat-elements {
+    display: flex;
+    align-items: center;
+    justify-content: start;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    scrollbar-width: none;
+    background-color: rgba(0, 0, 0, 0.8);
+}
+
+.stat-elements::-webkit-scrollbar {
+    display: none;
+}
+
+.stat-item {
+    width: 100%;
+    height: 30%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1vw;
+    background-color: #A1582C;
+    box-sizing: border-box;
+}
+
+.stat-item:nth-child(even) {
+    background-color: #C2723E;
+}
+
+.stat-item span {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    height: 4.5vw;
+    font-size: 2.5vw;
+    font-family: 'Pusab', sans-serif;
+    color: #fec32c;
+    margin-right: 2vw;
+    text-shadow:
+        4px -2px 3px #000,
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000; /* Effet de bordure noire */
+}
+
+@font-face {
+    font-family: 'Pusab'; /* Donnez un nom à votre police */
+    src: url('font/pusab/PUSAB___.otf') format('opentype');
+}
+
+
+#rankResults {
+    list-style-type: none;
+}
+
+#rankResults li {
+    background-image: url('img/friends/liBackground.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-left: 5vw;
+    margin-bottom: 3vh;
+    margin-left: 6vw;
+    list-style-type: none;
+    width: 70vw;
+}
+
+#rankResults li a {
+    text-decoration: none;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
