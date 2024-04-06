@@ -1,4 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
+import userSocket from "../sockets/userSocketConnection.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -6,9 +7,23 @@ const bottomPopup = document.getElementById('bottom-popup');
 let canClick = false; // Variable pour suivre si le bouton est cliquable
 
 window.onload = function() {
-    localStorage.setItem('gameStateID', 'waitingForMatch');
-    gameSocket.emit('findMatch', localStorage.getItem('token'));
+    const token = localStorage.getItem('token');
+
+    const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
+    if (usernameToRequest){
+        localStorage.setItem('gameStateID', 'waitingForMatch');
+        gameSocket.emit('gameRequest', token, usernameToRequest);
+    }
+
+    const usernameFromRequest = new URLSearchParams(window.location.search).get('fromUsername');
+    if (usernameFromRequest){
+        gameSocket.emit('gameRequestAccepted', token, usernameFromRequest);
+    }
 }
+
+gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
+    localStorage.setItem('gameStateID', 'waitingForMatch');
+});
 
 gameSocket.on('matchFound', () => {
     askTextButtonInteraction();

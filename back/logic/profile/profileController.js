@@ -1,5 +1,5 @@
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users/users');
+const {createUserCollection} = require('../../models/users/users');
 
 async function getPicture(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -41,8 +41,6 @@ async function getButton(req, res) {
             if (user) {
                 let buttonType = "add";
 
-                console.log(user.friends);
-                console.log(user.friendRequests);
                 if (user.friends.includes(currentUser)) {
                     buttonType = "friends";
                 } else if (user.friendRequests.includes(currentUser)) {

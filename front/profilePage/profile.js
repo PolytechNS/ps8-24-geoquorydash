@@ -1,6 +1,7 @@
 import { ProfileService } from '../Services/profileService.js';
 import { AuthService }  from "../Services/authService.js";
-import { FriendsService } from "../Services/friendsService.js"; // Import du service FriendsService
+import { FriendsService } from "../Services/friendsService.js";
+import { StatService } from "../Services/statService.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const myProfile = document.querySelector('.profile-container-me');
@@ -42,6 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const profilePictureElement = document.getElementById('profile-picture-friend');
         const usernameElement = document.getElementById('username-friend');
         usernameElement.textContent = username;
+        const rankElement = document.getElementById('ranking-friend');
         ProfileService.picture(username)
             .then(profileData => {
                 if (profileData.profilePicture) {
@@ -72,6 +74,15 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
             console.error('Error fetching current user:', error);
         });
+        StatService.getRanking(token)
+            .then(ranking => {
+                if (ranking.ranking !== 0) {
+                    rankElement.innerText = ranking.ranking;
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching ranking:', error);
+            });
     }
 
     function updateButtonImage(imageUrl) {
@@ -85,6 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const myProfilePictureElement = document.getElementById('profile-picture-me');
         const myUsernameElement = document.getElementById('username-me');
         myUsernameElement.textContent = username;
+        const myRankElement = document.getElementById('ranking-me');
+        StatService.getRanking(token)
+            .then(ranking => {
+                if (ranking.ranking !== 0) {
+                    myRankElement.innerText = ranking.ranking;
+                }
+            });
         ProfileService.picture(username)
             .then(profileData => {
                 if (profileData.profilePicture) {
@@ -120,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 console.error('Error sending friend request:', error);
                             });
                     } else if (addFriendBtn.style.backgroundImage.includes('cancel.png')) {
-                        FriendsService.removeFriend(currentUser, username)
+                        FriendsService.deniedFriend(currentUser, username)
                             .then(response => {
                                 alert(response.message);
                                 updateButtonImage('../img/profile/add.png');
@@ -128,7 +146,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             .catch(error => {
                                 console.error('Error sending friend request:', error);
                             });
-                    } else {
                     }
                 })
                 .catch(error => {
@@ -146,8 +163,8 @@ document.addEventListener('DOMContentLoaded', () => {
         results.forEach(result => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result}`;
-            link.textContent = result;
+            link.href = `../profilePage/profile.html?username=${result.username}`;
+            link.textContent = result.username;
             link.target = "_blank";
             li.appendChild(link);
             ul.appendChild(li);

@@ -11,17 +11,16 @@ body {
     position: relative;
 }
 
-.buttons{
-    position: absolute;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: row;
-    gap: 10vw;
+.friend {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #ccc;
 }
 
-#newGameButton img, #gameHistoryButton img {
-    width: 30vw;
-    height: auto;
+.online {
+    background-color: #96ff65; /* Vert clair pour les amis en ligne */
 }
 
+.offline {
+    background-color: #ad5858; /* Gris pour les amis hors ligne */
+}

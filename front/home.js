@@ -5,16 +5,13 @@ import { FriendsService } from './Services/friendsService.js';
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
-/*var openFriendsListTab = document.getElementById("openFriendsListTab");
-var openFriendsSearchTab = document.getElementById("openFriendsSearchTab");
-var openFriendsRequestTab = document.getElementById("openFriendsRequestTab");*/
+var rankModal = document.getElementById("rankModal");
 
 var token;
 updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
-    console.log('Token:', token);
 }
 
 var handleDeconnexionClick = function(event) {
@@ -25,7 +22,6 @@ var handleDeconnexionClick = function(event) {
         alert('Vous êtes déconnecté');
         const modal = window.parent.document.querySelector('.modal');
         modal.style.display = 'none';
-        // Assurez-vous de réinitialiser les boutons d'inscription et de connexion ici également, si nécessaire
     }
 };
 
@@ -342,6 +338,50 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
     });
 });
+
+// PAGE HOME -> PAGE RANK
+document.addEventListener("DOMContentLoaded", function() {
+    var openRankPage = document.getElementById("openRankPage");
+
+    openRankPage.addEventListener("click", function (e) {
+        e.preventDefault();
+        rankModal.style.display = "flex";
+    });
+
+    const rankResults = document.getElementById('rankResults');
+    StatService.getAllRanking()
+        .then(rank => {
+            displayRankResults(rank.ranking);
+        })
+        .catch(error => {
+            console.error('Error fetching rank:', error);
+        });
+
+    function displayRankResults(results) {
+        rankResults.innerHTML = '';
+
+        const ul= document.createElement('ul');
+
+        results.forEach(result => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result}`;
+            link.textContent = result.username;
+            link.target = "_blank";
+            li.appendChild(link);
+            ul.appendChild(li);
+        });
+
+        rankResults.appendChild(ul);
+    }
+
+    window.addEventListener("click", function(event) {
+        if (event.target === rankModal) {
+            rankModal.style.display = "none";
+        }
+    });
+});
+
 
 /**************** FONCTIONS DE GESTION DES AMIS ****************/
 function displayFriendsListTab(friendsResults, addFriendsText) {

@@ -71,9 +71,6 @@ body {
 
 .modal-content {
     box-sizing: border-box;
-    /*background-image: url('img/home/background_modal.png');
-    background-size: contain;
-    background-repeat: no-repeat;*/
     display: grid;
     grid-template-rows: auto 1fr;
 
@@ -139,7 +136,7 @@ body {
     width: 80%;
 }
 
-#account-elements, #loginForm, #signupForm, #friends-elements {
+#account-elements, #loginForm, #signupForm, #rank-elements, #friends-elements {
     display: flex;
     align-items: center;
     justify-content: space-evenly;
@@ -390,4 +387,30 @@ label img {
 @font-face {
     font-family: 'Pusab'; /* Donnez un nom à votre police */
     src: url('font/pusab/PUSAB___.otf') format('opentype');
+}
+
+
+#rankResults {
+    list-style-type: none;
+}
+
+#rankResults li {
+    background-image: url('img/friends/liBackground.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    padding-left: 5vw;
+    margin-bottom: 3vh;
+    margin-left: 6vw;
+    list-style-type: none;
+    width: 70vw;
+}
+
+#rankResults li a {
+    text-decoration: none;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
 }
