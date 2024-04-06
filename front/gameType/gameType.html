@@ -19,10 +19,14 @@
     <div class="buttons">
         <a href="../gameLocal/gameLocal.html" id="newGameButton"><img src="../img/gameType/local.png" alt="Local Game"></a>
         <a href="../gameOnline/gameOnline.html" id="gameHistoryButton"><img src="../img/gameType/online.png" alt="Online Game"></a>
+        <button id="game-friend-btn">Game Against Friend</button>
     </div>
 
+    <script src="./gameType.js" type="module"></script>
     <script src="../burgerMenu/burgerMenu.js" type="module"></script>
     <script src="../burgerChat/burgerChat.js" type="module"></script>
 
+    <script src="../sockets/socket.io.js"></script>
+    <script type="module" src="../sockets/userSocketConnection.js"></script>
 </body>
 </html>

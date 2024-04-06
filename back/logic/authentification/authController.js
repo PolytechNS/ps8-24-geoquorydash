@@ -1,6 +1,6 @@
 const { generateToken, verifyToken } = require('./tokenManager');
 const { parseJSON } = require('../../utils/utils.js');
-const createUserCollection = require('../../models/users/users');
+const {createUserCollection} = require('../../models/users/users');
 const { createDefaultConfiguration } = require('../../models/users/configuration.js');
 const { ObjectId } = require('mongodb');
 

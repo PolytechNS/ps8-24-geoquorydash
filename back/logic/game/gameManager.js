@@ -87,28 +87,6 @@ class GameManager {
         };
     }
 
-    initializeDefaultOnlineGameState(id) {
-        // genere un booleen aleatoire pour savoir qui commence
-        let randomBoolean = Math.random() >= 0.5;
-        this.gameStateList[id] = {
-            players: [
-                {
-                    id: "player1",
-                    position: { x: 0, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: randomBoolean
-                },
-                {
-                    id: "player2",
-                    position: { x: 16, y: 8 },
-                    walls: [],
-                    isCurrentPlayer: !randomBoolean
-                }
-            ],
-            isGameActive: true
-        };
-    }
-
     convertGameStateToGameStateTeacher(visibilityMap, id) {
         // Dans cette partie, nous sommes l'ia, donc les murs de l'ia seront ownWalls
         let IAplayer = this.gameStateList[id].players.find(player => player.id === "player1");

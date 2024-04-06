@@ -1,8 +1,8 @@
-const socketIo = require('socket.io');
 const gameManager = require('./logic/game/gameManager');
 const fogOfWar = require('./logic/game/fogOfWarController');
 const gameOnlineManager = require('./logic/game/gameOnlineManager');
 const chatManager = require('./logic/chat/chatManager');
+const usersConnected = require("./usersConnected");
 const statManager = require('./logic/stat/statManager');
 const { movePlayer, getPossibleMove, toggleWall, initializeGame, changeCurrentPlayer, moveAI} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
@@ -12,9 +12,9 @@ const { verifyAndValidateUserID } = require('./logic/authentification/authContro
 const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes");
 const {createGameStateInDatabase, setGameStateInProgressBoolean, getGameStateInProgress} = require("./models/game/gameState");
 const {retrieveConfigurationFromDatabase} = require("./models/users/configuration");
+const {findUserIdByUsername, findUsernameById} = require("./models/users/users");
 
-const setupSocket = (server) => {
-    const io = socketIo(server);
+const setupSocket = (io) => {
 
     io.of('/api/game').on('connection', async (socket) => {
         console.log('ON Connection');
@@ -232,15 +232,7 @@ const setupSocket = (server) => {
             } else {
                 gameOnlineManager.addPlayerToWaitList(userId, socket);
             }
-            var numberOfPlayersInWaitingRoom = Object.keys(gameOnlineManager.waitingPlayers).length;
-            // Le player qui arrive en premier dans la waiting room sera toujours player1, et le deuxième player2
-            if (numberOfPlayersInWaitingRoom === 2) {
-                var firstPlayerId = Object.keys(gameOnlineManager.waitingPlayers)[0];
-                var secondPlayerId = Object.keys(gameOnlineManager.waitingPlayers)[1];
-                statManager.createTemporaryStat(firstPlayerId, secondPlayerId, "online", "player1");
-                statManager.createTemporaryStat(secondPlayerId, firstPlayerId, "online", "player2");
-            }
-            gameOnlineManager.tryMatchmaking(io);
+            await gameOnlineManager.tryMatchmaking(io);
         });
 
         async function handleAIMove(id, token) {
@@ -344,6 +336,47 @@ const setupSocket = (server) => {
                     return;
                 }
                 await setGameStateInProgressBoolean(gameStateID, false);
+            }
+        });
+
+        socket.on('gameRequest', async (token, username) => {
+            const userId = verifyAndValidateUserID(token);
+            if (userId) {
+                const userIdToRequest = await findUserIdByUsername(username);
+                const userSocket = usersConnected.getUserSocket(userIdToRequest);
+                if (userSocket) {
+                    const data = {
+                        userIdSender: userId,
+                        userIdReceiver: userIdToRequest,
+                    };
+                    const roomId = await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
+                    userSocket.emit('gameRequest', {
+                        fromUsername: await findUsernameById(userId),
+                        roomId: roomId
+                    });
+
+                } else {
+                    console.log(`User ${username} is not connected.`);
+                }
+            } else {
+                console.log('Invalid token');
+            }
+        });
+
+        socket.on('gameRequestAccepted', async (token, usernameSenderRequest) => {
+            const userIdReceiverRequest = verifyAndValidateUserID(token);
+            if (userIdReceiverRequest) {
+                const userIdSenderRequest = await findUserIdByUsername(usernameSenderRequest);
+                const roomId = userIdSenderRequest + userIdReceiverRequest;
+                const data = {
+                    userIdReceiver: userIdReceiverRequest,
+                    waitingRoomId: roomId,
+                };
+                await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
+                await gameOnlineManager.tryMatchmakingFriend(io, roomId);
+            } else {
+                console.log(`User ${usernameSenderRequest} is not connected.`);
+                socket.emit('gameRequestDeclined');
             }
         });
     });

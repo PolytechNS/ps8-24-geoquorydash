@@ -1,6 +1,6 @@
 const createChatCollection = require('../../models/users/chats');
 const { parseJSON } = require("../../utils/utils");
-const createUserCollection = require("../../models/users/users");
+const {createUserCollection} = require("../../models/users/users");
 
 async function createNewChat(user1, user2) {
     const chatsCollection = await createChatCollection();
