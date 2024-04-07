@@ -13,6 +13,7 @@ const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes
 const {createGameStateInDatabase, setGameStateInProgressBoolean, getGameStateInProgress} = require("./models/game/gameState");
 const {retrieveConfigurationFromDatabase} = require("./models/users/configuration");
 const {findUserIdByUsername, findUsernameById} = require("./models/users/users");
+const {retrievePlayersWithGamestateIDFromDatabase} = require("./models/game/player");
 
 const setupSocket = (io) => {
 
@@ -380,6 +381,26 @@ const setupSocket = (io) => {
                 console.log(`User ${usernameSenderRequest} is not connected.`);
                 socket.emit('gameRequestDeclined');
             }
+        });
+
+        socket.on('leaveGame', async (token, gameStateID, roomId) => {
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            await endGameInDatabase(gameStateID, token);
+            const players = await retrievePlayersWithGamestateIDFromDatabase(gameStateID);
+            let winnerId;
+            players.forEach(player => {
+                if (player.userId.toString() !== userId) {
+                    winnerId = player.userId.toString();
+                }
+            });
+            await statManager.updateStat(userId, Date.now(), winnerId);
+            roomId ?
+                io.of('/api/game').to(roomId).emit("endGame", {id: winnerId}) :
+                socket.emit("endGame", {id: winnerId});
         });
     });
 

@@ -315,8 +315,13 @@ function endGame(player) {
     window.location.href = '/gameType/gameType.html';
 }
 
-window.onbeforeunload = function() {
+window.onbeforeunload = function(e) {
+    e.preventDefault();
+
+    e.returnValue = '';
+
     gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
+
 }
 
 export { askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

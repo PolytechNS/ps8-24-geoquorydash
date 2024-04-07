@@ -65,7 +65,7 @@ async function retrieveGameStateFromDB(gameStateID) {
             players: [],
             isGameActive: !gameStateTemp.gameFinished
         };
-        await retrievePlayersWithGamestateIDFromDatabase(database, gameStateTemp._id, gameState);
+        await retrievePlayersWithGamestateIDFromDatabase(gameStateTemp._id, gameState);
         return gameState;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);

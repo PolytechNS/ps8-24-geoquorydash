@@ -1,4 +1,5 @@
 import {askPossibleMove, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts} from "./game.js";
+let messageQueue = [];
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
@@ -97,4 +98,13 @@ function displayWalls(gameState) {
     })
 }
 
-export { updateBoardDisplay };
+function processMessageQueue() {
+    while (messageQueue.length > 0) {
+        const data = messageQueue.shift(); // Obtenez et supprimez le premier élément de la file
+        // Traitez le message ici, par exemple :
+        console.log('processMessageQueue', data.player);
+        updateBoardDisplay(data.gameState, data.visibilityMap, data.player);
+    }
+}
+
+export { updateBoardDisplay, messageQueue, processMessageQueue};
