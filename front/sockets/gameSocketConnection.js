@@ -3,7 +3,7 @@ var gameSocket = io('/api/game', {
         token: localStorage.getItem('token'),
     }
 });
-import { updateBoardDisplay, messageQueue } from '../gamePage/fogOfWar.js';
+import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
 import {
     displayPossibleMove,
     endGame,
@@ -18,10 +18,6 @@ gameSocket.on('connect', function() {
 gameSocket.on('updateBoard', function(gameState, visibilityMap, gameStateID, player, storeInQueue) {
     if (gameStateID) {
         localStorage.setItem('gameStateID', gameStateID);
-    }
-    if (storeInQueue) {
-        messageQueue.push({gameState, visibilityMap, player});
-    } else {
     }
     updateBoardDisplay(gameState, visibilityMap, player);
 

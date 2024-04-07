@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import {confirmationPopup, processMessageQueue} from "../gamePage/fogOfWar.js";
+import {confirmationPopup} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -27,7 +27,6 @@ gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
 
 gameSocket.on('matchFound', (roomId) => {
     confirmationPopup(roomId, askTextButtonInteraction);
-    processMessageQueue()
 });
 
 function askTextButtonInteraction() {
