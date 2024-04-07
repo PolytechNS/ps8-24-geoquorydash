@@ -67,8 +67,9 @@ const setupSocket = (io) => {
             }
 
             await setGameStateInProgressBoolean(gameStateID, true);
-            const gameState = gameManager.gameStateList[gameStateID];
-            const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
+            const gameState = await gameManager.resumeGame(gameStateID);
+            const visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
+            // gameManager.convertGameStateToGameStateTeacher(visibilityMap, gameStateID);
             socket.emit("updateBoard", gameState, visibilityMap, gameStateID);
         });
 
@@ -157,6 +158,7 @@ const setupSocket = (io) => {
         });
 
         socket.on('possibleMoveRequest', (id) => {
+            console.log('ON possibleMoveRequest', id);
             let possibleMove = getPossibleMove(id);
             socket.emit('possibleMoveList', possibleMove);
         });
@@ -239,7 +241,7 @@ const setupSocket = (io) => {
             let responseAI = moveAI(id);
             if (responseAI.action === 'wall') {
                 try {
-                    await toggleWallInDatabase(id, responseAI.value, responseAI.isVertical, token);
+                    await toggleWallInDatabase(id, responseAI.value, responseAI.isVertical, token, true);
                 } catch (error) {
                     if (error instanceof InvalidTokenError) {
                         socket.emit('tokenInvalid');

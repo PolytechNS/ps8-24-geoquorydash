@@ -78,18 +78,15 @@ async function retrieveAllGamesIDWithUserID(database, userId){
     }
 }
 
-async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId, gameState) {
+async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateObjectId, gameState) {
     const playerCollection = database.collection('players');
-    const query = {
-        gameStateId: new ObjectId(gameStateId),
-    };
-    const result = await playerCollection.find(query).toArray();
+    const result = await playerCollection.find({gameStateId: gameStateObjectId}).toArray();
     const players = [];
     if (result.length > 0) {
         result.forEach(player => {
             const playerData = {
                 position: player.position,
-                id: player.userId.toString() === 'ai' ? 'ia' : 'player1', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
+                id: player.userId.toString() === 'ai' ? 'player1' : 'player2', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
                 walls: player.walls,
                 isCurrentPlayer: player.isCurrentPlayer
             };

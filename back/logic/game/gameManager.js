@@ -30,6 +30,11 @@ class GameManager {
             const gameState = await retrieveGameStateFromDB(gameStateID);
             if (gameState) {
                 this.gameStateList[gameStateID] = gameState;
+                this.gameStateTeacherList[gameStateID] = {
+                    opponentWalls: [],
+                    ownWalls: [],
+                    board: []
+                };
                 return gameState;
             }
             return null;
