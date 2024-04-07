@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import {processMessageQueue} from "../gamePage/fogOfWar.js";
+import {confirmationPopup, processMessageQueue} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -12,27 +12,8 @@ window.onload = function() {
 }
 
 gameSocket.on('matchFound', function(roomId) {
-    var modal = document.getElementById("myModal");
-    var btn = document.getElementById("confirmButton");
-    var span = document.getElementsByClassName("close")[0];
-
-    modal.style.display = "block";
-
-    // Quand l'utilisateur clique sur <span> (x), fermez la modale
-    span.onclick = function() {
-        modal.style.display = "none";
-        localStorage.setItem('roomId', roomId);
-        askTextButtonInteraction();
-        processMessageQueue();
-    }
-
-    // Quand l'utilisateur clique sur le bouton de confirmation
-    btn.onclick = function() {
-        modal.style.display = "none";
-        localStorage.setItem('roomId', roomId);
-        askTextButtonInteraction();
-        processMessageQueue();
-    }
+    confirmationPopup(roomId, askTextButtonInteraction);
+    processMessageQueue();
 });
 
 function askTextButtonInteraction() {

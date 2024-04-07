@@ -22,8 +22,9 @@ gameSocket.on('updateBoard', function(gameState, visibilityMap, gameStateID, pla
     if (storeInQueue) {
         messageQueue.push({gameState, visibilityMap, player});
     } else {
-        updateBoardDisplay(gameState, visibilityMap, player);
     }
+    updateBoardDisplay(gameState, visibilityMap, player);
+
 });
 
 gameSocket.on('possibleMoveList', function(possibleMove) {

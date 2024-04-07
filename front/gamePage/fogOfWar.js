@@ -107,4 +107,25 @@ function processMessageQueue() {
     }
 }
 
-export { updateBoardDisplay, messageQueue, processMessageQueue};
+function confirmationPopup(roomId, askTextButtonInteraction) {
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("confirmButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    modal.style.display = "block";
+    localStorage.setItem('roomId', roomId);
+
+    // Quand l'utilisateur clique sur <span> (x), fermez la modale
+    span.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
+    }
+
+    // Quand l'utilisateur clique sur le bouton de confirmation
+    btn.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
+    }
+}
+
+export { updateBoardDisplay, messageQueue, confirmationPopup, processMessageQueue};

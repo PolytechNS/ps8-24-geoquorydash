@@ -343,6 +343,7 @@ const setupSocket = (io) => {
         });
 
         socket.on('gameRequest', async (token, username) => {
+            console.log('ON gameRequest');
             const userId = verifyAndValidateUserID(token);
             if (userId) {
                 const userIdToRequest = await findUserIdByUsername(username);
