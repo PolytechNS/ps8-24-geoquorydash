@@ -62,8 +62,8 @@ class GameOnlineManager {
 
         io.of('/api/game').to(roomId).emit('matchFound', roomId);
 
-        socket1.emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0]);
-        socket2.emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1]);
+        socket1.emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0], true);
+        socket2.emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1], true);
     }
 
 

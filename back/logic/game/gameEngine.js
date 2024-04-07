@@ -21,13 +21,13 @@ function movePlayer(targetPosition, gameStateId) {
     const gameState = gameManager.gameStateList[gameStateId];
     const currentPlayer = gameManager.getCurrentPlayer(gameStateId);
     currentPlayer.position = targetPosition;
-    if (currentPlayer === gameState.players[0] && targetPosition.x === 16) {
+    if (currentPlayer === gameState.players.find(player => player.id === 'player1') && targetPosition.x === 16) {
         // console.log("Player 1 wins");
         // console.log(currentPlayer);
 
         endGame(gameStateId);
         return currentPlayer;
-    } else if (currentPlayer === gameState.players[1] && targetPosition.x === 0) {
+    } else if (currentPlayer === gameState.players.find(player => player.id === 'player2') && targetPosition.x === 0) {
         // console.log("Player 2 wins");
         endGame(gameStateId);
         return currentPlayer;
@@ -35,6 +35,7 @@ function movePlayer(targetPosition, gameStateId) {
 }
 
 function moveAI(id) {
+    console.log("id de la game d'apres l'ia ", id);
     // Quand on fait ce move, nous sommes l'ia, donc le joueur local correspond au joueur adverse
     let currentPlayer = gameManager.getCurrentPlayer(id);
     // console.log("Id du joueur : " + currentPlayer.id);
@@ -107,6 +108,7 @@ function checkBarriersBetween(startPosition, targetPosition, object) {
 
 function getPossibleMove(id) {
     if (!gameManager.isGameActive(id)) return;
+    console.log("Je suis dans getPossibleMove");
     let possibleMove = [];
     let currentPlayer = gameManager.getCurrentPlayer(id);
     let otherPlayer = gameManager.getOtherPlayer(id);

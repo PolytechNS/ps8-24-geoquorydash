@@ -59,4 +59,15 @@ async function getGameStateInProgress() {
     }
 }
 
-module.exports = { createGameStateInDatabase, setGameStateToFinishedInDatabase, gameStatesNotFinished: gameStatesNotFinishedAndNotInProgress, setGameStateInProgressBoolean, getGameStateInProgress };
+async function retrieveGameStateWithIDFromDatabase(database, gameStateID){
+    const gameCollection = database.collection('gameStates');
+    const gameState = await gameCollection.findOne({_id: new ObjectId(gameStateID)});
+    return gameState;
+}
+
+module.exports = { createGameStateInDatabase,
+    setGameStateToFinishedInDatabase,
+    gameStatesNotFinished: gameStatesNotFinishedAndNotInProgress,
+    setGameStateInProgressBoolean,
+    getGameStateInProgress,
+    retrieveGameStateWithIDFromDatabase };

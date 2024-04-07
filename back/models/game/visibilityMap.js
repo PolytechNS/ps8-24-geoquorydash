@@ -21,6 +21,7 @@ async function retrieveVisibilityMapWithGameStateIDFromDatabase(database, gameSt
     const visibilityMapObj = await visibilityMapCollection.findOne({
         gameStateId: new ObjectId(gameStateID)
     });
+    console.log("visibilityMapObj", visibilityMapObj);
     return visibilityMapObj.visibilityMap;
 }
 
