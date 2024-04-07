@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import userSocket from "../sockets/userSocketConnection.js";
+import {confirmationPopup} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -25,8 +25,8 @@ gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
     localStorage.setItem('gameStateID', 'waitingForMatch');
 });
 
-gameSocket.on('matchFound', () => {
-    askTextButtonInteraction();
+gameSocket.on('matchFound', (roomId) => {
+    confirmationPopup(roomId, askTextButtonInteraction);
 });
 
 function askTextButtonInteraction() {
@@ -145,7 +145,20 @@ gameSocket.on('displayText', (text, position) => {
 
 
 
-window.onbeforeunload = function() {
-    localStorage.removeItem('gameStateID');
-    localStorage.removeItem('roomId');
-}
+let isExiting = false;
+
+window.addEventListener('beforeunload', (event) => {
+    isExiting = true;
+    // La logique standard de beforeunload pour demander confirmation
+    event.preventDefault();
+    event.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+    if (isExiting) {
+        gameSocket.emit('leaveGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
+        // L'utilisateur quitte effectivement la page, procédez à la suppression
+        localStorage.removeItem('gameStateID');
+        localStorage.removeItem('roomId');
+    }
+});

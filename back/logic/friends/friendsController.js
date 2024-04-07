@@ -45,7 +45,7 @@ async function addFriend(req, res) {
             );
             if (result.modifiedCount > 0) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Friend request sent successfully' }));
+                res.end(JSON.stringify({ message: 'Votre demande d\'ami a bien été envoyée' }));
             } else {
                 res.writeHead(404, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ error: 'User not found' }));
@@ -59,6 +59,7 @@ async function addFriend(req, res) {
 }
 
 async function cancelFriend(req, res) {
+    console.log('cancelFriend');
     parseJSON(req, async (err, { currentUser, targetUser }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });

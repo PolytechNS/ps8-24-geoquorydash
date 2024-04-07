@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 console.error('Error sending friend request:', error);
                             });
                     } else if (addFriendBtn.style.backgroundImage.includes('cancel.png')) {
-                        FriendsService.deniedFriend(currentUser, username)
+                        FriendsService.cancelFriend(currentUser, username)
                             .then(response => {
                                 alert(response.message);
                                 updateButtonImage('../img/profile/add.png');

@@ -1,4 +1,6 @@
-const { ObjectId } = require('mongodb');
+const { ObjectId, MongoClient} = require('mongodb');
+const {uri} = require("../../bdd");
+const {DatabaseConnectionError} = require("../../utils/errorTypes");
 
 async function createPlayerInDatabase(database, gameStateId, gameStateForPlayer, userId) {
     const playerCollection = database.collection('players');
@@ -78,25 +80,31 @@ async function retrieveAllGamesIDWithUserID(database, userId){
     }
 }
 
-async function retrievePlayersWithGamestateIDFromDatabase(database, gameStateId, gameState) {
-    const playerCollection = database.collection('players');
-    const query = {
-        gameStateId: new ObjectId(gameStateId),
-    };
-    const result = await playerCollection.find(query).toArray();
-    const players = [];
-    if (result.length > 0) {
-        result.forEach(player => {
-            const playerData = {
-                position: player.position,
-                id: player.userId.toString() === 'ai' ? 'ia' : 'player1', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
-                walls: player.walls,
-                isCurrentPlayer: player.isCurrentPlayer
-            };
-            players.push(playerData);
-        });
+async function retrievePlayersWithGamestateIDFromDatabase(gameStateObjectId, gameState) {
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const playerCollection = database.collection('players');
+        const result = await playerCollection.find({gameStateId: gameStateObjectId}).toArray();
+        const players = [];
+        if (result.length > 0) {
+            result.forEach(player => {
+                const playerData = {
+                    position: player.position,
+                    id: player.userId.toString() === 'ai' ? 'player1' : 'player2', // Si l'ID est 'ai', le joueur est l'IA, sinon c'est 'p2
+                    walls: player.walls,
+                    isCurrentPlayer: player.isCurrentPlayer
+                };
+                players.push(playerData);
+            });
+        }
+        if (gameState) gameState.players = players;
+        return result;
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
     }
-    gameState.players = players;
 }
 
 module.exports = { createPlayerInDatabase, retrieveAllGamesIDWithUserID, retrievePlayersWithGamestateIDFromDatabase, changeUserPlayerPositionInDatabase, changeAIPlayerPositionInDatabase, addWallToUserPlayerInDatabase, addWallToAIPlayerInDatabase};

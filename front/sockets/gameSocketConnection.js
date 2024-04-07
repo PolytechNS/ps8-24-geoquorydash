@@ -8,18 +8,19 @@ import {
     displayPossibleMove,
     endGame,
     lockBarrier,
-    ImpossibleWallPlacementPopUp,
+    ImpossibleWallPlacementPopUp
 } from '../gamePage/game.js';
 
 gameSocket.on('connect', function() {
     console.log('Connected to /api/game!');
 });
 
-gameSocket.on('updateBoard', function(gameState, visibilityMap, gameStateID, player) {
+gameSocket.on('updateBoard', function(gameState, visibilityMap, gameStateID, player, storeInQueue) {
     if (gameStateID) {
         localStorage.setItem('gameStateID', gameStateID);
     }
     updateBoardDisplay(gameState, visibilityMap, player);
+
 });
 
 gameSocket.on('possibleMoveList', function(possibleMove) {
@@ -75,10 +76,8 @@ gameSocket.on('databaseConnectionError', function() {
     alert('Probleme de connexion avec la base de données. Veuillez réessayer plus tard.');
 });
 
-gameSocket.on('matchFound', function(roomId) {
-    alert('Match trouvé! Vous allez être redirigé vers la partie.');
-    localStorage.setItem('roomId', roomId);
-});
+
+
 
 gameSocket.on('gameAlreadyInProgress', function(gameStateId) {
     alert('Une partie est déjà en cours.');

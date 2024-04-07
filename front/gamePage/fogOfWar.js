@@ -1,5 +1,11 @@
-import {askPossibleMove, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts} from "./game.js";
-
+import {
+    askPossibleMove,
+    lockBarrier,
+    activateBarrierCellListeners,
+    deactivateBarrierCellListeners,
+    updatePlayerBarrierCounts,
+    getPlayerElementById
+} from "./game.js";
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
@@ -32,16 +38,21 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
     hideOldPossibleMoves(player);
 
     let playerCell = document.getElementById(`cell-${player.position.x}-${player.position.y}`);
-    playerCell.appendChild(document.getElementById(player.id));
+    console.log(getPlayerElementById(player.id));
+    playerCell.appendChild(getPlayerElementById(player.id));
     playerCell.firstElementChild.style.opacity = 1;
     playerCell.style.opacity = 1;
 
     let otherPlayer = gameState.players.find(otherPlayer => otherPlayer.id !== player.id);
     let otherPlayerCell = document.getElementById(`cell-${otherPlayer.position.x}-${otherPlayer.position.y}`);
-    var otherPlayerInBoard = document.getElementById(otherPlayer.id);
-    otherPlayerCell.appendChild(otherPlayerInBoard);
-    otherPlayerCell.style.opacity === '1' ? otherPlayerInBoard.style.opacity = '1' : otherPlayerInBoard.style.opacity = '0';
-
+    console.log(getPlayerElementById(otherPlayer.id));
+    var otherPlayerInBoard = getPlayerElementById(otherPlayer.id);
+    if (otherPlayerCell.style.opacity === '1'){
+        otherPlayerCell.appendChild(otherPlayerInBoard);
+        otherPlayerInBoard.style.opacity = '1';
+    } else {
+        otherPlayerInBoard.remove();
+    }
     displayWalls(gameState);
 
     const barrierCells = document.getElementsByClassName('barrier-cell');
@@ -72,15 +83,19 @@ function updateBoardDisplayLocalGame(gameState, visibilityMap) {
     hideOldPossibleMoves(currentPlayer);
 
     let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
-    currentPlayerCell.appendChild(document.getElementById('player2'));
+    currentPlayerCell.appendChild(getPlayerElementById('player2'));
     currentPlayerCell.firstElementChild.style.opacity = 1;
     currentPlayerCell.style.opacity = 1;
 
     let otherPlayerPosition = gameState.players.find(player => player.id !== currentPlayer.id).position;
     let otherPlayerCell = document.getElementById(`cell-${otherPlayerPosition.x}-${otherPlayerPosition.y}`);
-    var otherPlayer = document.getElementById('player1');
-    otherPlayerCell.appendChild(otherPlayer);
-    otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
+    var otherPlayer =getPlayerElementById('player1');
+    if (otherPlayerCell.style.opacity === '1'){
+        otherPlayerCell.appendChild(otherPlayer);
+        otherPlayer.style.opacity = '1';
+    } else {
+        otherPlayer.remove();
+    }
 
     displayWalls(gameState);
 
@@ -97,4 +112,25 @@ function displayWalls(gameState) {
     })
 }
 
-export { updateBoardDisplay };
+function confirmationPopup(roomId, askTextButtonInteraction) {
+    var modal = document.getElementById("myModal");
+    var btn = document.getElementById("confirmButton");
+    var span = document.getElementsByClassName("close")[0];
+
+    modal.style.display = "block";
+    localStorage.setItem('roomId', roomId);
+
+    // Quand l'utilisateur clique sur <span> (x), fermez la modale
+    span.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
+    }
+
+    // Quand l'utilisateur clique sur le bouton de confirmation
+    btn.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
+    }
+}
+
+export { updateBoardDisplay, confirmationPopup};

@@ -22,7 +22,7 @@
     <div class="secondary">
         <a href="#" id="openFriendsPage"><img src="img/home/button_friends.png" alt="Friends"></a>
         <a href="#" id="openStatPage"><img src="img/home/button_stat.png" alt="Stat"></a>
-        <a href="successPage/success.html"><img src="img/home/button_success.png" alt="Success"></a>
+        <a href="#" id="openRankPage"><img src="img/home/button_success.png" alt="Rank"></a>
         <a href="#" id="openAccountPage"><img src="img/home/button_account.png" alt="Account"></a>
     </div>
 
@@ -32,10 +32,10 @@
 
             <div id="account-elements">
                 <div class="account-text-container">
-                    <img src="./img/account/first_account.png" alt="sentence" class="account-image" id="connect_text_1">
-                    <img src="./img/account/second_account.png" alt="sentence" class="account-image" id="connect_text_2">
-                    <img src="./img/account/connected_text.png" alt="sentence" class="account-image" id="deconnect_text_1" style="display: none;">
-                    <img src="./img/account/deconnect_below.png" alt="sentence" class="account-image" id="deconnect_text_2" style="display: none;">
+                    <img src="./img/account/first_account.png" alt="sentence" class="information-image" id="connect_text_1">
+                    <img src="./img/account/second_account.png" alt="sentence" class="information-image" id="connect_text_2">
+                    <img src="./img/account/connected_text.png" alt="sentence" class="information-image" id="deconnect_text_1" style="display: none;">
+                    <img src="./img/account/deconnect_below.png" alt="sentence" class="information-image" id="deconnect_text_2" style="display: none;">
                 </div>
                 
 
@@ -54,19 +54,19 @@
 
             <form id="signupForm">
                 <div class="credentials">
-                    <div id="usernameBlock">
-                        <label for="usernameInput"><img src="./img/account/username.png" alt="Username"></label>
-                        <input type="text" id="usernameInput" name="username">
+                    <div id="signupUsernameBlock">
+                        <label for="usernameInputSignUp"><img src="./img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInputSignUp" name="username">
                     </div>
-                    <div id="passwordBlock">
-                        <label for="passwordInput"><img src="./img/account/password.png" alt="Password"></label>
-                        <input type="password" id="passwordInput" name="password">
+                    <div id="signupPasswordBlock">
+                        <label for="passwordInputSignUp"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputSignUp" name="password">
 
                     </div>
                 </div>
                 
-                <div id="validationBlock">
-                    <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButton">
+                <div class="validationBlock">
+                    <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButtonValidation">
                 </div>
             </form>
         </div>
@@ -78,18 +78,17 @@
 
             <form id="loginForm">
                 <div class="credentials">
-                    <div id="usernameBlock">
-                        <label for="usernameInput"><img src="./img/account/username.png" alt="Username"></label>
-                        <input type="text" id="usernameInput" name="username">
+                    <div id="loginUsernameBlock">
+                        <label for="usernameInputLogIn"><img src="./img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInputLogIn" name="username">
                     </div>
-                    <div id="passwordBlock">
-                        <label for="passwordInput"><img src="./img/account/password.png" alt="Password"></label>
-                        <input type="password" id="passwordInput" name="password">
-
+                    <div id="loginPasswordBlock">
+                        <label for="passwordInputLogIn"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputLogIn" name="password">
                     </div>
                 </div>
                 
-                <div id="validationBlock">
+                <div class="validationBlock">
                     <input type="image" src="./img/account/button_login.png" alt="Login" id="loginButton">
                     <img src="./img/account/title_signup.png" alt="signup" id="signupButton">
                 </div>
@@ -99,12 +98,41 @@
 
     <div id="friendsModal" class="modal">
         <div class="modal-content">
-            <iframe id="friendsFrame" src="friendsPage/friends.html"></iframe>
+            <img src="./img/friends/title_friends.png" alt="title" class="title-page-image">
+
+            <div id="friends-elements">
+
+                <div id="friendsListTab" class="friendsTab">
+                    <ul id="friendsResults"></ul>
+                    <img src="./img/friends/add_friends.png" alt="Ajouter" class="information-image" id="add_friends_text">
+                </div>
+                
+                <div id="friendsSearchTab" class="friendsTab">
+                    <form id="friendsForm">
+                        <label for="searchInput"><img src="./img/friends/search.png" alt="Search"></label>
+                        <input type="text" id="searchInput" name="search">
+                        <input type="image" src="../img/friends/ok.png" alt="OK" id="okButton">
+                    </form>
+    
+                    <ul id="searchResults"></ul>
+                </div>
+
+                <div id="friendsRequestTab" class="friendsTab">
+                    <ul id="requestResults"></ul>
+                    <img src="./img/friends/no_pending_demand.png" alt="Ajouter" class="information-image" id="no_pending_demand_text">
+                </div>
+
+                <div id="friendsButtonContainer">
+                    <img src="./img/friends/listButton.png" alt="List" id="openFriendsListTab">
+                    <img src="./img/friends/searchButton.png" alt="Search" id="openFriendsSearchTab">
+                    <img src="./img/friends/requestButton.png" alt="Requests" id="openFriendsRequestTab">
+                </div>
+            </div>
         </div>
     </div>
 
     <div id="statModal" class="modal">
-        <div class="modal-content stat-page">
+        <div class="modal-content">
 
             <img src="./img/stats/title_statistiques.png" alt="title" class="title-page-image">
 
@@ -132,6 +160,17 @@
                 <div class="stat-item">
                     <img src="./img/stats/fastest_win.png" alt="sentence" class="stat-image">
                     <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rankModal" class="modal">
+        <div class="modal-content">
+            <img src="./img/friends/classement.png" alt="title" class="title-page-image">
+            <div id="rank-elements">
+                <div id="rankListTab" class="rankTab">
+                    <ul id="rankResults"></ul>
                 </div>
             </div>
         </div>

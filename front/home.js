@@ -1,16 +1,17 @@
 import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
+import { FriendsService } from './Services/friendsService.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
+var rankModal = document.getElementById("rankModal");
 
 var token;
 updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
-    console.log('Token:', token);
 }
 
 var handleDeconnexionClick = function(event) {
@@ -21,7 +22,6 @@ var handleDeconnexionClick = function(event) {
         alert('Vous êtes déconnecté');
         const modal = window.parent.document.querySelector('.modal');
         modal.style.display = 'none';
-        // Assurez-vous de réinitialiser les boutons d'inscription et de connexion ici également, si nécessaire
     }
 };
 
@@ -129,17 +129,101 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     var friendsModal = document.getElementById("friendsModal");
     var openFriendsPage = document.getElementById("openFriendsPage");
-    var friendsFrame = document.getElementById("friendsFrame");
+    var friendsListTab = document.getElementById("friendsListTab");
+    var friendsSearchTab = document.getElementById("friendsSearchTab");
+    var friendsRequestTab = document.getElementById("friendsRequestTab");
+    var openFriendsListTab = document.getElementById("openFriendsListTab");
+    var openFriendsSearchTab = document.getElementById("openFriendsSearchTab");
+    var openFriendsRequestTab = document.getElementById("openFriendsRequestTab");
+
+    const friendsResults = document.getElementById('friendsResults');
+    const addFriendsText = document.getElementById('add_friends_text');
+    const requestResults = document.getElementById('requestResults');
+    const noPendingDemandText = document.getElementById('no_pending_demand_text');
 
     openFriendsPage.addEventListener("click", function(e) {
+        if(token) {
+            e.preventDefault();
+            friendsModal.style.display = "flex";
+            friendsListTab.style.display = "flex";
+            
+            displayFriendsListTab(friendsResults, addFriendsText);
+        } else {
+            alert('Vous devez être connecté pour accéder à vos amis');
+        }
+        
+    });
+
+    openFriendsListTab.addEventListener("click", function(e) {
         e.preventDefault();
-        friendsFrame.src = "friendsPage/friends.html";
-        friendsModal.style.display = "flex";
+        friendsSearchTab.style.display = "none";
+        friendsRequestTab.style.display = "none";
+        friendsListTab.style.display = "flex";
+
+        displayFriendsListTab(friendsResults, addFriendsText);
+    });
+
+    openFriendsSearchTab.addEventListener("click", function(e) {
+        e.preventDefault();
+        friendsListTab.style.display = "none";
+        friendsRequestTab.style.display = "none";
+        friendsSearchTab.style.display = "flex";
+
+        const searchForm = document.getElementById('friendsForm');
+        const searchResults = document.getElementById('searchResults');
+
+        searchForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const username = searchForm.querySelector('[name="search"]').value;
+            FriendsService.searchUsers(username)
+                .then(data => {
+                    displaySearchResults(data, searchResults);
+                })
+                .catch(error => {
+                    console.error(error);
+                });
+        });
+    });
+
+    openFriendsRequestTab.addEventListener("click", function(e) {
+        e.preventDefault();
+        friendsListTab.style.display = "none";
+        friendsSearchTab.style.display = "none";
+        friendsRequestTab.style.display = "flex";
+
+        if (token) {
+            AuthService.username(token)
+                .then(authUsername => {
+                    FriendsService.getRequests(authUsername)
+                        .then(requests => {
+                            displayRequestResults(requests, requestResults);
+                            if (requestResults.children.length === 0) {
+                                requestResults.style.display = 'none';
+                                noPendingDemandText.style.display = 'flex';
+                            } else {
+                                noPendingDemandText.style.display = 'none';
+                                requestResults.style.display = 'flex';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error fetching requests:', error);
+                        });
+                })
+                .catch(error => {
+                    console.error('Error fetching username:', error);
+                });
+
+        }
     });
 
     window.addEventListener("click", function(event) {
         if (event.target === friendsModal) {
+            document.getElementById('friendsForm').reset();
+            document.getElementById('searchResults').innerHTML = '';
             friendsModal.style.display = "none";
+            friendsListTab.style.display = "none";
+            friendsSearchTab.style.display = "none";
+            friendsRequestTab.style.display = "none";
         }
     });
 });
@@ -194,6 +278,13 @@ document.addEventListener('DOMContentLoaded', () => {
         event.preventDefault();
         const username = signupForm.querySelector('[name="username"]').value;
         const password = signupForm.querySelector('[name="password"]').value;
+        if (username === '') {
+            alert('Veuillez renseigner un nom d’utilisateur');
+            return;
+        } else if (password === '') {
+            alert('Veuillez renseigner un mot de passe');
+            return;
+        }
         AuthService.signUp(username, password)
             .then(data => {
                 console.log("On vient de se signup");
@@ -247,31 +338,180 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
     });
 });
-/*
-function updateDeconnexionVisibility() {
-    const deconnexionButton = document.getElementById('logout-btn');
-    if (token) {
-        document.getElementById('openSignupPage').style.display = 'none';
-        document.getElementById('openLoginPage').style.display = 'none';
 
-        deconnexionButton.style.display = 'block';
+// PAGE HOME -> PAGE RANK
+document.addEventListener("DOMContentLoaded", function() {
+    var openRankPage = document.getElementById("openRankPage");
 
-        deconnexionButton.addEventListener('click', function(event) {
-            event.preventDefault();
+    openRankPage.addEventListener("click", function (e) {
+        e.preventDefault();
+        rankModal.style.display = "flex";
+    });
 
-            if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
-                localStorage.clear();
-                alert('Vous êtes déconnecté');
-                const modal = window.parent.document.querySelector('.modal');
-                modal.style.display = 'none';
-                updateToken();
-                updateDeconnexionVisibility();
-            }
+    const rankResults = document.getElementById('rankResults');
+    StatService.getAllRanking()
+        .then(rank => {
+            displayRankResults(rank.ranking);
+            rankResults.style.display = 'flex';
+        })
+        .catch(error => {
+            console.error('Error fetching rank:', error);
         });
-    } else {
-        document.getElementById('openSignupPage').style.display = 'block';
-        document.getElementById('openLoginPage').style.display = 'block';
 
-        deconnexionButton.style.display = "none";
+    function displayRankResults(results) {
+        rankResults.innerHTML = '';
+
+        const ul= document.createElement('ul');
+
+        results.forEach(result => {
+            const li = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `../profilePage/profile.html?username=${result.username}`;
+            link.textContent = result.username;
+            link.target = "_blank";
+            li.appendChild(link);
+            ul.appendChild(li);
+            rankResults.appendChild(ul);
+        });
     }
-}*/
+
+    window.addEventListener("click", function(event) {
+        if (event.target === rankModal) {
+            rankModal.style.display = "none";
+        }
+    });
+});
+
+
+/**************** FONCTIONS DE GESTION DES AMIS ****************/
+function displayFriendsListTab(friendsResults, addFriendsText) {
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getFriends(authUsername)
+                    .then(friends => {
+                        displayFriendsResults(friends, friendsResults);
+                        if (friendsResults.children.length === 0) {
+                            friendsResults.style.display = 'none';
+                            addFriendsText.style.display = 'flex';
+                        } else {
+                            addFriendsText.style.display = 'none';
+                            friendsResults.style.display = 'flex';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching requests:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching username:', error);
+            });
+
+    }
+}
+
+function displayFriendsResults(results, friendsResults) {
+    friendsResults.innerHTML = '';
+
+    results.forEach(result => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `../profilePage/profile.html?username=${result.username}`;
+        link.textContent = result.username;
+        link.target = "_blank";
+        li.appendChild(link);
+        friendsResults.appendChild(li);
+    });
+}
+
+function displaySearchResults(results, searchResults) {
+    searchResults.innerHTML = '';
+
+    results.forEach(result => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `./profilePage/profile.html?username=${result.username}`;
+        link.textContent = result.username;
+        link.target = "_blank";
+        li.appendChild(link);
+        searchResults.appendChild(li);
+    });
+}
+
+function displayRequestResults(results, requestResults) {
+    requestResults.innerHTML = '';
+
+    results.forEach(result => {
+        const li = document.createElement('li');
+        const link = document.createElement('a');
+        link.href = `./profilePage/profile.html?username=${result}`;
+        link.textContent = result;
+        link.target = "_blank";
+
+        const acceptDeniedContainer = document.createElement('div');
+        acceptDeniedContainer.classList.add('accept-denied-container');
+
+        const acceptButton = document.createElement('button');
+        acceptButton.classList.add('accept');
+        acceptButton.addEventListener('click', () => handleFriendRequest('accept', result));
+
+        const deniedButton = document.createElement('button');
+        deniedButton.classList.add('denied');
+        deniedButton.addEventListener('click', () => handleFriendRequest('deny', result));
+
+        acceptDeniedContainer.appendChild(acceptButton);
+        acceptDeniedContainer.appendChild(deniedButton);
+
+        li.appendChild(link);
+        li.appendChild(acceptDeniedContainer);
+        requestResults.appendChild(li);
+    });
+}
+
+// Fonction pour mettre à jour la liste des demandes d'amis
+function updateRequestResults() {
+    AuthService.username(token)
+        .then(authUsername => {
+            FriendsService.getRequests(authUsername)
+                .then(requests => {
+                    const requestResults = document.getElementById('requestResults');
+                    const noPendingDemandText = document.getElementById('no_pending_demand_text');
+                    displayRequestResults(requests, requestResults);
+
+                    // Vérifiez si la liste des demandes est vide après la mise à jour
+                    if (requestResults.children.length === 0) {
+                        // Masquez la liste des résultats des demandes d'amis
+                        requestResults.style.display = 'none';
+                        // Affichez l'image indiquant qu'il n'y a pas de demandes en attente
+                        noPendingDemandText.style.display = 'flex';
+                    } else {
+                        // Si la liste des demandes n'est pas vide, assurez-vous que l'image noPendingDemandText est masquée
+                        noPendingDemandText.style.display = 'none';
+                        requestResults.style.display = 'flex';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching requests:', error);
+                });
+        })
+        .catch(error => {
+            console.error('Error fetching username:', error);
+        });
+}
+
+// Fonction pour gérer les demandes d'amis (acceptation ou refus)
+function handleFriendRequest(action, friendUsername) {
+    AuthService.username(token)
+        .then(authUsername => {
+            if (action === 'accept') {
+                FriendsService.acceptFriend(authUsername, friendUsername)
+                    .then(() => updateRequestResults()) // Mise à jour de la liste après acceptation
+                    .catch(error => console.error('Error accepting friend:', error));
+            } else if (action === 'deny') {
+                FriendsService.deniedFriend(authUsername, friendUsername)
+                    .then(() => updateRequestResults()) // Mise à jour de la liste après refus
+                    .catch(error => console.error('Error denying friend:', error));
+            }
+        })
+        .catch(error => console.error('Error fetching username:', error));
+}
