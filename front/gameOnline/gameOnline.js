@@ -24,8 +24,6 @@ function askTextButtonInteraction() {
 
 
 gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
-    console.log('ON answerTextButtonInteraction ', text, playerId);
-
     var interactionContainer;
     if(playerId === 'player1') {
         interactionContainer = document.getElementById('top-interaction-container');
@@ -85,7 +83,6 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
             }
         }
         interactionContainer.appendChild(button);
-        console.log(interactionContainer);
     }
     interactionContainer.style.visibility = 'hidden;'
     interactionContainer.style.display = 'flex';

@@ -310,6 +310,10 @@ function ImpossibleWallPlacementPopUp() {
     alert("Placement de barrière impossible");
 }
 
+function getPlayerElementById(playerId) {
+    return playerId === 'player1' ? player1 : player2;
+}
+
 function endGame(player) {
     alert("Le joueur " + player.id + " a gagne !");
     window.location.href = '/gameType/gameType.html';
@@ -324,4 +328,4 @@ window.onbeforeunload = function(e) {
 
 }
 
-export { askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
+export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
