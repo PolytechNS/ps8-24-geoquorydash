@@ -366,6 +366,7 @@ document.addEventListener("DOMContentLoaded", function() {
     StatService.getAllRanking()
         .then(rank => {
             displayRankResults(rank.ranking);
+            rankResults.style.display = 'flex';
         })
         .catch(error => {
             console.error('Error fetching rank:', error);
@@ -379,14 +380,13 @@ document.addEventListener("DOMContentLoaded", function() {
         results.forEach(result => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result}`;
+            link.href = `../profilePage/profile.html?username=${result.username}`;
             link.textContent = result.username;
             link.target = "_blank";
             li.appendChild(link);
             ul.appendChild(li);
+            rankResults.appendChild(ul);
         });
-
-        rankResults.appendChild(ul);
     }
 
     window.addEventListener("click", function(event) {
@@ -399,7 +399,6 @@ document.addEventListener("DOMContentLoaded", function() {
 
 /**************** FONCTIONS DE GESTION DES AMIS ****************/
 function displayFriendsListTab(friendsResults, addFriendsText) {
-    console.log('On affiche les amis');
     if (token) {
         AuthService.username(token)
             .then(authUsername => {
@@ -431,8 +430,8 @@ function displayFriendsResults(results, friendsResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `../profilePage/profile.html?username=${result}`;
-        link.textContent = result;
+        link.href = `../profilePage/profile.html?username=${result.username}`;
+        link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
         friendsResults.appendChild(li);

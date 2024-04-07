@@ -59,6 +59,7 @@ async function addFriend(req, res) {
 }
 
 async function cancelFriend(req, res) {
+    console.log('cancelFriend');
     parseJSON(req, async (err, { currentUser, targetUser }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });

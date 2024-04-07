@@ -55,18 +55,18 @@
             <form id="signupForm">
                 <div class="credentials">
                     <div id="signupUsernameBlock">
-                        <label for="usernameInput"><img src="./img/account/username.png" alt="Username"></label>
-                        <input type="text" id="usernameInput" name="username">
+                        <label for="usernameInputSignUp"><img src="./img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInputSignUp" name="username">
                     </div>
                     <div id="signupPasswordBlock">
-                        <label for="passwordInput"><img src="./img/account/password.png" alt="Password"></label>
-                        <input type="password" id="passwordInput" name="password">
+                        <label for="passwordInputSignUp"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputSignUp" name="password">
 
                     </div>
                 </div>
                 
-                <div id="validationBlock">
-                    <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButton">
+                <div class="validationBlock">
+                    <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButtonValidation">
                 </div>
             </form>
         </div>
@@ -79,17 +79,16 @@
             <form id="loginForm">
                 <div class="credentials">
                     <div id="loginUsernameBlock">
-                        <label for="usernameInput"><img src="./img/account/username.png" alt="Username"></label>
-                        <input type="text" id="usernameInput" name="username">
+                        <label for="usernameInputLogIn"><img src="./img/account/username.png" alt="Username"></label>
+                        <input type="text" id="usernameInputLogIn" name="username">
                     </div>
                     <div id="loginPasswordBlock">
-                        <label for="passwordInput"><img src="./img/account/password.png" alt="Password"></label>
-                        <input type="password" id="passwordInput" name="password">
-
+                        <label for="passwordInputLogIn"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputLogIn" name="password">
                     </div>
                 </div>
                 
-                <div id="validationBlock">
+                <div class="validationBlock">
                     <input type="image" src="./img/account/button_login.png" alt="Login" id="loginButton">
                     <img src="./img/account/title_signup.png" alt="signup" id="signupButton">
                 </div>
@@ -110,7 +109,7 @@
                 
                 <div id="friendsSearchTab" class="friendsTab">
                     <form id="friendsForm">
-                        <label for="search" class="friend-label"><img src="./img/friends/search.png" alt="search"></label>
+                        <label for="searchInput"><img src="./img/friends/search.png" alt="Search"></label>
                         <input type="text" id="searchInput" name="search">
                         <input type="image" src="../img/friends/ok.png" alt="OK" id="okButton">
                     </form>
@@ -168,9 +167,11 @@
 
     <div id="rankModal" class="modal">
         <div class="modal-content">
-            <img src="./img/account/title_account.png" alt="title" class="title-page-image">
+            <img src="./img/friends/classement.png" alt="title" class="title-page-image">
             <div id="rank-elements">
-                <ul id="rankResults"></ul>
+                <div id="rankListTab" class="rankTab">
+                    <ul id="rankResults"></ul>
+                </div>
             </div>
         </div>
     </div>
