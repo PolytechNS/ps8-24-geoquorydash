@@ -265,7 +265,7 @@ const setupSocket = (io) => {
                     }
                 }
             } else if (responseAI === 'endGame') {
-                await endGameInDatabase(id);
+                await endGameInDatabase(id, token);
 
                 const userId = verifyAndValidateUserID(token);
                 if (!userId) {
