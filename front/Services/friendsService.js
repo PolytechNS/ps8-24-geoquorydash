@@ -41,6 +41,14 @@ export const FriendsService = {
         })
             .then(response => response.json());
     },
+    cancelFriend(currentUser, targetUser) {
+        return fetch(`${API_ENDPOINT}/api/friends/cancel`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ currentUser, targetUser }),
+        })
+            .then(response => response.json());
+    },
     deniedFriend(currentUser, targetUser) {
         return fetch(`${API_ENDPOINT}/api/friends/denied`, {
             method: 'POST',
