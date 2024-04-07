@@ -417,8 +417,8 @@ function displayFriendsResults(results, friendsResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `../profilePage/profile.html?username=${result}`;
-        link.textContent = result;
+        link.href = `../profilePage/profile.html?username=${result.username}`;
+        link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
         friendsResults.appendChild(li);
