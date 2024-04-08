@@ -374,7 +374,6 @@ document.addEventListener("DOMContentLoaded", function() {
     StatService.getAllRanking()
         .then(rank => {
             displayRankResults(rank.ranking);
-            rankResults.style.display = 'flex';
         })
         .catch(error => {
             console.error('Error fetching rank:', error);
