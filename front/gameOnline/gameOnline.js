@@ -41,7 +41,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
         if (interactionContainer.classList.contains('active')) {
             interactionContainer.classList.remove('active');
             buttonInteractionPin.classList.remove('active');
-
+            setCursorToButtonInteractions(interactionContainer, 'context-menu');
             setTimeout(() => {
                 canClick = true;
             }, 300);
@@ -50,6 +50,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
             interactionContainer.style.display = 'flex';
             topPopup.classList.remove('visible');
             bottomPopup.classList.remove('visible');
+            setCursorToButtonInteractions(interactionContainer, 'pointer');
 
             setTimeout(() => {
                 interactionContainer.classList.add('active');
@@ -65,6 +66,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
 
     canClick = true;
     buttonInteractionPin.src = '../img/game/Pins.png';
+    buttonInteractionPin.style.cursor = 'pointer';
 });
 
 function setTextButtonInteraction(text, interactionContainer, playerId) {
@@ -72,14 +74,18 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
         const button = document.createElement('div');
         button.classList.add('interaction');
         button.innerHTML = text[i];
+        button.style.cursor = 'context-menu';
         button.onclick = function() {
             if (!canClick) return;
-            let myPosition = playerId === 'player1' ? 'top' : 'bottom';
-            console.log('EMIT displayText ', text[i], myPosition);
-            gameSocket.emit('displayText', localStorage.getItem('roomId'), text[i], myPosition);
-
             if (interactionContainer.classList.contains('active')) {
-                interactionContainer.classList.remove('active');
+                let myPosition = playerId === 'player1' ? 'top' : 'bottom';
+                console.log('EMIT displayText ', text[i], myPosition);
+                gameSocket.emit('displayText', localStorage.getItem('roomId'), text[i], myPosition);
+
+                if (interactionContainer.classList.contains('active')) {
+                    interactionContainer.classList.remove('active');
+                }
+                setCursorToButtonInteractions(interactionContainer, 'context-menu');
             }
         }
         interactionContainer.appendChild(button);
@@ -89,6 +95,12 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
 
     topPopup.style.marginTop = `${interactionContainer.offsetHeight*0.1}px`;
     bottomPopup.style.marginBottom = `${interactionContainer.offsetHeight*0.1}px`;
+}
+
+function setCursorToButtonInteractions(interactionContainer, style) {
+    for (let i = 0; i < interactionContainer.children.length; i++) {
+        interactionContainer.children[i].style.cursor = style;
+    }
 }
 
 gameSocket.on('displayText', (text, position) => {
@@ -111,16 +123,17 @@ gameSocket.on('displayText', (text, position) => {
         }
     }
 
-
-
     setTimeout(() => {
         popUpToTrigger.classList.add('visible');
+        popUpToTrigger.style.cursor = 'context-menu';
         buttonInteractionPin.src = '../img/game/Pins_NotUsable.png';
+        buttonInteractionPin.style.cursor = 'context-menu';
     }, 100);
 
     setTimeout(() => {
         popUpToTrigger.classList.remove('visible');
         buttonInteractionPin.classList.remove('active');
+        buttonInteractionPin.style.cursor = 'pointer';
         buttonInteractionPin.src = '../img/game/Pins.png';
         canClick = true;
     }, 2000);
@@ -132,7 +145,6 @@ let isExiting = false;
 
 window.addEventListener('beforeunload', (event) => {
     isExiting = true;
-    // La logique standard de beforeunload pour demander confirmation
     event.preventDefault();
     event.returnValue = '';
 });
@@ -140,7 +152,6 @@ window.addEventListener('beforeunload', (event) => {
 window.addEventListener('unload', () => {
     if (isExiting) {
         gameSocket.emit('leaveGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
-        // L'utilisateur quitte effectivement la page, procédez à la suppression
         localStorage.removeItem('gameStateID');
         localStorage.removeItem('roomId');
     }

@@ -332,7 +332,7 @@ const setupSocket = (io) => {
 
         socket.on('quitGame', async (token, gameStateID) => {
             console.log('ON quitGame');
-            if (token){
+            if (token && gameStateID !== 'waitingForMatch') {
                 const verificationResult = verifyAndValidateUserID(token);
                 if (!verificationResult) {
                     socket.emit('tokenInvalid');
@@ -390,18 +390,20 @@ const setupSocket = (io) => {
                 socket.emit('tokenInvalid');
                 return;
             }
-            await endGameInDatabase(gameStateID, token);
-            const players = await retrievePlayersWithGamestateIDFromDatabase(gameStateID);
-            let winnerId;
-            players.forEach(player => {
-                if (player.userId.toString() !== userId) {
-                    winnerId = player.userId.toString();
-                }
-            });
-            await statManager.updateStat(userId, Date.now(), winnerId);
-            roomId ?
-                io.of('/api/game').to(roomId).emit("endGame", {id: winnerId}) :
-                socket.emit("endGame", {id: winnerId});
+            if (gameStateID !== 'waitingForMatch') {
+                await endGameInDatabase(gameStateID, token);
+                const players = await retrievePlayersWithGamestateIDFromDatabase(gameStateID);
+                let winnerId;
+                players.forEach(player => {
+                    if (player.userId.toString() !== userId) {
+                        winnerId = player.userId.toString();
+                    }
+                });
+                await statManager.updateStat(userId, Date.now(), winnerId);
+                roomId ?
+                    io.of('/api/game').to(roomId).emit("endGame", {id: winnerId}) :
+                    socket.emit("endGame", {id: winnerId});
+            }
         });
     });
 
