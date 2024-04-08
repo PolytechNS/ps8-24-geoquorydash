@@ -3,6 +3,7 @@ const { ObjectId } = require('mongodb');
 const { uri } = require('../../bdd.js');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
+const achievementsManager = require('../../logic/achievements/achievementsManager.js');
 
 async function createStatInDatabase(userId) {
     console.log("On rentre dans la méthode de création de stats");
@@ -18,7 +19,8 @@ async function createStatInDatabase(userId) {
             numberOfVictory : 0,
             numberOfMoves : 0,
             numberOfWallsInstalled : 0,
-            fastestWinNumberOfMoves : 0 // Cette statistique concerne le nombre de coups joués uniquement par le joueur gagnant
+            fastestWinNumberOfMoves : 0, // Cette statistique concerne le nombre de coups joués uniquement par le joueur gagnant
+            winLooseArray : []
         };
         const result = await statCollection.insertOne(newStat);
         return result;
@@ -47,6 +49,7 @@ async function updateStatInDatabase(userId, temporaryStat, winnerId) {
             statistics.numberOfPlayedGames += 1;
             if(playerId === winnerId) {
                 statistics.numberOfVictory += 1;
+                statistics.winLooseArray.push("win");
 
                 // fastestWinNumberOfMoves représente le nombre de décisions prises par les deux joueurs cumulées (mur posé ou déplacement)
                 // Étant donné que c'est une victoire, le nombre de tours
@@ -54,12 +57,17 @@ async function updateStatInDatabase(userId, temporaryStat, winnerId) {
                 if(statistics.fastestWinNumberOfMoves > tmpFastestWinNumberOfMoves || statistics.fastestWinNumberOfMoves === 0) {
                     statistics.fastestWinNumberOfMoves = tmpFastestWinNumberOfMoves;
                 }
+            } else {
+                statistics.winLooseArray.push("loose");
             }
             statistics.playingTimeDuration += Math.ceil(temporaryStat.playingTimeDuration / 60000); // Conversion de millisecondes en minutes
             statistics.numberOfMoves += temporaryStat.numberOfMoves;
             statistics.numberOfWallsInstalled += temporaryStat.numberOfWallsInstalled;
 
             await statCollection.updateOne({ userId: userId }, { $set: statistics });
+
+            // La mise à jour des statistiques peut entraîner de nouveaux achievements
+            await achievementsManager.checkNewAchievements(userId, temporaryStat, statistics);
         } else {
             throw new Error('No statistics found for this user');
         }
