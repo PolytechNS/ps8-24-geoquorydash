@@ -54,10 +54,14 @@ async function loadBurgerChat() {
             });
 
     }
-    function displayFriendsResults(results) {
+    async function displayFriendsResults(results) {
         friendsResultsChat.innerHTML = '';
-
-        const ul= document.createElement('ul');
+        let notificationFromUsernames;
+        await ChatService.getNotifications(token).then(r => {
+            notificationFromUsernames = r;
+            console.log('notificationFromUsernames ', notificationFromUsernames);
+        });
+        const ul = document.createElement('ul');
 
         results.forEach(result => {
             const li = document.createElement('li');
@@ -69,9 +73,15 @@ async function loadBurgerChat() {
 
             const chatButton = document.createElement('button');
             chatButton.classList.add('chat');
+            chatButton.id = `chat-${result.username}`;
             chatButton.addEventListener('click', () => {
                 openChatWindow(result.username);
             });
+            console.log('result.username ', result.username);
+            if (notificationFromUsernames && notificationFromUsernames.includes(result.username)) {
+                console.log('notificationFromUsernames.includes(result.username) ', result.username);
+                chatButton.style.backgroundImage = 'url("../img/chat/chat_notif.png")';
+            }
 
             container.appendChild(link);
             container.appendChild(chatButton);
