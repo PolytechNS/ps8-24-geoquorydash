@@ -5,6 +5,7 @@ const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
 let currentPlayer = player2;
 let currentPlayerID = 'player2';
+let timeout;
 
 console.log("LA PARTIE SE LANCE");
 
@@ -89,6 +90,7 @@ function activateBarrierCellListeners(cell, i, j, playerID) {
             handleCellAction(cell, i, j, 'hideBarrier', currentPlayerID);
         },
         click: function(event) {
+            clearTimeout(timeout);
             event.preventDefault();
             handleCellAction(cell, i, j, 'lockBarrier', currentPlayerID);
         }
@@ -99,6 +101,15 @@ function activateBarrierCellListeners(cell, i, j, playerID) {
     });
 
     currentPlayerID = playerID;
+
+    if (localStorage.getItem('roomId')){
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            gameSocket.emit('timeout', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
+        }, 5000);
+    }
 }
 
 function deactivateBarrierCellListeners(cell) {
@@ -180,6 +191,16 @@ function displayPossibleMove(possibleMove) {
         cell.addEventListener('click', callback);
         cell.moveEventListener = callback;
     });
+
+    // Seulement pour les games en ligne
+    if (localStorage.getItem('roomId')){
+        if (timeout) {
+            clearTimeout(timeout);
+        }
+        timeout = setTimeout(() => {
+            gameSocket.emit('timeout', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
+        }, 5000);
+    }
 }
 
 function displayPossibleToggleBarrier(targetCell, targetCell2, targetCell3, isVertical, playerID) {
@@ -198,7 +219,6 @@ function hidePossibleToggleBarrier(targetCell, targetCell2, targetCell3) {
         targetCell2.classList.remove('previewMode');
         targetCell3.classList.remove('previewMode');
     }
-
 }
 
 function socketToggleWall(targetCell, targetCell2, targetCell3, isVertical){
@@ -233,6 +253,7 @@ function lockBarrier(wall, withToggle, playerID) {
 }
 
 function socketMovePlayer(i, j) {
+    clearTimeout(timeout);
     let targetPosition = {x: i, y: j};
     const id = localStorage.getItem('gameStateID') ? localStorage.getItem('gameStateID') : gameSocket.id;
     gameSocket.emit('movePlayer', targetPosition, id, localStorage.getItem('token'), localStorage.getItem('roomId'));

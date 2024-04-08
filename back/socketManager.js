@@ -405,6 +405,32 @@ const setupSocket = (io) => {
                     socket.emit("endGame", {id: winnerId});
             }
         });
+
+        socket.on('timeout', async (token, gameStateID, roomId) => {
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            if (gameStateID !== 'waitingForMatch') {
+                changeCurrentPlayer(gameStateID);
+                fogOfWar.updateBoardVisibility(gameStateID);
+                try {
+                    await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
+                gameOnlineManager.emitUpdateBoard(gameStateID, roomId);
+            }
+        });
     });
 
 

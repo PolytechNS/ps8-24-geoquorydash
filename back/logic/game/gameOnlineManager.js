@@ -116,6 +116,8 @@ class GameOnlineManager {
 
 
     emitUpdateBoard(gameStateID, roomId){
+        console.log(gameStateID, roomId);
+        console.log(this.gameInSession[roomId]);
         const socket1 = this.gameInSession[roomId][0];
         const socket2 = this.gameInSession[roomId][1];
         let visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;

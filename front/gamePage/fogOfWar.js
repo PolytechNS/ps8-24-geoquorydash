@@ -6,6 +6,9 @@ import {
     updatePlayerBarrierCounts,
     getPlayerElementById
 } from "./game.js";
+
+let continueMap = new Map(); // Clé : ID du joueur, Valeur : booléen indiquant si l'animation doit continuer
+
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
@@ -54,7 +57,6 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
         otherPlayerInBoard.remove();
     }
     displayWalls(gameState);
-
     const barrierCells = document.getElementsByClassName('barrier-cell');
     if (player.isCurrentPlayer) {
         Array.from(barrierCells).forEach(barrierCell => {
@@ -63,12 +65,19 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
             activateBarrierCellListeners(barrierCell, i, j, player.id);
         });
         askPossibleMove();
+        if (localStorage.getItem('roomId')) {
+            progress(300,300, player.id)
+            stopProgress(otherPlayer.id)
+        }
     } else {
         Array.from(barrierCells).forEach(barrierCell => {
             deactivateBarrierCellListeners(barrierCell);
         });
+        if (localStorage.getItem('roomId')) {
+            progress(300, 300, otherPlayer.id)
+            stopProgress(player.id)
+        }
     }
-
 }
 
 function updateBoardDisplayLocalGame(gameState, visibilityMap) {
@@ -132,5 +141,41 @@ function confirmationPopup(roomId, askTextButtonInteraction) {
         askTextButtonInteraction();
     }
 }
+
+function progress(timeleft, timetotal, currentPlayerID) {
+    console.log(currentPlayerID);
+    // selectionner la div #bar enfant de #progress-bar-${currentPlayerID}
+    var progressBar = document.querySelector(`#progress-bar-${currentPlayerID} .bar`);
+
+    var width = 100;
+    var totalTime = timetotal;
+    continueMap.set(currentPlayerID, true); // Démarre l'animation pour ce joueur
+
+    function updateProgress() {
+        if (!continueMap.get(currentPlayerID)) { // Vérifie si l'animation doit continuer
+            return;
+        }
+        var timePassed = totalTime - timeleft;
+        width = 100 - (timePassed / totalTime) * 100;
+        progressBar.style.width = width + '%';
+        progressBar.textContent = `${width.toFixed(0)} %`;
+
+        if (timeleft > 0) {
+            timeleft--;
+            requestAnimationFrame(updateProgress);
+        }
+    }
+
+    requestAnimationFrame(updateProgress);
+}
+
+
+function stopProgress(currentPlayerID) {
+    continueMap.set(currentPlayerID, false); // Arrête l'animation pour ce joueur
+    var progressBar = document.querySelector(`#progress-bar-${currentPlayerID} .bar`);
+    progressBar.style.width = '100%';
+    progressBar.textContent = '';
+}
+
 
 export { updateBoardDisplay, confirmationPopup};
