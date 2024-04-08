@@ -81,13 +81,18 @@ async function loadBurgerChat() {
         friendNameHeader.classList.add('friend-name-header');
         friendNameHeader.textContent = friendName;
 
-        const backButton = document.createElement('button');
+        const backButton = document.createElement('a');
         backButton.classList.add('back-button');
-        backButton.img = '../img/chat/back.png';
+        backButton.href = '#';
         backButton.addEventListener('click', function() {
             friendsResultsChat.style.display = 'flex';
             chatSection.style.display = 'none';
         });
+
+        const backButtonImg = document.createElement('img');
+        backButtonImg.src = '../img/chat/back.png';
+        backButtonImg.alt = 'Back';
+        backButton.appendChild(backButtonImg);
 
         const headerSection = document.createElement('div');
         headerSection.classList.add('header-section');
