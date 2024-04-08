@@ -23,7 +23,7 @@ async function loadBurgerChat() {
     burgerChatContainer.innerHTML = html;
 
 
-    const friendsResults = document.getElementById('friendsResults');
+    const friendsResultsChat = document.getElementById('friendsResultsChat');
     const token = localStorage.getItem('token');
     if (token) {
         AuthService.username(token)
@@ -42,7 +42,7 @@ async function loadBurgerChat() {
 
     }
     function displayFriendsResults(results) {
-        friendsResults.innerHTML = '';
+        friendsResultsChat.innerHTML = '';
 
         const ul= document.createElement('ul');
 
@@ -66,20 +66,39 @@ async function loadBurgerChat() {
             ul.appendChild(li);
         });
 
-        friendsResults.appendChild(ul);
+        friendsResultsChat.appendChild(ul);
     }
 
     async function openChatWindow(friendName) {
-        friendsResults.style.display = 'none';
+        friendsResultsChat.style.display = 'none';
 
-        const chatSection = document.getElementById('chatSection')
+        const chatSection = document.getElementById('chatSection');
+
         chatSection.style.display = 'flex';
         chatSection.innerHTML = '';
 
         const friendNameHeader = document.createElement('div');
         friendNameHeader.classList.add('friend-name-header');
         friendNameHeader.textContent = friendName;
-        chatSection.appendChild(friendNameHeader);
+
+        const backButton = document.createElement('a');
+        backButton.classList.add('back-button');
+        backButton.href = '#';
+        backButton.addEventListener('click', function() {
+            friendsResultsChat.style.display = 'flex';
+            chatSection.style.display = 'none';
+        });
+
+        const backButtonImg = document.createElement('img');
+        backButtonImg.src = '../img/chat/back.png';
+        backButtonImg.alt = 'Back';
+        backButton.appendChild(backButtonImg);
+
+        const headerSection = document.createElement('div');
+        headerSection.classList.add('header-section');
+        headerSection.appendChild(backButton);
+        headerSection.appendChild(friendNameHeader);
+        chatSection.appendChild(headerSection);
 
         const chatArea = document.createElement('div');
         chatArea.classList.add('chat-area');
@@ -128,7 +147,7 @@ async function loadBurgerChat() {
 
         const messageInput = document.createElement('input');
         messageInput.setAttribute('type', 'text');
-        messageInput.setAttribute('placeholder', 'Type your message...');
+        messageInput.setAttribute('placeholder', ' ');
         messageInputContainer.appendChild(messageInput);
 
         const sendButton = document.createElement('button');
