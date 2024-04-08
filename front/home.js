@@ -1,6 +1,7 @@
 import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
 import { FriendsService } from './Services/friendsService.js';
+import { AchievementsService } from './Services/achievementsService.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -146,6 +147,9 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             friendsModal.style.display = "flex";
             friendsListTab.style.display = "flex";
+            openFriendsSearchTab.style.opacity = "0.5";
+            openFriendsRequestTab.style.opacity = "0.5";
+            openFriendsListTab.style.opacity = "1";
             
             displayFriendsListTab(friendsResults, addFriendsText);
         } else {
@@ -159,6 +163,9 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsListTab.style.display = "flex";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "1";
 
         displayFriendsListTab(friendsResults, addFriendsText);
     });
@@ -168,6 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsSearchTab.style.display = "flex";
+        
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "1";
 
         const searchForm = document.getElementById('friendsForm');
         const searchResults = document.getElementById('searchResults');
@@ -190,6 +201,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "flex";
+
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "1";
 
         if (token) {
             AuthService.username(token)
@@ -295,6 +310,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => {
                     console.error('Statistics error:', error);
                 });
+                AchievementsService.associateAchievementsToNewUser(username)
+                .then(data3 => {
+                    console.log("La création d'achievements s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
                 signupModal.style.display = "none";
                 loginModal.style.display= "flex";
                 alert('Inscription effectuée');
@@ -361,17 +383,17 @@ document.addEventListener("DOMContentLoaded", function() {
     function displayRankResults(results) {
         rankResults.innerHTML = '';
 
-        const ul= document.createElement('ul');
-
-        results.forEach(result => {
+        results.forEach((result, index) => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result.username}`;
-            link.textContent = result.username;
+            link.onclick = function(event) {
+                event.preventDefault();
+                window.location.href = `./profilePage/profile.html?username=${result.username}`;
+            };
+            link.textContent = `${index + 1}. ${result.username}`;
             link.target = "_blank";
             li.appendChild(link);
-            ul.appendChild(li);
-            rankResults.appendChild(ul);
+            rankResults.appendChild(li);
         });
     }
 
@@ -416,7 +438,10 @@ function displayFriendsResults(results, friendsResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `../profilePage/profile.html?username=${result.username}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result.username}`;
+        };
         link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
@@ -430,7 +455,10 @@ function displaySearchResults(results, searchResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `./profilePage/profile.html?username=${result.username}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result.username}`;
+        };
         link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
@@ -444,7 +472,10 @@ function displayRequestResults(results, requestResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `./profilePage/profile.html?username=${result}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result}`;
+        };
         link.textContent = result;
         link.target = "_blank";
 

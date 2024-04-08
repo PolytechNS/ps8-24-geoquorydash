@@ -57,7 +57,7 @@ async function loadBurgerChat() {
             const chatButton = document.createElement('button');
             chatButton.classList.add('chat');
             chatButton.addEventListener('click', () => {
-                openChatWindow(result);
+                openChatWindow(result.username);
             });
 
             container.appendChild(link);
