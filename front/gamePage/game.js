@@ -346,7 +346,6 @@ window.onbeforeunload = function(e) {
     e.returnValue = '';
 
     gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
-
 }
 
 export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };

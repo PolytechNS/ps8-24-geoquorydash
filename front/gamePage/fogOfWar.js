@@ -158,7 +158,7 @@ function progress(timeleft, timetotal, currentPlayerID) {
         var timePassed = totalTime - timeleft;
         width = 100 - (timePassed / totalTime) * 100;
         progressBar.style.width = width + '%';
-        progressBar.textContent = `${width.toFixed(0)} %`;
+        progressBar.textContent = `${width.toFixed(0)}`;
 
         if (timeleft > 0) {
             timeleft--;
