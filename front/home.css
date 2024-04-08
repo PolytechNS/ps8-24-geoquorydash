@@ -260,7 +260,7 @@ label img {
     list-style-type: none;*/
 }
 
-#friendsResults, #requestResults, #searchResults {
+#searchResults {
     box-sizing: border-box;
     width: 100%;
     overflow-y: auto;
@@ -271,16 +271,12 @@ label img {
     padding: 0;
 }
 
-#friendsResults, #requestResults {
-    height: 100%;
-}
-
 #searchResults {
     height: 50%;
     max-height: 50%;
 }
 
-#friendsResults li, #requestResults li, #searchResults li {
+ #searchResults li {
     background-image: url('./img/friends/liBackground.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -294,7 +290,7 @@ label img {
     align-items: center;
 }
 
-#friendsResults li a, #requestResults li a, #searchResults li a {
+#searchResults li a {
     text-decoration: none;
     color: white !important;
     font-family: 'Pusab', sans-serif;
@@ -390,7 +386,7 @@ label img {
 }
 
 
-#rankResults {
+#rankResults, #friendsResults, #requestResults {
     box-sizing: border-box;
     list-style-type: none;
     display: flex;
@@ -403,7 +399,7 @@ label img {
     margin: 0;
 }
 
-#rankResults li {
+#rankResults li, #friendsResults li, #requestResults li {
     background-image: url('img/friends/liBackground.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -411,12 +407,12 @@ label img {
     margin-bottom: 3vh;
     list-style-type: none;
     width: 80%;
-    min-height: 10%;
+    min-height: 15%;
     display: flex;
     align-items: center;
 }
 
-#rankResults li a {
+#rankResults li a, #friendsResults li a, #requestResults li a {
     text-decoration: none;
     color: white !important;
     font-family: 'PUSAB', sans-serif;
