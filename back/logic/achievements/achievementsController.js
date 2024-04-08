@@ -17,7 +17,7 @@ async function associateAchievementsToNewUser(req, res) {
             const userByUsername = await usersCollection.findOne({ username });
             
             if (userByUsername) {
-                console.log("User found with the username :", username);
+                // console.log("User found with the username :", username);
                 await createAchievementsInDatabase(userByUsername._id);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Statistics associated successfully' }));
@@ -48,7 +48,7 @@ async function updateFriendsAchievements(req, res) {
             const userByUsername = await usersCollection.findOne({ username });
             
             if (userByUsername) {
-                console.log("User found with the username :", username);
+                // console.log("User found with the username :", username);
                 await achievementsManager.checkNewFriendsAchievements(userByUsername._id, numberOfFriends);
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Statistics associated successfully' }));

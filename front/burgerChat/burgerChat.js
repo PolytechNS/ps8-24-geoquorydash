@@ -1,10 +1,23 @@
 import { AuthService } from '../Services/authService.js';
 import { FriendsService } from '../Services/friendsService.js';
 import { ChatService } from '../Services/chatService.js';
+import userSocket from "../sockets/userSocketConnection.js";
 
 const burgerChatButton = document.getElementById('burger-chat-button');
 const burgerChatContainer = document.getElementById('burger-chat-container');
 let burgerChatLoaded = false;
+
+let token = localStorage.getItem('token');
+if (burgerChatButton && token){
+    ChatService.getNotifications(token).then(r => {
+        console.log(r);
+        if (r){
+            if (r.length > 0) burgerChatButton.firstElementChild.src = `../img/chat/chat_notif.png`;
+        }
+    }).catch(e => {
+        console.error('Error fetching notifications:', e);
+    })
+}
 
 burgerChatButton.addEventListener('click', async () => {
     if (!burgerChatLoaded) {
@@ -173,7 +186,7 @@ async function loadBurgerChat() {
                     .then(sender => {
                         ChatService.sendMessage(sender, receiver, message)
                             .then(response => {
-                                console.log('Message sent:', response);
+                                userSocket.emit('message', { sender, receiver, message });
                                 const chatArea = document.querySelector('.chat-area');
                                 const messageElement = document.createElement('div');
                                 messageElement.textContent = message;
