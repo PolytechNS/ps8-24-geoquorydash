@@ -385,7 +385,6 @@ label img {
     src: url('font/pusab/PUSAB___.otf') format('opentype');
 }
 
-
 #rankResults, #friendsResults, #requestResults {
     box-sizing: border-box;
     list-style-type: none;
