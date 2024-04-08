@@ -16,12 +16,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10vw;
+    gap: 5vw;
 }
 
-#newGameButton img, #gameHistoryButton img {
-    width: 30vw;
-    height: auto;
+#gameLocalButton img, #gameOnlineButton img, #gameFriendButton img{
+    width: auto;
+    height: 20vh;
 }
 
 
