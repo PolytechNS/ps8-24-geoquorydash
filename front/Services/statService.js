@@ -53,12 +53,12 @@ export const StatService = {
             console.error('Erreur lors de la récupération du nombre de jeux joués:', error);
         });
     },
-    getRanking(token) {
+    getRanking(username) {
         return fetch(`${API_ENDPOINT}/api/stat/ranking`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                authorization: `Bearer ${token}`
+                authorization: `Bearer ${username}`
             }
         })
         .then(response => {

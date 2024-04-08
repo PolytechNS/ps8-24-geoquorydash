@@ -294,3 +294,45 @@ body {
         -1px  1px 0 rgba(0, 0, 0, 0.5),
          1px  1px 0 rgba(0, 0, 0, 0.5);
 }
+
+#modal-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    transition: background-color 0.5s ease, backdrop-filter 0.5s ease;
+}
+
+#modal-options-container {
+    background-color: white;
+    margin: auto;
+    padding: 2vh 2vw;
+    border-radius: 10px;
+    position: fixed;
+    z-index: 999;
+    left: 35%;
+    top: 25%;
+    width: 25%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
+
+.photo-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+
