@@ -147,14 +147,18 @@ document.addEventListener('DOMContentLoaded', () => {
                                 console.error('Error sending friend request:', error);
                             });
                     } else if (addFriendBtn.style.backgroundImage.includes('friend.png')) {
-                        FriendsService.removeFriend(currentUser, username)
-                            .then(response => {
-                                alert(response.message);
-                                updateButtonImage('../img/profile/add.png');
-                            })
-                            .catch(error => {
-                                console.error('Error sending friend request:', error);
-                            });
+                        // Confirmation de suppression d'ami
+                        if (confirm("Êtes-vous sûr de vouloir supprimer cet ami ?")) {
+                            // Si l'utilisateur confirme, supprimez l'ami
+                            FriendsService.removeFriend(currentUser, username)
+                                .then(response => {
+                                    alert(response.message);
+                                    updateButtonImage('../img/profile/add.png');
+                                })
+                                .catch(error => {
+                                    console.error('Error sending friend request:', error);
+                                });
+                        }
                     }
                 })
                 .catch(error => {
