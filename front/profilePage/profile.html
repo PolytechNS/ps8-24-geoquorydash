@@ -15,25 +15,42 @@
     <div id="burger-chat-container"></div>
 
     <div class="profile-container">
-        <div class="sub-container">
-            <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
-            <h1 class="username" id="username-friend"></h1>
-            <div class="rank">
-                <h2><img src="../img/profile/rang.png" alt="Rank"></h2>
-                <p class="ranking" id="ranking-friend">/</p>
+        <div class="topPageContainer">
+            <div class="sub-container">
+                <div id="profilePictureContainer">
+                    <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
+                </div>
+                <div id="usernameContainer">
+                    <div class="username" id="username-friend"></div>
+                </div>
+                <div id="rankContainer">
+                    <div class="rank">
+                        <div id="rankImageContainer"><img src="../img/profile/rang.png" alt="Rank"></div>
+                        <div class="ranking" id="ranking-friend">/</div>
+                    </div>
+                </div>
             </div>
+            <button id="add-friend-btn" class="custom-button"></button>
         </div>
-        <button id="add-friend-btn" class="custom-button"></button>
+        <div id="friendAchievementsContainer">
+                
+        </div>
     </div>
 
     <div class="profile-container-me" style="display: none;">
         <div class="topPageContainer">
             <div class="sub-container-me">
-                <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-me">
-                <h1 class="username" id="username-me"></h1>
-                <div class="rank">
-                    <h2><img src="../img/profile/rang.png" alt="Rank"></h2>
-                    <p class="ranking" id="ranking-me">/</p>
+                <div id="profilePictureContainer">
+                    <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-me">
+                </div>
+                <div id="usernameContainer">
+                    <div class="username" id="username-me"></div>
+                </div>
+                <div id="rankContainer">
+                    <div class="rank">
+                        <div id="rankImageContainer"><img src="../img/profile/rang.png" alt="Rank"></div>
+                        <div class="ranking" id="ranking-me">/</div>
+                    </div>
                 </div>
             </div>
             <ul id="friendsResults"></ul>
