@@ -383,17 +383,14 @@ document.addEventListener("DOMContentLoaded", function() {
     function displayRankResults(results) {
         rankResults.innerHTML = '';
 
-        const ul= document.createElement('ul');
-
-        results.forEach(result => {
+        results.forEach((result, index) => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `../profilePage/profile.html?username=${result.username}`;
-            link.textContent = result.username;
+            link.href = `./profilePage/profile.html?username=${result.username}`;
+            link.textContent = `${index + 1}. ${result.username}`;
             link.target = "_blank";
             li.appendChild(link);
-            ul.appendChild(li);
-            rankResults.appendChild(ul);
+            rankResults.appendChild(li);
         });
     }
 

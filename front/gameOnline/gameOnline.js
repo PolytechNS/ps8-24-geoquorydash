@@ -1,4 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
+import {confirmationPopup} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -10,8 +11,8 @@ window.onload = function() {
     gameSocket.emit('findMatch', localStorage.getItem('token'));
 }
 
-gameSocket.on('matchFound', () => {
-    askTextButtonInteraction();
+gameSocket.on('matchFound', function(roomId) {
+    confirmationPopup(roomId, askTextButtonInteraction);
 });
 
 function askTextButtonInteraction() {
@@ -23,8 +24,6 @@ function askTextButtonInteraction() {
 
 
 gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
-    console.log('ON answerTextButtonInteraction ', text, playerId);
-
     var interactionContainer;
     if(playerId === 'player1') {
         interactionContainer = document.getElementById('top-interaction-container');
@@ -84,7 +83,6 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
             }
         }
         interactionContainer.appendChild(button);
-        console.log(interactionContainer);
     }
     interactionContainer.style.visibility = 'hidden;'
     interactionContainer.style.display = 'flex';
@@ -130,7 +128,20 @@ gameSocket.on('displayText', (text, position) => {
 
 
 
-window.onbeforeunload = function() {
-    localStorage.removeItem('gameStateID');
-    localStorage.removeItem('roomId');
-}
+let isExiting = false;
+
+window.addEventListener('beforeunload', (event) => {
+    isExiting = true;
+    // La logique standard de beforeunload pour demander confirmation
+    event.preventDefault();
+    event.returnValue = '';
+});
+
+window.addEventListener('unload', () => {
+    if (isExiting) {
+        gameSocket.emit('leaveGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
+        // L'utilisateur quitte effectivement la page, procédez à la suppression
+        localStorage.removeItem('gameStateID');
+        localStorage.removeItem('roomId');
+    }
+});

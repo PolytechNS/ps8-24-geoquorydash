@@ -13,6 +13,7 @@ const {InvalidTokenError, DatabaseConnectionError} = require("./utils/errorTypes
 const {createGameStateInDatabase, setGameStateInProgressBoolean, getGameStateInProgress} = require("./models/game/gameState");
 const {retrieveConfigurationFromDatabase} = require("./models/users/configuration");
 const {findUserIdByUsername, findUsernameById} = require("./models/users/users");
+const {retrievePlayersWithGamestateIDFromDatabase} = require("./models/game/player");
 
 const setupSocket = (io) => {
 
@@ -67,8 +68,9 @@ const setupSocket = (io) => {
             }
 
             await setGameStateInProgressBoolean(gameStateID, true);
-            const gameState = gameManager.gameStateList[gameStateID];
-            const visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;
+            const gameState = await gameManager.resumeGame(gameStateID);
+            const visibilityMap = await fogOfWar.resumeVisibilityMap(gameStateID);
+            // gameManager.convertGameStateToGameStateTeacher(visibilityMap, gameStateID);
             socket.emit("updateBoard", gameState, visibilityMap, gameStateID);
         });
 
@@ -157,6 +159,7 @@ const setupSocket = (io) => {
         });
 
         socket.on('possibleMoveRequest', (id) => {
+            console.log('ON possibleMoveRequest', id);
             let possibleMove = getPossibleMove(id);
             socket.emit('possibleMoveList', possibleMove);
         });
@@ -239,7 +242,7 @@ const setupSocket = (io) => {
             let responseAI = moveAI(id);
             if (responseAI.action === 'wall') {
                 try {
-                    await toggleWallInDatabase(id, responseAI.value, responseAI.isVertical, token);
+                    await toggleWallInDatabase(id, responseAI.value, responseAI.isVertical, token, true);
                 } catch (error) {
                     if (error instanceof InvalidTokenError) {
                         socket.emit('tokenInvalid');
@@ -265,7 +268,7 @@ const setupSocket = (io) => {
                     }
                 }
             } else if (responseAI === 'endGame') {
-                await endGameInDatabase(id);
+                await endGameInDatabase(id, token);
 
                 const userId = verifyAndValidateUserID(token);
                 if (!userId) {
@@ -340,6 +343,7 @@ const setupSocket = (io) => {
         });
 
         socket.on('gameRequest', async (token, username) => {
+            console.log('ON gameRequest');
             const userId = verifyAndValidateUserID(token);
             if (userId) {
                 const userIdToRequest = await findUserIdByUsername(username);
@@ -378,6 +382,26 @@ const setupSocket = (io) => {
                 console.log(`User ${usernameSenderRequest} is not connected.`);
                 socket.emit('gameRequestDeclined');
             }
+        });
+
+        socket.on('leaveGame', async (token, gameStateID, roomId) => {
+            const userId = verifyAndValidateUserID(token);
+            if (!userId) {
+                socket.emit('tokenInvalid');
+                return;
+            }
+            await endGameInDatabase(gameStateID, token);
+            const players = await retrievePlayersWithGamestateIDFromDatabase(gameStateID);
+            let winnerId;
+            players.forEach(player => {
+                if (player.userId.toString() !== userId) {
+                    winnerId = player.userId.toString();
+                }
+            });
+            await statManager.updateStat(userId, Date.now(), winnerId);
+            roomId ?
+                io.of('/api/game').to(roomId).emit("endGame", {id: winnerId}) :
+                socket.emit("endGame", {id: winnerId});
         });
     });
 
