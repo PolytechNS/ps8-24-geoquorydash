@@ -150,6 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (profileData.profilePicture) {
                     myProfilePictureElement.src = profileData.profilePicture;
                 } else {
+                    console.log("Pas de photo de profil");
                     myProfilePictureElement.src = '../img/profile/picture.png';
                 }
             })
@@ -229,3 +230,47 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const myProfilePictureElement = document.getElementById('profile-picture-me');
+    const modalContainer = document.getElementById('modal-container');
+    const modalOptionsContainer = document.getElementById('modal-options-container');
+
+    myProfilePictureElement.addEventListener('click', () => {
+        modalContainer.style.display = 'block';
+    });
+
+    modalOptionsContainer.addEventListener('click', (event) => {
+        if (event.target.tagName === 'IMG') {
+            const imageUrl = event.target.src;
+            AuthService.username(localStorage.getItem('token'))
+                .then(username => {
+                    ProfileService.updatePicture(username, imageUrl)
+                        .then(response => {
+                            if (response.profilePicture) {
+                                myProfilePictureElement.src = response.profilePicture;
+                                modalContainer.style.display = 'none';
+                                location.reload();
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating profile picture:', error);
+                        });
+                })
+                .catch(error => {
+                    console.error('Error fetching username:', error);
+                });
+        }
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modalContainer) {
+            modalContainer.style.display = 'none';
+        }
+    });
+});
+
+
+
+
+
