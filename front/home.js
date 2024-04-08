@@ -1,6 +1,7 @@
 import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
 import { FriendsService } from './Services/friendsService.js';
+import { AchievementsService } from './Services/achievementsService.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -305,6 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 StatService.associateStatToNewUser(username)
                 .then(data2 => {
                     console.log("L'association s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
+                AchievementsService.associateAchievementsToNewUser(username)
+                .then(data3 => {
+                    console.log("La création d'achievements s'est bien passée");
                 })
                 .catch(error => {
                     console.error('Statistics error:', error);
