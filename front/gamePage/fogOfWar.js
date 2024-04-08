@@ -121,14 +121,32 @@ function displayWalls(gameState) {
     })
 }
 
-function confirmationPopup(roomId, askTextButtonInteraction) {
+function popUp(text) {
     var modal = document.getElementById("myModal");
-    var btn = document.getElementById("confirmButton");
-    var span = document.getElementsByClassName("close")[0];
+    var modalContent = document.querySelector('.modal-content');
+    
+    var textContent = document.querySelector('.modal-content p')
+    textContent.textContent = text;
+    modalContent.appendChild(textContent);
 
     modal.style.display = "block";
-    localStorage.setItem('roomId', roomId);
+}
 
+function confirmationPopup(askTextButtonInteraction) {
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
+    
+    var btn = document.createElement('button');
+    btn.textContent = 'OK';
+    btn.id = 'confirmButton';
+    modalContent.appendChild(btn);
+    
+    var span =document.createElement('span');
+    span.innerHTML = '&times;';
+    span.classList.add('close');
+    modalContent.appendChild(span);
+    
     // Quand l'utilisateur clique sur <span> (x), fermez la modale
     span.onclick = function() {
         modal.style.display = "none";
@@ -178,4 +196,4 @@ function stopProgress(currentPlayerID) {
 }
 
 
-export { updateBoardDisplay, confirmationPopup};
+export { updateBoardDisplay, popUp, confirmationPopup};

@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import {confirmationPopup} from "../gamePage/fogOfWar.js";
+import {confirmationPopup, popUp} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -12,6 +12,7 @@ window.onload = function() {
     const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
     if (usernameToRequest){
         localStorage.setItem('gameStateID', 'waitingForMatch');
+        popUp('En attente de votre adversaire...')
         gameSocket.emit('gameRequest', token, usernameToRequest);
     }
 
@@ -21,12 +22,13 @@ window.onload = function() {
     }
 }
 
-gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
+gameSocket.on('gameRequestAndRoomCreated', () => {
     localStorage.setItem('gameStateID', 'waitingForMatch');
 });
 
 gameSocket.on('matchFound', (roomId) => {
-    confirmationPopup(roomId, askTextButtonInteraction);
+    localStorage.setItem('roomId', roomId);
+    confirmationPopup(askTextButtonInteraction);
 });
 
 function askTextButtonInteraction() {

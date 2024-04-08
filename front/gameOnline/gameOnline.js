@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import {confirmationPopup} from "../gamePage/fogOfWar.js";
+import {confirmationPopup, popUp} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -9,10 +9,12 @@ let canClick = false; // Variable pour suivre si le bouton est cliquable
 window.onload = function() {
     localStorage.setItem('gameStateID', 'waitingForMatch');
     gameSocket.emit('findMatch', localStorage.getItem('token'));
+    popUp('En attente d\'un adversaire...');
 }
 
 gameSocket.on('matchFound', function(roomId) {
-    confirmationPopup(roomId, askTextButtonInteraction);
+    localStorage.setItem('roomId', roomId);
+    confirmationPopup(askTextButtonInteraction);
 });
 
 function askTextButtonInteraction() {
