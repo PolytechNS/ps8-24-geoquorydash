@@ -146,6 +146,15 @@ document.addEventListener('DOMContentLoaded', () => {
                             .catch(error => {
                                 console.error('Error sending friend request:', error);
                             });
+                    } else if (addFriendBtn.style.backgroundImage.includes('friend.png')) {
+                        FriendsService.removeFriend(currentUser, username)
+                            .then(response => {
+                                alert(response.message);
+                                updateButtonImage('../img/profile/add.png');
+                            })
+                            .catch(error => {
+                                console.error('Error sending friend request:', error);
+                            });
                     }
                 })
                 .catch(error => {

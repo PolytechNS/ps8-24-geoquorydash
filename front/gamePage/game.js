@@ -3,7 +3,6 @@ import gameSocket from "../sockets/gameSocketConnection.js";
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
 const player2 = createPlayer('player2', 'red');
-let currentPlayer = player2;
 let currentPlayerID = 'player2';
 
 console.log("LA PARTIE SE LANCE");
@@ -240,7 +239,8 @@ function socketMovePlayer(i, j) {
 
 function canToggleBarrier() {
     const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
-    if ((currentPlayer === player1 && player1BarrierCount < 0) || (currentPlayer === player2 && player2BarrierCount < 0)) {
+    console.log("current player 1:" + (currentPlayerID === 'player1') + " player1 count:" + player1BarrierCount + " current player 2:" + (currentPlayerID === 'player2') + " player2 count:" + player2BarrierCount);
+    if ((currentPlayerID === 'player1' && player1BarrierCount < 0) || (currentPlayerID === 'player2' && player2BarrierCount < 0)) {
         return false;
     }
     return true;
