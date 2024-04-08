@@ -10,6 +10,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
     height: 100%;
 }
@@ -116,6 +117,45 @@ body {
     transition: opacity 0.1s ease-out;
 }
 
+.player-info {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: 5vh;
+    font-weight: bold;
+    width: 100%;
+    color: white;
+}
+
+.progress-bar {
+    display: flex;
+    align-self: center;
+    justify-items: center;
+    width: 90%;
+    height: 4%;
+    margin-top: 30%;
+    margin-bottom: 20%;
+
+    background-color: rgba(164, 164, 164, 0.68);
+    border-radius: 2vh;
+}
+
+.progress-bar div {
+    height: 70%;
+    align-self: center;
+    text-align: right;
+    line-height: 110%;
+    width: 100%;
+    margin-left: 2%;
+    margin-right: 2%;
+
+    background-color: #ffffff;
+    box-sizing: border-box;
+    border-radius: 2vh;
+    font-family: 'joystix', sans-serif;
+}
+
 @font-face {
     font-family: 'joystix';
     src: url('../font/joystix_monospace.otf');
@@ -155,3 +195,4 @@ body {
     text-decoration: none;
     cursor: pointer;
 }
+

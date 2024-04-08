@@ -19,7 +19,7 @@ function setupConfiguration(configurationPossible, personalConfiguration){
         button.innerHTML = personalConfiguration.textInGameInteraction[i];
         button.onclick = function() {
             const modal = document.getElementById('modal-container');
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
 
             const optionsContainer = document.getElementById('modal-options-container');
             optionsContainer.innerHTML = ''; // Efface les options précédentes

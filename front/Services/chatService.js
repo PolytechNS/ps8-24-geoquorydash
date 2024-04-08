@@ -16,5 +16,13 @@ export const ChatService = {
             body: JSON.stringify({ sender, receiver, message })
         })
             .then(response => response.json());
+    },
+    getNotifications(token) {
+        return fetch(`${API_ENDPOINT}/api/chat/notifications`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ token })
+        })
+            .then(response => response.json());
     }
 };

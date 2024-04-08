@@ -1,0 +1,79 @@
+const { MongoClient } = require('mongodb');
+const { ObjectId } = require('mongodb');
+const { uri } = require('../../bdd.js');
+const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
+const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
+
+async function createAchievementsInDatabase(userId) {
+    console.log("On rentre dans la méthode de création des achievements");
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const achievementsCollection = database.collection('achievements');
+        const newAchievementsStructure = {
+            userId : userId,
+            achievements : []
+        };
+        const result = await achievementsCollection.insertOne(newAchievementsStructure);
+        return result;
+    } catch (error) {
+        console.error("Error connecting to MongoDB while associating achievements:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
+async function updateAchievementsInDatabase(userId, achievement) {
+    console.log("On rentre dans la méthode de mise à jour des achievements classiques");
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const achievementsCollection = database.collection('achievements');
+        userId = new ObjectId(userId);
+        const achievementsStructure = await achievementsCollection.findOne({ userId: userId });
+        if(achievementsStructure) {
+            const achievementExists = achievementsStructure.achievements.some(existingAchievement => existingAchievement.id === achievement.id);
+            if (!achievementExists) {
+                console.log("L'achievement \"" + achievement.nom + "\" n'existe pas encore pour cet utilisateur");
+                achievementsStructure.achievements.push(achievement);
+                const result = await achievementsCollection.updateOne({ userId: userId }, { $set: { achievements: achievementsStructure.achievements } });
+                return result;
+            } else {
+                console.log("L'achievement \"" + achievement.nom + "\" existe déjà pour cet utilisateur");
+            }
+        } else {
+            throw new Error('No achievements found for this user');
+        }
+    } catch (error) {
+        console.error("Error connecting to MongoDB while updating achievements:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
+async function retrieveAchievementsFromDatabaseForAUser(token) {
+    console.log("On rentre dans la méthode de récupération des achievements");
+    var userId = verifyAndValidateUserID(token);
+    if (!userId) {
+        console.error("Invalid token");
+        throw new InvalidTokenError("Invalid token");
+    }
+    const client = new MongoClient(uri);
+    try {
+        await client.connect();
+        const database = client.db('myapp_db');
+        const achievementsCollection = database.collection('achievements');
+        userId = new ObjectId(userId);
+        const achievementsStructure = await achievementsCollection.findOne({ userId: userId });
+        if(achievementsStructure) {
+            return achievementsStructure;
+        } else {
+            throw new Error('No achievements found for this user');
+        }
+    } catch (error) {
+        console.error("Error connecting to MongoDB:", error);
+        throw new DatabaseConnectionError("Error connecting to MongoDB");
+    }
+}
+
+module.exports = { createAchievementsInDatabase, updateAchievementsInDatabase, retrieveAchievementsFromDatabaseForAUser };

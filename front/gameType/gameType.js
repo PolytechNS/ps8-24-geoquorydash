@@ -1,4 +1,4 @@
-const gameRequestBtn = document.getElementById('game-friend-btn');
+const gameRequestBtn = document.getElementById('gameFriendButton');
 
 gameRequestBtn.addEventListener('click', () => {
     window.location.href = '../friendSelection/friendSelection.html';
