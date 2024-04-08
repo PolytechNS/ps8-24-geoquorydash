@@ -64,7 +64,8 @@ async function getRanking(req, res) {
     try {
         const stats = await retrieveAllStatsFromDatabase();
         const rankedPlayers = calculateHybridRanking(stats);
-        var userId = new ObjectId(verifyAndValidateUserID(token));
+        var userId = await getUserIdByUsername(token);
+        console.log("userId", userId);
         const userIndex = rankedPlayers.findIndex(playerId => playerId.equals(userId));
         const userRanking = userIndex !== -1 ? userIndex + 1 : 0;
         res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -103,6 +104,18 @@ async function getUserById(userId) {
         console.error("Error fetching user by ID:", error);
         throw error;
     }
+}
+
+async function getUserIdByUsername(username) {
+    try {
+        const usersCollection = await createUserCollection();
+        const user = await usersCollection.findOne({ username });
+        return user._id;
+    } catch (error) {
+        console.error("Error fetching user by username:", error);
+        throw error;
+    }
+
 }
 
 function calculateHybridRanking(stats) {

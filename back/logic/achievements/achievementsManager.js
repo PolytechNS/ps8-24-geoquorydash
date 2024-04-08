@@ -8,37 +8,44 @@ class AchievementsManager {
             {
                 "id": 1,
                 "nom": "Un stratège est né",
-                "description": "Gagnez une partie pour la première fois."
+                "description": "Gagnez une partie pour la première fois.",
+                "url": "Robot028.png"
             },
             {
                 "id": 2,
                 "nom": "J'ai pas le temps",
                 "description": "Gagnez une partie en moins d'une minute.",
+                "url": "Swing039.png"
             },
             {
                 "id": 3,
                 "nom": "Tu veux un curly ?",
                 "description": "Ajoutez votre 1er ami.",
+                "url": "Ball106.png"
             },
             {
                 "id": 4,
                 "nom": "Trop famous",
                 "description": "Ajoutez 5 amis à votre liste d'amis.",
+                "url": "Cube371.png"
             },
             {
                 "id": 5,
                 "nom": "Marathonien",
                 "description": "Jouez un total de 50 parties.",
+                "url": "Cube365.png"
             },
             {
                 "id": 5,
                 "nom": "Point faible : trop fort",
                 "description": "Gagnez 5 parties d'affilée.",
+                "url": "Cube368.png"
             },
             {
                 "id": 6,
                 "nom": "Português",
-                "description": "Tu as posé tous tes murs lors d'une partie. (Tu comptes construire quoi au juste ??)"
+                "description": "Tu as posé tous tes murs lors d'une partie.\n(Tu comptes construire quoi au juste ??)",
+                "url": "Ship150.png"
             }
         ]
     };

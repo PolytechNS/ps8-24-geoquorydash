@@ -31,65 +31,66 @@ body {
 .topPageContainer {
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100vw;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     height: 30vh;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-
+    gap: 2%;
 }
 
-.sub-container {
+.sub-container, .sub-container-me {
+    box-sizing: border-box;
     display: flex;
     flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-    position: absolute;
-    top: 3vh;
-    left: 10vw;
-    width: 50vw;
+    justify-content: space-between;
+    align-items: center;
+    /*top: 3vh;
+    left: 10vw;*/
+    width: 55%;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
-    height: 25vh;
+    height: 90%;
+    padding-right: 1vw;
+    padding-left: 1vw;
 }
 
-.sub-container-me {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    align-items: flex-start;
-    position: absolute;
-    top: 3vh;
-    left: 10vw;
-    width: 50vw;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 5px;
-    height: 25vh;
+#profilePictureContainer {
+    width: 20%;
+    padding-top: 20%;
+    position: relative;
+    margin-right: 1vw;
+    overflow: hidden;
 }
 
 .profile-picture {
-    position: relative;
-    width: 11vw;
-    height: 11vw;
-    margin-left: 3vw;
-    border-radius: 5px;
-    margin-right: 3vw;
-    margin-top: 2vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 95%;
+    object-fit: cover;
+}
+
+#usernameContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 50%;
+    height: auto;
 }
 
 .username {
     font-size: 8vh;
-    width: auto;
+    max-width: 100%;
     color: white;
     font-family: 'PUSAB', sans-serif;
     -webkit-text-stroke-width: 0.3px;
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
-    margin-top: 8vh;
+    overflow-wrap: break-word;
 }
 
 @font-face {
@@ -102,29 +103,27 @@ body {
 }
 
 .custom-button {
-    position: absolute;
-    top: 5vh;
-    right: 5vw;
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
-    height: 15vh;
-    width: 25vw;
-    border-radius: 15px;
+    height: 50%;
+    width: 20vw;
+    border-radius: 35px;
+    margin-left: 5vw;
     cursor: pointer;
 }
 
 #friendsResults {
-    position: absolute;
-    top: 1vh;
-    right: 5vw;
-    width: 25vw;
+    box-sizing: border-box;
+    /*top: 1vh;
+    right: 5vw;*/
+    width: 30%;
+    height: 90%;
     background-color: rgba(0, 0, 0, 0.3);
     border-radius: 5px;
     padding: 2vh 1vw;
     overflow: auto;
     overflow-x: hidden;
-    height: 21vh;
 }
 
 #friendsResults li {
@@ -148,32 +147,47 @@ body {
     letter-spacing: 0.1vw;
 }
 
+#rankContainer {
+    width: 24%;
+    padding-top: 24%;
+    position: relative;
+    overflow: hidden;
+}
+
 .rank {
+    box-sizing: border-box;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
     display: flex;
     flex-direction: column;
     align-items: center;
-    height: 21vh;
+    justify-content: center;
     border-radius: 10px;
-    padding-left: 2vw;
-    padding-right: 2vw;
-    margin-left: 5vw;
-    margin-top: 2vh;
-    background-color: rgba(0, 0, 0, 0.3);
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    padding-left: 1vw;
+    padding-right: 1vw;
+    background-color: rgba(0, 0, 0, 0.5);
 }
 
-.rank h2, .rank p {
-    margin: 0;
-}
-
-.rank h2 img {
-    width: auto;
-    height: 6vh;
+#rankImageContainer {
+    width: 80%;
+    height: auto;
     background-size: 100% 100%;
     background-repeat: no-repeat;
-    margin-top: 3vh;
 }
 
-.rank p {
+#rankImageContainer img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#ranking-me, #ranking-friend {
     font-family: 'PUSAB', sans-serif;
     width: auto;
     background-image: linear-gradient(to top, #FFD700, #FFA500);
@@ -183,12 +197,13 @@ body {
     text-fill-color: transparent;
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
+    line-height: 1;
     font-size: 5vh;
     -webkit-text-stroke-width: 0.8px;
     margin-top: 2vh;
 }
 
-#achievementsContainer {
+#achievementsContainer, #friendAchievementsContainer {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -198,21 +213,126 @@ body {
     left: 0;
     width: 100vw;
     height: 68vh;
-    background-color: rgba(155, 155, 155, 0.3);
     border-radius: 5px;
     padding: 2vh 2vw;
     overflow-y: auto;
 }
 
 .achievement {
+    box-sizing: border-box;
     display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    flex-direction: row;
+    justify-content: center;
     align-items: center;
     width: 80vw;
     height: 15vh;
-    background-color: rgba(0, 0, 0, 0.3);
-    border-radius: 5px;
+    background-color: #A1582C;
+    border-radius: 10px;
     margin-bottom: 1vw;
     padding: 1vh 1vw;
+    border: 4px solid black;
 }
+
+.achievement:nth-child(even) {
+    background-color: #C2723E;
+}
+
+.imageContainer {
+    width: 10%;
+    position: relative;
+    margin-right: 2vw;
+    margin-left: 1vw;
+    padding-top: 8%; /* Cela crée un bloc avec une hauteur égale à 8% de la largeur du parent */
+    overflow: hidden; /* Pour s'assurer que le contenu ne dépasse pas */
+}
+
+.imageContainer img {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translate(-50%, -50%);
+}
+
+.achievement-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+    gap: 1vh;
+}
+
+.achievement-title {
+    font-family: 'PUSAB', sans-serif;
+    font-size: 5vh;
+    color: #fec32c;
+    text-shadow:
+        3px 2px 3px #000,
+        -1px -1px 0 #000,  
+         1px -1px 0 #000,
+        -1px  1px 0 #000,
+         1px  1px 0 #000;
+    /*background: linear-gradient(to top, #fde348, #e49e28);
+    -webkit-background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    text-fill-color: transparent;*/
+}
+
+.achievement-description {
+    font-family: 'PUSAB', sans-serif;
+    font-size: 3vh;
+    color: white;
+    line-height: 1.05;
+    text-shadow:
+        2px 1px 2px rgba(0, 0, 0, 0.5), /* Légèrement plus clair et moins étendu */
+        -1px -1px 0 rgba(0, 0, 0, 0.5),  
+         1px -1px 0 rgba(0, 0, 0, 0.5),
+        -1px  1px 0 rgba(0, 0, 0, 0.5),
+         1px  1px 0 rgba(0, 0, 0, 0.5);
+}
+
+#modal-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    transition: background-color 0.5s ease, backdrop-filter 0.5s ease;
+}
+
+#modal-options-container {
+    background-color: white;
+    margin: auto;
+    padding: 2vh 2vw;
+    border-radius: 10px;
+    position: fixed;
+    z-index: 999;
+    left: 35%;
+    top: 25%;
+    width: 25%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 10px;
+}
+
+.photo-grid img {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
+}
+
+
