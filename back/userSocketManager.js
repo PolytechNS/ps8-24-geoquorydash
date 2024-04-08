@@ -1,6 +1,7 @@
 const {verifyAndValidateUserID} = require("./logic/authentification/authController");
 const usersConnected = require('./usersConnected');
-const {findUsernameById} = require("./models/users/users");
+const {findUsernameById, findUserIdByUsername} = require("./models/users/users");
+const notificationManager = require("./logic/notifications/notificationManager");
 
 const userSetupSocket = (io) => {
 
@@ -35,6 +36,31 @@ const userSetupSocket = (io) => {
             if (userId) {
                 usersConnected.removeUser(userId);
                 io.of('/api/user').emit('updateStatus', {username, status: 'offline'});
+            } else {
+                console.log('Invalid token');
+            }
+        });
+
+        socket.on('message', async (data) => {
+            const receiverId = await findUserIdByUsername(data.receiver);
+            const receiverSocket = usersConnected.getUserSocket(receiverId);
+            if (receiverSocket) {
+                receiverSocket.emit('message', {
+                    sender: data.sender,
+                    message: data.message
+                });
+            } else {
+                console.log(`User ${data.receiver} is not connected.`);
+            }
+            notificationManager.addChatNotification(receiverId, data.sender);
+        });
+
+        socket.on('retrieveChatNotifications', (token) => {
+            const userId = verifyAndValidateUserID(token);
+            if (userId) {
+                const notifications = notificationManager.getChatNotifications(userId);
+                console.log('Chat notifications retrieved');
+                socket.emit('chatNotifications', notifications);
             } else {
                 console.log('Invalid token');
             }

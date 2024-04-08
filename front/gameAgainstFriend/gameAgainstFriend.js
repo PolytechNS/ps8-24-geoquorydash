@@ -1,5 +1,5 @@
 import gameSocket from "../sockets/gameSocketConnection.js";
-import {confirmationPopup} from "../gamePage/fogOfWar.js";
+import {confirmationPopup, popUp} from "../gamePage/fogOfWar.js";
 
 const buttonInteractionPin = document.getElementById('pin');
 const topPopup = document.getElementById('top-popup');
@@ -12,6 +12,7 @@ window.onload = function() {
     const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
     if (usernameToRequest){
         localStorage.setItem('gameStateID', 'waitingForMatch');
+        popUp('En attente de votre adversaire...')
         gameSocket.emit('gameRequest', token, usernameToRequest);
     }
 
@@ -21,12 +22,13 @@ window.onload = function() {
     }
 }
 
-gameSocket.on('gameRequestAndRoomCreated', (gameStateId) => {
+gameSocket.on('gameRequestAndRoomCreated', () => {
     localStorage.setItem('gameStateID', 'waitingForMatch');
 });
 
 gameSocket.on('matchFound', (roomId) => {
-    confirmationPopup(roomId, askTextButtonInteraction);
+    localStorage.setItem('roomId', roomId);
+    confirmationPopup(askTextButtonInteraction);
 });
 
 function askTextButtonInteraction() {
@@ -57,6 +59,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
         if (interactionContainer.classList.contains('active')) {
             interactionContainer.classList.remove('active');
             buttonInteractionPin.classList.remove('active');
+            setCursorToButtonInteractions(interactionContainer, 'context-menu');
 
             setTimeout(() => {
                 canClick = true;
@@ -66,6 +69,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
             interactionContainer.style.display = 'flex';
             topPopup.classList.remove('visible');
             bottomPopup.classList.remove('visible');
+            setCursorToButtonInteractions(interactionContainer, 'pointer');
 
             setTimeout(() => {
                 interactionContainer.classList.add('active');
@@ -81,6 +85,7 @@ gameSocket.on('answerTextButtonInteraction', (text, playerId) => {
 
     canClick = true;
     buttonInteractionPin.src = '../img/game/Pins.png';
+    buttonInteractionPin.style.cursor = 'pointer';
 });
 
 function setTextButtonInteraction(text, interactionContainer, playerId) {
@@ -88,6 +93,7 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
         const button = document.createElement('div');
         button.classList.add('interaction');
         button.innerHTML = text[i];
+        button.style.cursor = 'context-menu';
         button.onclick = function() {
             if (!canClick) return;
             let myPosition = playerId === 'player1' ? 'top' : 'bottom';
@@ -97,6 +103,8 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
             if (interactionContainer.classList.contains('active')) {
                 interactionContainer.classList.remove('active');
             }
+            setCursorToButtonInteractions(interactionContainer, 'context-menu');
+
         }
         interactionContainer.appendChild(button);
         console.log(interactionContainer);
@@ -106,6 +114,12 @@ function setTextButtonInteraction(text, interactionContainer, playerId) {
 
     topPopup.style.marginTop = `${interactionContainer.offsetHeight*0.1}px`;
     bottomPopup.style.marginBottom = `${interactionContainer.offsetHeight*0.1}px`;
+}
+
+function setCursorToButtonInteractions(interactionContainer, style) {
+    for (let i = 0; i < interactionContainer.children.length; i++) {
+        interactionContainer.children[i].style.cursor = style;
+    }
 }
 
 gameSocket.on('displayText', (text, position) => {
@@ -128,17 +142,18 @@ gameSocket.on('displayText', (text, position) => {
         }
     }
 
-
-
     setTimeout(() => {
         popUpToTrigger.classList.add('visible');
+        popUpToTrigger.style.cursor = 'context-menu';
         buttonInteractionPin.src = '../img/game/Pins_NotUsable.png';
+        buttonInteractionPin.style.cursor = 'context-menu';
     }, 100);
 
     setTimeout(() => {
         popUpToTrigger.classList.remove('visible');
         buttonInteractionPin.classList.remove('active');
         buttonInteractionPin.src = '../img/game/Pins.png';
+        buttonInteractionPin.style.cursor = 'pointer';
         canClick = true;
     }, 2000);
 });
