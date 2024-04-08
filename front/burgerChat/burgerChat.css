@@ -5,7 +5,7 @@
     left: 0;
     bottom: 0;
     width: 30vw;
-    background-color: rgba(0, 0, 0, 0.9);
+    background-color: rgba(0, 0, 0, 0.7);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     z-index: 1000;
 }
@@ -100,6 +100,12 @@
     margin-right: 8vw;
 }
 
+.back-button img {
+    width: 6vh;
+    height: 6vh;
+    cursor: pointer;
+}
+
 .friend-name-header {
     color: white !important;
     font-family: 'PUSAB', sans-serif;
@@ -191,3 +197,21 @@
     left: 33vw;
 }
 
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 998;
+    display: none;
+    backdrop-filter: blur(0);
+    transition: background-color 0.5s ease, backdrop-filter 0.5s ease;
+}
+
+.burger-chat.show + .overlay {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
