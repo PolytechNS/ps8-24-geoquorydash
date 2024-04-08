@@ -364,7 +364,10 @@ document.addEventListener("DOMContentLoaded", function() {
         results.forEach((result, index) => {
             const li = document.createElement('li');
             const link = document.createElement('a');
-            link.href = `./profilePage/profile.html?username=${result.username}`;
+            link.onclick = function(event) {
+                event.preventDefault();
+                window.location.href = `./profilePage/profile.html?username=${result.username}`;
+            };
             link.textContent = `${index + 1}. ${result.username}`;
             link.target = "_blank";
             li.appendChild(link);
@@ -413,7 +416,10 @@ function displayFriendsResults(results, friendsResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `../profilePage/profile.html?username=${result.username}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result.username}`;
+        };
         link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
@@ -427,7 +433,10 @@ function displaySearchResults(results, searchResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `./profilePage/profile.html?username=${result.username}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result.username}`;
+        };
         link.textContent = result.username;
         link.target = "_blank";
         li.appendChild(link);
@@ -441,7 +450,10 @@ function displayRequestResults(results, requestResults) {
     results.forEach(result => {
         const li = document.createElement('li');
         const link = document.createElement('a');
-        link.href = `./profilePage/profile.html?username=${result}`;
+        link.onclick = function(event) {
+            event.preventDefault();
+            window.location.href = `./profilePage/profile.html?username=${result}`;
+        };
         link.textContent = result;
         link.target = "_blank";
 
