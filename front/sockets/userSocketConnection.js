@@ -6,12 +6,12 @@ var userSocket = io('/api/user', {
             location: location
         }
     });
+
 userSocket.on('connect', function() {
     console.log('Connected to /api/user! ');
 });
 
 userSocket.on('updateSocket', function(data) {
-
     console.log('Socket updated', userSocket.userId);
 });
 
@@ -33,6 +33,23 @@ userSocket.on('gameRequestDeclined', function(payload) {
     alert('Game request declined ');
     window.location.href = '/';
 });
+
+userSocket.on('message', function(data) {
+    const burgerChatButton = document.getElementById('burger-chat-button')
+    const timestamp = new Date().getTime(); // Génère le timestamp actuel
+    burgerChatButton.firstElementChild.src = `../img/chat/chat_notif.png?${timestamp}`;
+});
+
+userSocket.on('chatNotifications', function(data) {
+    console.log('chatNotifications', data);
+    const burgerChatButton = document.getElementById('burger-chat-button');
+    if (data){
+        burgerChatButton.firstElementChild.src = `../img/chat/chat_notif.png`;
+    } else {
+        burgerChatButton.firstElementChild.src = `../img/chat/chat.png`;
+    }
+});
+
 
 window.addEventListener('beforeunload', function () {
     if (token) {
