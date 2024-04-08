@@ -2,6 +2,7 @@ import { ProfileService } from '../Services/profileService.js';
 import { AuthService }  from "../Services/authService.js";
 import { FriendsService } from "../Services/friendsService.js";
 import { StatService } from "../Services/statService.js";
+import { AchievementsService } from '../Services/achievementsService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const myProfile = document.querySelector('.profile-container-me');
@@ -35,6 +36,47 @@ document.addEventListener('DOMContentLoaded', () => {
                     console.error('Error fetching username:', error);
                 });
         }
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getFriends(authUsername)
+                    .then(friends => {
+                        const numberOfFriends = friends.length;
+                        console.log("Nombre d'amis : " + numberOfFriends);
+                        AchievementsService.updateFriendsAchievements(authUsername, numberOfFriends)
+                            .then(() => {
+                                AchievementsService.getAchievements(token).then(data => {
+                                    console.log(data);
+                                    const achievements = data.achievementsStructure.achievements;
+                                    const achievementsContainer = document.getElementById('achievementsContainer');
+                                    achievements.forEach(achievement => {
+                                        console.log("Un de plus");
+                                        const achievementElement = document.createElement('div');
+                                        achievementElement.classList.add('achievement');
+                                        const achievementTitle = document.createElement('h3');
+                                        achievementTitle.textContent = achievement.nom;
+                                        const achievementDescription = document.createElement('p');
+                                        achievementDescription.textContent = achievement.description;
+                                        achievementElement.appendChild(achievementTitle);
+                                        achievementElement.appendChild(achievementDescription);
+                                        achievementsContainer.appendChild(achievementElement);
+                                    });
+                                    console.log("Fini");
+                                }).catch(error => {
+                                    console.error('Erreur lors de la récupération des achievements:', error);
+                                    alert('Erreur lors de la récupération des achievements.');
+                                });
+                            })
+                            .catch(error => {
+                                console.error('Error fetching requests:', error);
+                            });
+                    })
+                    .catch(error => {
+                        console.error('Error fetching requests:', error);
+                    });
+            })
+            .catch(error => {
+                console.error('Error fetching username:', error);
+            });
     }
 
     function updateProfileContent(username) {

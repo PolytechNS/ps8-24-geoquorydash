@@ -1,6 +1,7 @@
 import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
 import { FriendsService } from './Services/friendsService.js';
+import { AchievementsService } from './Services/achievementsService.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -146,6 +147,9 @@ document.addEventListener("DOMContentLoaded", function() {
             e.preventDefault();
             friendsModal.style.display = "flex";
             friendsListTab.style.display = "flex";
+            openFriendsSearchTab.style.opacity = "0.5";
+            openFriendsRequestTab.style.opacity = "0.5";
+            openFriendsListTab.style.opacity = "1";
             
             displayFriendsListTab(friendsResults, addFriendsText);
         } else {
@@ -159,6 +163,9 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsListTab.style.display = "flex";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "1";
 
         displayFriendsListTab(friendsResults, addFriendsText);
     });
@@ -168,6 +175,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsRequestTab.style.display = "none";
         friendsSearchTab.style.display = "flex";
+        
+        openFriendsRequestTab.style.opacity = "0.5";
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "1";
 
         const searchForm = document.getElementById('friendsForm');
         const searchResults = document.getElementById('searchResults');
@@ -190,6 +201,10 @@ document.addEventListener("DOMContentLoaded", function() {
         friendsListTab.style.display = "none";
         friendsSearchTab.style.display = "none";
         friendsRequestTab.style.display = "flex";
+
+        openFriendsListTab.style.opacity = "0.5";
+        openFriendsSearchTab.style.opacity = "0.5";
+        openFriendsRequestTab.style.opacity = "1";
 
         if (token) {
             AuthService.username(token)
@@ -291,6 +306,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 StatService.associateStatToNewUser(username)
                 .then(data2 => {
                     console.log("L'association s'est bien passée");
+                })
+                .catch(error => {
+                    console.error('Statistics error:', error);
+                });
+                AchievementsService.associateAchievementsToNewUser(username)
+                .then(data3 => {
+                    console.log("La création d'achievements s'est bien passée");
                 })
                 .catch(error => {
                     console.error('Statistics error:', error);
