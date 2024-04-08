@@ -15,7 +15,7 @@
     transform: translateX(0);
 }
 
-#friendsResults {
+#friendsResultsChat {
     max-height: 40vh;
     overflow-y: auto;
     overflow-x: hidden;
@@ -26,11 +26,11 @@
     align-items: center;
 }
 
-#friendsResults li div {
+#friendsResultsChat li div {
     position: relative;
 }
 
-#friendsResults li {
+#friendsResultsChat li {
     background-image: url('../img/friends/liBackground.png');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -42,7 +42,7 @@
     width: 15vw;
 }
 
-#friendsResults li a {
+#friendsResultsChat li a {
     margin-top: 0;
     text-decoration: none;
     color: white !important;
@@ -51,9 +51,10 @@
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
+    margin-right: 1vw;
 }
 
-#friendsResults li button.chat {
+#friendsResultsChat li button.chat {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -69,7 +70,7 @@
     cursor: pointer;
 }
 
-#friendsResults li button.chat.message {
+#friendsResultsChat li button.chat.message {
     background-image: url('../img/friends/denied.png');
 }
 
@@ -84,10 +85,22 @@
     align-items: center;
 }
 
-.friend-name-header {
-    margin-top: 3vh;
+.header-section {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 30vw;
+    margin-top: 1vh;
     margin-bottom: 3vh;
-    margin-left: 3vw;
+    margin-left: 1vw;
+}
+
+.back-button {
+    margin-right: 8vw;
+}
+
+.friend-name-header {
     color: white !important;
     font-family: 'PUSAB', sans-serif;
     font-size: 6vh;
@@ -106,9 +119,11 @@
 
 .chat-area div {
     margin: 1vh;
-    padding: 1vh;
+    padding: 1vh 1vw;
     border-radius: 1vh;
     word-wrap: break-word;
+    font-size: 3vh;
+    font-family: 'joystix', sans-serif;
 }
 
 .chat-area div.own-message {
@@ -151,6 +166,11 @@
 @font-face {
     font-family: 'PUSAB';
     src: url('../img/game/PUSAB___.otf');
+}
+
+@font-face {
+    font-family: 'joystix';
+    src: url('../font/joystix_monospace.otf');
 }
 
 .burger-chat-button {
