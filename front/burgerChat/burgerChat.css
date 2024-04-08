@@ -69,6 +69,10 @@
     cursor: pointer;
 }
 
+#friendsResults li button.chat.message {
+    background-image: url('../img/friends/denied.png');
+}
+
 #chatSection {
     display: none;
     height: 100%;
