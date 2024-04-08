@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
             console.error('Error fetching current user:', error);
         });
-        StatService.getRanking(token)
+        StatService.getRanking(username)
             .then(ranking => {
                 if (ranking.ranking !== 0) {
                     rankElement.innerText = ranking.ranking;
@@ -139,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const myUsernameElement = document.getElementById('username-me');
         myUsernameElement.textContent = username;
         const myRankElement = document.getElementById('ranking-me');
-        StatService.getRanking(token)
+        StatService.getRanking(username)
             .then(ranking => {
                 if (ranking.ranking !== 0) {
                     myRankElement.innerText = ranking.ranking;
