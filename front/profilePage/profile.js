@@ -237,7 +237,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOptionsContainer = document.getElementById('modal-options-container');
 
     myProfilePictureElement.addEventListener('click', () => {
-        modalContainer.style.display = 'block';
+        if(confirm("Voulez-vous changer votre photo de profil ?")) {
+            modalContainer.style.display = 'block';
+        }
     });
 
     modalOptionsContainer.addEventListener('click', (event) => {
