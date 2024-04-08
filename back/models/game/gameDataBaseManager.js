@@ -1,6 +1,8 @@
 const { MongoClient } = require('mongodb');
 const { uri } = require('../../bdd.js');
-const { createGameStateInDatabase, setGameStateToFinishedInDatabase, gameStatesNotFinished} = require('./gameState');
+const { createGameStateInDatabase, setGameStateToFinishedInDatabase, gameStatesNotFinished,
+    retrieveGameStateWithIDFromDatabase
+} = require('./gameState');
 const { createVisibilityMapInDatabase, changeVisibilityMapInDatabase, retrieveVisibilityMapWithGameStateIDFromDatabase} = require('./visibilityMap');
 const { createPlayerInDatabase, retrieveAllGamesIDWithUserID, changeUserPlayerPositionInDatabase,
     changeAIPlayerPositionInDatabase, addWallToAIPlayerInDatabase, addWallToUserPlayerInDatabase,
@@ -25,7 +27,7 @@ async function createGameInDatabase(gameState, visibilityMap, users, gameStateID
             let userPlayer2 = gameState.players.find(player => player.id === 'player1');
             await createPlayerInDatabase(database, gameStateID, userPlayer2, users.userId2);
         } else {
-            let aiPlayer = gameState.players.find(player => player.id === 'ia');
+            let aiPlayer = gameState.players.find(player => player.id === 'player1');
             await createPlayerInDatabase(database, gameStateID, aiPlayer);
         }
     } catch (error) {
@@ -58,10 +60,12 @@ async function retrieveGameStateFromDB(gameStateID) {
     try {
         await client.connect();
         const database = client.db('myapp_db');
+        const gameStateTemp = await retrieveGameStateWithIDFromDatabase(database, gameStateID);
         const gameState = {
-            players: []
+            players: [],
+            isGameActive: !gameStateTemp.gameFinished
         };
-        await retrievePlayersWithGamestateIDFromDatabase(database, gameStateID, gameState);
+        await retrievePlayersWithGamestateIDFromDatabase(gameStateTemp._id, gameState);
         return gameState;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
@@ -121,7 +125,7 @@ async function moveAIPlayerInDatabase(gameStateID, targetPosition, token) {
     }
 }
 
-async function toggleWallInDatabase(gameStateID, wall, isVertical, token) {
+async function toggleWallInDatabase(gameStateID, wall, isVertical, token, aiMove) {
     if (token){
         var userID = verifyAndValidateUserID(token);
         if (!userID) {
@@ -135,10 +139,10 @@ async function toggleWallInDatabase(gameStateID, wall, isVertical, token) {
             wall.push({
                 isVertical: isVertical
             });
-            if (userID) {
-                await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
-            } else {
+            if (aiMove) {
                 await addWallToAIPlayerInDatabase(database, gameStateID, wall);
+            } else {
+                await addWallToUserPlayerInDatabase(database, gameStateID, wall, userID);
             }
         } catch (error) {
             console.error("Error connecting to MongoDB:", error);

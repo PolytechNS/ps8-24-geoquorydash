@@ -4,12 +4,20 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <link rel="stylesheet" href="gameHistory.css">
+    <link rel="stylesheet" href="../burgerChat/burgerChat.css">
     <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
 </head>
 <body>
     <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
     <div id="burger-menu-container"></div>
+
+    <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
+    <div id="burger-chat-container"></div>
+
     <script type="module" src="gameHistory.js"></script>
+    <script src="../burgerChat/burgerChat.js" type="module"></script>
     <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+    <script src="../sockets/socket.io.js"></script>
+    <script type="module" src="../sockets/userSocketConnection.js"></script>
 </body>
 </html>

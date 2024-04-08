@@ -33,8 +33,12 @@ class FogOfWar{
         try {
             const visibilityMap = await retrieveVisibilityMapFromDatabase(gameStateID);
             if (visibilityMap) {
-                this.visibilityMapObjectList[gameStateID].visibilityMap = visibilityMap;
-                return visibilityMap;
+                this.visibilityMapObjectList[gameStateID] = {
+                    visibilityMap: visibilityMap,
+                    oldPlayer1AdjacentsCells: this.getAdjacentPlayerCellsIndices(gameManager.gameStateList[gameStateID].players[0].position.x, gameManager.gameStateList[gameStateID].players[0].position.y),
+                    oldPlayer2AdjacentsCells: this.getAdjacentPlayerCellsIndices(gameManager.gameStateList[gameStateID].players[1].position.x, gameManager.gameStateList[gameStateID].players[1].position.y)
+                };
+                return this.visibilityMapObjectList[gameStateID].visibilityMap;
             }
             return null;
         } catch (error) {
@@ -79,7 +83,7 @@ class FogOfWar{
         visibilityMapObject.oldPlayer1AdjacentsCells = adjacentPlayer1Cells;
         visibilityMapObject.oldPlayer2AdjacentsCells = adjacentPlayer2Cells;
 
-        this.displayVisibilityMap(id);
+        // this.displayVisibilityMap(id);
     }
 
     getAdjacentPlayerCellsIndices(i, j) {

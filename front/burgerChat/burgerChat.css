@@ -1,0 +1,217 @@
+.burger-chat {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 30vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.show {
+    display: block;
+    transform: translateX(0);
+}
+
+#friendsResultsChat {
+    max-height: 40vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 30vw;
+    list-style-type: none;
+    display: flex;
+    justify-content: left;
+    align-items: center;
+}
+
+#friendsResultsChat li div {
+    position: relative;
+}
+
+#friendsResultsChat li {
+    background-image: url('../img/friends/liBackground.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding-left: 3vw;
+    margin-bottom: 3vh;
+    margin-left: 0;
+    list-style-type: none;
+    width: 15vw;
+}
+
+#friendsResultsChat li a {
+    margin-top: 0;
+    text-decoration: none;
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+    margin-right: 1vw;
+}
+
+#friendsResultsChat li button.chat {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-image: url('../img/chat/chat.png');
+    right: -4vw;
+    background-color: transparent;
+    background-position: center;
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    border: none;
+    width: 6vh;
+    height: 6vh;
+    cursor: pointer;
+}
+
+#friendsResultsChat li button.chat.message {
+    background-image: url('../img/friends/denied.png');
+}
+
+#chatSection {
+    display: none;
+    height: 100%;
+    width: 30vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.header-section {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+    width: 30vw;
+    margin-top: 1vh;
+    margin-bottom: 3vh;
+    margin-left: 1vw;
+}
+
+.back-button {
+    margin-right: 8vw;
+}
+
+.back-button img {
+    width: 6vh;
+    height: 6vh;
+    cursor: pointer;
+}
+
+.friend-name-header {
+    color: white !important;
+    font-family: 'PUSAB', sans-serif;
+    font-size: 6vh;
+    -webkit-text-stroke-width: 3px;
+    -webkit-text-stroke-color: black;
+    letter-spacing: 0.1vw;
+}
+
+.chat-area {
+    height: 70vh;
+    width: 27vw;
+    overflow-y: auto;
+    overflow-x: hidden;
+    margin-bottom: 5vh;
+}
+
+.chat-area div {
+    margin: 1vh;
+    padding: 1vh 1vw;
+    border-radius: 1vh;
+    word-wrap: break-word;
+    font-size: 3vh;
+    font-family: 'joystix', sans-serif;
+}
+
+.chat-area div.own-message {
+    margin-left: 10vw;
+    text-align: right;
+    background-color: #007bff;
+    opacity: 0.9;
+    color: white;
+}
+
+.chat-area div.friend-message {
+    margin-right: 10vw;
+    background-color: dimgrey;
+    opacity: 0.9;
+    color: white;
+}
+
+.message-input-container {
+    display: flex;
+    width: 27vw;
+}
+
+.message-input-container input[type="text"] {
+    width: 80%;
+    height: 6vh;
+    margin-right: 5%;
+    font-size: 4vh;
+}
+
+.message-input-container button {
+    width: 13%;
+    height: 6vh;
+    background-image: url('../img/chat/send.png');
+    background-size: 100% 100%;
+    border: none;
+    cursor: pointer;
+    border-radius: 100%;
+}
+
+@font-face {
+    font-family: 'PUSAB';
+    src: url('../img/game/PUSAB___.otf');
+}
+
+@font-face {
+    font-family: 'joystix';
+    src: url('../font/joystix_monospace.otf');
+}
+
+.burger-chat-button {
+    position: fixed;
+    top: 15vh;
+    left: 2vw;
+    z-index: 999;
+    width: 4vw;
+    height: 8vh;
+}
+
+.burger-chat-button img {
+    width: 100%;
+    height: 100%;
+}
+
+.burger-chat-button.open {
+    left: 33vw;
+}
+
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0);
+    z-index: 998;
+    display: none;
+    backdrop-filter: blur(0);
+    transition: background-color 0.5s ease, backdrop-filter 0.5s ease;
+}
+
+.burger-chat.show + .overlay {
+    display: block;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}

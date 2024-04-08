@@ -1,9 +1,18 @@
-import {askPossibleMove, handleCellAction, lockBarrier, activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts} from "./game.js";
+import {
+    askPossibleMove,
+    lockBarrier,
+    activateBarrierCellListeners,
+    deactivateBarrierCellListeners,
+    updatePlayerBarrierCounts,
+    getPlayerElementById
+} from "./game.js";
+
+let continueMap = new Map(); // Clé : ID du joueur, Valeur : booléen indiquant si l'animation doit continuer
 
 function hideOldPossibleMoves() {
     let playerCells = document.getElementsByClassName('player-cell');
     for (let i = 0; i < playerCells.length; i++) {
-        playerCells[i].style.backgroundColor = '';
+        playerCells[i].classList.remove('blinking');
     }
 }
 
@@ -32,32 +41,43 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
     hideOldPossibleMoves(player);
 
     let playerCell = document.getElementById(`cell-${player.position.x}-${player.position.y}`);
-    playerCell.appendChild(document.getElementById(player.id));
+    console.log(getPlayerElementById(player.id));
+    playerCell.appendChild(getPlayerElementById(player.id));
     playerCell.firstElementChild.style.opacity = 1;
     playerCell.style.opacity = 1;
 
     let otherPlayer = gameState.players.find(otherPlayer => otherPlayer.id !== player.id);
     let otherPlayerCell = document.getElementById(`cell-${otherPlayer.position.x}-${otherPlayer.position.y}`);
-    var otherPlayerInBoard = document.getElementById(otherPlayer.id);
-    otherPlayerCell.appendChild(otherPlayerInBoard);
-    otherPlayerCell.style.opacity === '1' ? otherPlayerInBoard.style.opacity = '1' : otherPlayerInBoard.style.opacity = '0';
-
+    console.log(getPlayerElementById(otherPlayer.id));
+    var otherPlayerInBoard = getPlayerElementById(otherPlayer.id);
+    if (otherPlayerCell.style.opacity === '1'){
+        otherPlayerCell.appendChild(otherPlayerInBoard);
+        otherPlayerInBoard.style.opacity = '1';
+    } else {
+        otherPlayerInBoard.remove();
+    }
     displayWalls(gameState);
-
     const barrierCells = document.getElementsByClassName('barrier-cell');
     if (player.isCurrentPlayer) {
         Array.from(barrierCells).forEach(barrierCell => {
             let barrierCellId = barrierCell.id;
             let { i, j } = getIndicesFromId(barrierCellId);
-            activateBarrierCellListeners(barrierCell, i, j);
+            activateBarrierCellListeners(barrierCell, i, j, player.id);
         });
         askPossibleMove();
+        if (localStorage.getItem('roomId')) {
+            progress(300,300, player.id)
+            stopProgress(otherPlayer.id)
+        }
     } else {
         Array.from(barrierCells).forEach(barrierCell => {
             deactivateBarrierCellListeners(barrierCell);
         });
+        if (localStorage.getItem('roomId')) {
+            progress(300, 300, otherPlayer.id)
+            stopProgress(player.id)
+        }
     }
-
 }
 
 function updateBoardDisplayLocalGame(gameState, visibilityMap) {
@@ -72,15 +92,19 @@ function updateBoardDisplayLocalGame(gameState, visibilityMap) {
     hideOldPossibleMoves(currentPlayer);
 
     let currentPlayerCell = document.getElementById(`cell-${currentPlayerPosition.x}-${currentPlayerPosition.y}`);
-    currentPlayerCell.appendChild(document.getElementById('player2'));
+    currentPlayerCell.appendChild(getPlayerElementById('player2'));
     currentPlayerCell.firstElementChild.style.opacity = 1;
     currentPlayerCell.style.opacity = 1;
 
     let otherPlayerPosition = gameState.players.find(player => player.id !== currentPlayer.id).position;
     let otherPlayerCell = document.getElementById(`cell-${otherPlayerPosition.x}-${otherPlayerPosition.y}`);
-    var otherPlayer = document.getElementById('player1');
-    otherPlayerCell.appendChild(otherPlayer);
-    otherPlayerCell.style.opacity === '1' ? otherPlayer.style.opacity = '1' : otherPlayer.style.opacity = '0';
+    var otherPlayer =getPlayerElementById('player1');
+    if (otherPlayerCell.style.opacity === '1'){
+        otherPlayerCell.appendChild(otherPlayer);
+        otherPlayer.style.opacity = '1';
+    } else {
+        otherPlayer.remove();
+    }
 
     displayWalls(gameState);
 
@@ -91,159 +115,85 @@ function displayWalls(gameState) {
     gameState.players.forEach(player => {
         player.walls.forEach(wall => {
             let cell = document.getElementById(`cell-${wall[0].x}-${wall[0].y}`);
-            handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier');
-            lockBarrier(wall);
+            // handleCellAction(cell, wall[0].x, wall[0].y, 'displayBarrier', player.id);
+            lockBarrier(wall, true, player.id);
         });
     })
 }
 
-function getAdjacentPlayerCellsIndices(i, j) {
-    let adjacentIndices = [];
+function popUp(text) {
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+    
+    var textContent = document.querySelector('.modal-content p')
+    textContent.textContent = text;
+    modalContent.appendChild(textContent);
 
-    let playerCellRow = i / 2;
-    let playerCellCol = j / 2;
-    let baseIndex = playerCellRow * 9 + playerCellCol; // Convert 2D position to 1D
-
-    // Check player cell itself
-    adjacentIndices.push(baseIndex);
-
-    // Check left player cell
-    if (j > 1) {
-        adjacentIndices.push(baseIndex - 1);
-    }
-
-    // Check right player cell
-    if (j < 15) {
-        adjacentIndices.push(baseIndex + 1);
-    }
-
-    // Check top player cell
-    if (i > 1) {
-        adjacentIndices.push(baseIndex - 9);
-    }
-
-    // Check bottom player cell
-    if (i < 15) {
-        adjacentIndices.push(baseIndex + 9);
-    }
-
-    return adjacentIndices;
+    modal.style.display = "block";
 }
 
-function getAdjacentBarrierCellsIndicesHorizontal(i,j) {
-    let nearAdjacentIndices = [];
-    let farAdjacentIndices = [];
-    let barrierCellRow = (i-1)/2;
-    let barrierCellCol = j/2;
-    let baseIndex = barrierCellRow * 9 + barrierCellCol;
-
-    nearAdjacentIndices.push(baseIndex);
-    nearAdjacentIndices.push(baseIndex + 1);
-    nearAdjacentIndices.push(baseIndex + 9);
-    nearAdjacentIndices.push(baseIndex + 10);
-
-    if (j>1){
-        farAdjacentIndices.push(baseIndex - 1);
-        farAdjacentIndices.push(baseIndex + 8);
-    }
-    if (j<14){
-        farAdjacentIndices.push(baseIndex + 2);
-        farAdjacentIndices.push(baseIndex + 11);
-    }
-    if (i>1){
-        farAdjacentIndices.push(baseIndex - 9);
-        farAdjacentIndices.push(baseIndex - 8);
-    }
-    if (i<15){
-        farAdjacentIndices.push(baseIndex + 18);
-        farAdjacentIndices.push(baseIndex + 19);
+function confirmationPopup(askTextButtonInteraction) {
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
+    
+    var btn = document.createElement('button');
+    btn.textContent = 'OK';
+    btn.id = 'confirmButton';
+    modalContent.appendChild(btn);
+    
+    var span =document.createElement('span');
+    span.innerHTML = '&times;';
+    span.classList.add('close');
+    modalContent.appendChild(span);
+    
+    // Quand l'utilisateur clique sur <span> (x), fermez la modale
+    span.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
     }
 
-    let adjacentIndices = [];
-    adjacentIndices.push(nearAdjacentIndices);
-    adjacentIndices.push(farAdjacentIndices)
-    return adjacentIndices;
+    // Quand l'utilisateur clique sur le bouton de confirmation
+    btn.onclick = function() {
+        modal.style.display = "none";
+        askTextButtonInteraction();
+    }
 }
 
-function getAdjacentBarrierCellsIndicesVertical(i,j) {
-    let nearAdjacentIndices = [];
-    let farAdjacentIndices = [];
-    let barrierCellRow = i/2;
-    let barrierCellCol = (j-1)/2;
-    let baseIndex = barrierCellRow * 9 + barrierCellCol;
+function progress(timeleft, timetotal, currentPlayerID) {
+    console.log(currentPlayerID);
+    // selectionner la div #bar enfant de #progress-bar-${currentPlayerID}
+    var progressBar = document.querySelector(`#progress-bar-${currentPlayerID} .bar`);
 
-    nearAdjacentIndices.push(baseIndex);
-    nearAdjacentIndices.push(baseIndex + 1);
-    nearAdjacentIndices.push(baseIndex + 9);
-    nearAdjacentIndices.push(baseIndex + 10);
+    var width = 100;
+    var totalTime = timetotal;
+    continueMap.set(currentPlayerID, true); // Démarre l'animation pour ce joueur
 
-    if (j>1){
-        farAdjacentIndices.push(baseIndex - 1);
-        farAdjacentIndices.push(baseIndex + 8);
-    }
-    if (j<15){
-        farAdjacentIndices.push(baseIndex + 2);
-        farAdjacentIndices.push(baseIndex + 11);
-    }
-    if (i>1){
-        farAdjacentIndices.push(baseIndex - 9);
-        farAdjacentIndices.push(baseIndex - 8);
-    }
-    if (i<14){
-        farAdjacentIndices.push(baseIndex + 18);
-        farAdjacentIndices.push(baseIndex + 19);
-    }
-
-    let adjacentIndices = [];
-    adjacentIndices.push(nearAdjacentIndices);
-    adjacentIndices.push(farAdjacentIndices)
-    return adjacentIndices;
-}
-
-function adjustVisibilityForWallsHorizontal(barrierCellId, currentPlayer) {
-    let { i, j } = getIndicesFromId(barrierCellId);
-    let adjacentBarrierCells = getAdjacentBarrierCellsIndicesHorizontal(i, j);
-
-    if (currentPlayer === 'player1'){
-        let visibilityToAdd = 2;
-        for (let i = 0; i < adjacentBarrierCells.length; i++){
-            for (let j = 0; j < adjacentBarrierCells[i].length; j++){
-                visibilityMap[adjacentBarrierCells[i][j]] += visibilityToAdd;
-            }
-            visibilityToAdd -= 1;
+    function updateProgress() {
+        if (!continueMap.get(currentPlayerID)) { // Vérifie si l'animation doit continuer
+            return;
         }
-    } else {
-        let visibilityToAdd = -2;
-        for (let i = 0; i < adjacentBarrierCells.length; i++){
-            for (let j = 0; j < adjacentBarrierCells[i].length; j++){
-                visibilityMap[adjacentBarrierCells[i][j]] += visibilityToAdd;
-            }
-            visibilityToAdd += 1;
+        var timePassed = totalTime - timeleft;
+        width = 100 - (timePassed / totalTime) * 100;
+        progressBar.style.width = width + '%';
+        progressBar.textContent = `${width.toFixed(0)}`;
+
+        if (timeleft > 0) {
+            timeleft--;
+            requestAnimationFrame(updateProgress);
         }
     }
+
+    requestAnimationFrame(updateProgress);
 }
 
-function adjustVisibilityForWallsVertical(barrierCellId, currentPlayer) {
-    let { i, j } = getIndicesFromId(barrierCellId);
-    let adjacentBarrierCells = getAdjacentBarrierCellsIndicesVertical(i, j);
 
-    if (currentPlayer === 'player1'){
-        let visibilityToAdd = 2;
-        for (let i = 0; i < adjacentBarrierCells.length; i++){
-            for (let j = 0; j < adjacentBarrierCells[i].length; j++){
-                visibilityMap[adjacentBarrierCells[i][j]] += visibilityToAdd;
-            }
-            visibilityToAdd -= 1;
-        }
-    } else {
-        let visibilityToAdd = -2;
-        for (let i = 0; i < adjacentBarrierCells.length; i++){
-            for (let j = 0; j < adjacentBarrierCells[i].length; j++){
-                visibilityMap[adjacentBarrierCells[i][j]] += visibilityToAdd;
-            }
-            visibilityToAdd += 1;
-        }
-    }
+function stopProgress(currentPlayerID) {
+    continueMap.set(currentPlayerID, false); // Arrête l'animation pour ce joueur
+    var progressBar = document.querySelector(`#progress-bar-${currentPlayerID} .bar`);
+    progressBar.style.width = '100%';
+    progressBar.textContent = '';
 }
 
-export {  updateBoardDisplay, adjustVisibilityForWallsHorizontal, adjustVisibilityForWallsVertical };
+
+export { updateBoardDisplay, popUp, confirmationPopup};
