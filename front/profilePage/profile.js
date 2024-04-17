@@ -3,6 +3,7 @@ import { AuthService }  from "../Services/authService.js";
 import { FriendsService } from "../Services/friendsService.js";
 import { StatService } from "../Services/statService.js";
 import { AchievementsService } from '../Services/achievementsService.js';
+import userSocket from "../sockets/userSocketConnection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
     const myProfile = document.querySelector('.profile-container-me');
@@ -187,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (addFriendBtn.style.backgroundImage.includes('add.png')) {
                         FriendsService.addFriend(currentUser, username)
                             .then(response => {
+                                userSocket.emit('addFriendRequest', currentUser, username);
                                 alert(response.message);
                                 updateButtonImage('../img/profile/cancel.png');
                             })

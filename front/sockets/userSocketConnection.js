@@ -64,6 +64,25 @@ userSocket.on('removeChatNotification', function(username) {
     }
 });
 
+userSocket.on('friendRequest', function(fromUsername) {
+    const popup = document.getElementById('friend-request-modal');
+    
+    // On affiche la popup
+    popup.style.display = 'flex';
+    setTimeout(() => {
+        popup.firstElementChild.classList.add('active');
+    }, 100);
+    
+    
+    // On fait disparaître la popup après 3 secondes
+    setTimeout(() => {
+        popup.firstElementChild.classList.remove('active');
+    }, 3000);
+    setTimeout(() => {
+        popup.style.display = 'none';
+    }, 3300);
+});
+
 
 window.addEventListener('beforeunload', function () {
     if (token) {

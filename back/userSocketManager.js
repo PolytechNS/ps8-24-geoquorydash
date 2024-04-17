@@ -64,6 +64,16 @@ const userSetupSocket = (io) => {
                 console.log('Invalid token');
             }
         });
+
+        socket.on('addFriendRequest', async (fromUsername, toUsername) => {
+            const toUserId = await findUserIdByUsername(toUsername);
+            const toSocket = usersConnected.getUserSocket(toUserId);
+            if (toSocket) {
+                toSocket.emit('friendRequest', fromUsername);
+            } else {
+                console.log(`User ${toUsername} is not connected.`);
+            }
+        });
     });
 }
 
