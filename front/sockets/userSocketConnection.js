@@ -35,18 +35,32 @@ userSocket.on('gameRequestDeclined', function(payload) {
 });
 
 userSocket.on('message', function(data) {
-    const burgerChatButton = document.getElementById('burger-chat-button')
     const timestamp = new Date().getTime(); // Génère le timestamp actuel
+
+    const burgerChatButton = document.getElementById('burger-chat-button')
     burgerChatButton.firstElementChild.src = `../img/chat/chat_notif.png?${timestamp}`;
+
+    const senderChatButton = document.getElementById('chat-' + data.sender);
+    if (senderChatButton) {
+        console.log('data', data);
+        senderChatButton.style.backgroundImage = `url('../img/chat/chat_notif.png?${timestamp}')`;
+    }
 });
 
-userSocket.on('chatNotifications', function(data) {
+userSocket.on('updateGlobalChatNotifications', function(data) {
     console.log('chatNotifications', data);
     const burgerChatButton = document.getElementById('burger-chat-button');
     if (data){
         burgerChatButton.firstElementChild.src = `../img/chat/chat_notif.png`;
     } else {
         burgerChatButton.firstElementChild.src = `../img/chat/chat.png`;
+    }
+});
+
+userSocket.on('removeChatNotification', function(username) {
+    const senderChatButton = document.getElementById('chat-' + username);
+    if (senderChatButton) {
+        senderChatButton.style.backgroundImage = `url('../img/chat/chat.png')`;
     }
 });
 
