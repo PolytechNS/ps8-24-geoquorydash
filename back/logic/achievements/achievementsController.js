@@ -66,22 +66,23 @@ async function updateFriendsAchievements(req, res) {
 }
 
 async function retrieveAchievements(req, res) {
-    const authHeader = req.headers.authorization;
-    let token;
+    parseJSON(req, async (err, { username }) => {
+        if (err) {
+            res.writeHead(400, { 'Content-Type': 'text/plain' });
+            res.end('Invalid JSON');
+            return;
+        }
 
-    if (authHeader && authHeader.startsWith('Bearer ')) {
-        token = authHeader.split(' ')[1];
-    }
-
-    try {
-        const achievementsStructure = await retrieveAchievementsFromDatabaseForAUser(token);
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ achievementsStructure }));
-    } catch (error) {
-        console.error("Error retrieving game history:", error);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Internal Server Error');
-    }
+        try {
+            const achievementsStructure = await retrieveAchievementsFromDatabaseForAUser(username);
+            res.writeHead(200, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ achievementsStructure }));
+        } catch (error) {
+            console.error("Error retrieving game history:", error);
+            res.writeHead(500, { 'Content-Type': 'text/plain' });
+            res.end('Internal Server Error');
+        }
+    });
 }
 
 module.exports = { associateAchievementsToNewUser, updateFriendsAchievements, retrieveAchievements };

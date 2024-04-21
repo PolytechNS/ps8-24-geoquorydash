@@ -3,6 +3,7 @@ const { ObjectId } = require('mongodb');
 const { uri } = require('../../bdd.js');
 const { InvalidTokenError, DatabaseConnectionError } = require('../../utils/errorTypes');
 const { verifyAndValidateUserID } = require('../../logic/authentification/authController');
+const {createUserCollection} = require('../../models/users/users');
 
 async function createAchievementsInDatabase(userId) {
     console.log("On rentre dans la méthode de création des achievements");
@@ -51,13 +52,9 @@ async function updateAchievementsInDatabase(userId, achievement) {
     }
 }
 
-async function retrieveAchievementsFromDatabaseForAUser(token) {
+async function retrieveAchievementsFromDatabaseForAUser(username) {
     console.log("On rentre dans la méthode de récupération des achievements");
-    var userId = verifyAndValidateUserID(token);
-    if (!userId) {
-        console.error("Invalid token");
-        throw new InvalidTokenError("Invalid token");
-    }
+    var userId = await getUserIdByUsername(username);
     const client = new MongoClient(uri);
     try {
         await client.connect();
@@ -66,14 +63,28 @@ async function retrieveAchievementsFromDatabaseForAUser(token) {
         userId = new ObjectId(userId);
         const achievementsStructure = await achievementsCollection.findOne({ userId: userId });
         if(achievementsStructure) {
+            console.log("On a bien trouvé des achievements pour le joueur de username " + username);
             return achievementsStructure;
         } else {
+            console.log("Aucun achievement trouvé pour l'utilisateur de username " + username);
             throw new Error('No achievements found for this user');
         }
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw new DatabaseConnectionError("Error connecting to MongoDB");
     }
+}
+
+async function getUserIdByUsername(username) {
+    try {
+        const usersCollection = await createUserCollection();
+        const user = await usersCollection.findOne({ username });
+        return user._id;
+    } catch (error) {
+        console.error("Error fetching user by username:", error);
+        throw error;
+    }
+
 }
 
 module.exports = { createAchievementsInDatabase, updateAchievementsInDatabase, retrieveAchievementsFromDatabaseForAUser };
