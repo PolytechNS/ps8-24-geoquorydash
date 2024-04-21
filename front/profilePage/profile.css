@@ -12,7 +12,7 @@ body {
     overflow: hidden;
 }
 
-.profile-container {
+.profile-container-friend {
     flex-direction: row;
     justify-content: flex-start;
     width: 100%;
@@ -145,6 +145,7 @@ body {
     -webkit-text-stroke-width: 3px;
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
+    cursor: pointer;
 }
 
 #rankContainer {

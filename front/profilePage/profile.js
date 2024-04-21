@@ -5,19 +5,50 @@ import { StatService } from "../Services/statService.js";
 import { AchievementsService } from '../Services/achievementsService.js';
 
 document.addEventListener('DOMContentLoaded', () => {
+    console.log("On est dans la page de profil");
     const myProfile = document.querySelector('.profile-container-me');
-    const profile = document.querySelector('.profile-container');
+    const profile = document.querySelector('.profile-container-friend');
     const addFriendBtn = document.getElementById('add-friend-btn');
 
     const params = new URLSearchParams(window.location.search);
     let username = params.get('username');
+    if(username) {
+        console.log("Le username associé à cette page est : " + username);
+    } else {
+        console.log("Pas de username associé à cette page pour le moment");
+    }
     const token = localStorage.getItem('token');
     if (token) {
-        if (!username) {
+        AuthService.username(token)
+            .then(authUsername => {
+                if(!username) {
+                    username = authUsername;
+                    console.log("Je connais maintenant mon username, et c'est : " + username);
+                    updateMyProfileContent(username);
+                    retrieveAchievements();
+                } else {
+                    if (authUsername === username) {
+                        console.log("Je connaissais déjà mon username, et c'est : " + username);
+                        updateMyProfileContent(username);
+                        retrieveAchievements();
+                    } else {
+                        console.log("C'est un ami, et son username est : " + username);
+                        updateFriendProfileContent(username);
+                        console.log("NEXT FUNCTION");
+                        retrieveAchievements(username);
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching username:', error);
+            });
+        /*if (!username) {
             AuthService.username(token)
                 .then(authUsername => {
                     username = authUsername;
+                    console.log("Je connais maintenant mon username, et c'est : " + username);
                     updateMyProfileContent(username);
+                    retrieveAchievements();
                 })
                 .catch(error => {
                     console.error('Error fetching username:', error);
@@ -28,26 +59,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 .then(authUsername => {
                     if (authUsername === username) {
                         updateMyProfileContent(username);
+                        retrieveAchievements();
+                        console.log("C'est moi");
                     } else {
-                        updateProfileContent(username);
+                        updateFriendProfileContent(username);
+                        retrieveAchievements(username);
+                        console.log("C'est un ami");
                     }
                 })
                 .catch(error => {
                     console.error('Error fetching username:', error);
                 });
-        }
+        }*/
+    }
+
+    function retrieveAchievements(friendUsername) {
         AuthService.username(token)
             .then(authUsername => {
+                if (friendUsername) {
+                    console.log("Cette recherche d'achievement concerne un ami, qui a pour username : " + friendUsername);
+                    authUsername = friendUsername;
+                } else {
+                    console.log("Cette recherche d'achievement me concerne moi, et mon username est : " + authUsername);
+                }
+                /**** CETTE PARTIE EST UNE SIMPLE MISE À JOUR DES ACHIEVEMENTS D'AMI ****/
                 FriendsService.getFriends(authUsername)
                     .then(friends => {
                         const numberOfFriends = friends.length;
                         console.log("Nombre d'amis : " + numberOfFriends);
                         AchievementsService.updateFriendsAchievements(authUsername, numberOfFriends)
                             .then(() => {
-                                AchievementsService.getAchievements(token).then(data => {
-                                    console.log(data);
+                                /**** FIN DE LA MISE À JOUR DES ACHIEVEMENTS D'AMI ****/
+                                AchievementsService.getAchievements(authUsername).then(data => {
+                                    console.log(data.achievementsStructure);
                                     const achievements = data.achievementsStructure.achievements;
-                                    const achievementsContainer = document.getElementById('achievementsContainer');
+                                    var achievementsContainer = null;
+                                    if(friendUsername) {
+                                        console.log("C'est un ami dans l'id");
+                                        achievementsContainer = document.getElementById('friendAchievementsContainer');
+                                    } else {
+                                        console.log("C'est moi dans l'id");
+                                        achievementsContainer = document.getElementById('achievementsContainer');
+                                    }
                                     achievements.forEach(achievement => {
                                         console.log("Un de plus");
                                         const achievementElement = document.createElement('div');
@@ -92,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
-    function updateProfileContent(username) {
+    function updateFriendProfileContent(username) {
         myProfile.style.display = 'none';
         profile.style.display = 'flex';
         const profilePictureElement = document.getElementById('profile-picture-friend');
