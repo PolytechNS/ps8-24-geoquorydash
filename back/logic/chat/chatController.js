@@ -30,8 +30,9 @@ async function getMessages(req, res) {
             if (chat) {
                 const userId = await findUserIdByUsername(username1);
                 notificationManager.removeChatNotification(userId, username2);
+                usersConnected.getUserSocket(userId).emit('removeChatNotification', username2);
                 if (notificationManager.getChatNotifications(userId).length === 0) {
-                    usersConnected.getUserSocket(userId).emit('chatNotifications');
+                    usersConnected.getUserSocket(userId).emit('updateGlobalChatNotifications');
                 }
                 // Récupérer tous les messages et trier par timestamp
                 const messages = chat.messages.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));

@@ -59,10 +59,19 @@ const userSetupSocket = (io) => {
             const userId = verifyAndValidateUserID(token);
             if (userId) {
                 const notifications = notificationManager.getChatNotifications(userId);
-                console.log('Chat notifications retrieved');
-                socket.emit('chatNotifications', notifications);
+                socket.emit('updateGlobalChatNotifications', notifications);
             } else {
                 console.log('Invalid token');
+            }
+        });
+
+        socket.on('addFriendRequest', async (fromUsername, toUsername) => {
+            const toUserId = await findUserIdByUsername(toUsername);
+            const toSocket = usersConnected.getUserSocket(toUserId);
+            if (toSocket) {
+                toSocket.emit('friendRequest', fromUsername);
+            } else {
+                console.log(`User ${toUsername} is not connected.`);
             }
         });
     });
