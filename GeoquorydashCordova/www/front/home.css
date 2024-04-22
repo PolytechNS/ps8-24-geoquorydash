@@ -12,6 +12,15 @@ body {
     position: relative;
 }
 
+#homePageContent {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+}
+
 .top-image {
     width: 80%;
     height: auto;
