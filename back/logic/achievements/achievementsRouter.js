@@ -8,7 +8,7 @@ async function handleAchievementsRoutes(req, res) {
     } else if (url.pathname === '/api/achievements/updatefriendsachievements' && req.method === 'POST') {
         console.log("On a bien reçu la requête de mise à jour des achievements des amis");
         await updateFriendsAchievements(req, res);
-    } else if (url.pathname === '/api/achievements/getachievements' && req.method === 'GET') {
+    } else if (url.pathname === '/api/achievements/getachievements' && req.method === 'POST') {
         await retrieveAchievements(req, res);
     } else {
         res.writeHead(404, {'Content-Type': 'text/plain'});
