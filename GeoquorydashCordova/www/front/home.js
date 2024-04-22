@@ -8,12 +8,14 @@ var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
 var rankModal = document.getElementById("rankModal");
 
+
 var token;
 updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
 }
+
 
 var handleDeconnexionClick = function(event) {
     event.preventDefault();
@@ -25,6 +27,7 @@ var handleDeconnexionClick = function(event) {
         modal.style.display = 'none';
     }
 };
+
 
 // PAGE HOME -> PAGE ACCOUNT
 document.addEventListener("DOMContentLoaded", function() {
@@ -283,6 +286,24 @@ document.addEventListener("DOMContentLoaded", function() {
         if (event.target === statModal) {
             statModal.style.display = "none";
         }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+   const profileButton = document.getElementById('profilePage');
+    profileButton.addEventListener('click', function(event) {
+         event.preventDefault();
+         if (token) {
+              AuthService.username(token)
+                .then(authUsername => {
+                     window.location.href = `./profilePage/profile.html?username=${authUsername}`;
+                })
+                .catch(error => {
+                     console.error('Error fetching username:', error);
+                });
+         } else {
+              alert('Vous devez être connecté pour accéder à votre profil');
+         }
     });
 });
 
@@ -545,3 +566,5 @@ function handleFriendRequest(action, friendUsername) {
         })
         .catch(error => console.error('Error fetching username:', error));
 }
+
+
