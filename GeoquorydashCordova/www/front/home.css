@@ -1,7 +1,8 @@
 body {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
+    flex-direction: column;
     height: 100vh;
     width: 100vw;
     margin: 0;
@@ -12,29 +13,16 @@ body {
 }
 
 .top-image {
-    position: absolute;
-    top: 5%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 80vw;
+    width: 80%;
     height: auto;
 }
 
 .main,
 .secondary {
-    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
     flex-direction: row;
-}
-
-.main {
-    top: 35%;
-}
-
-.secondary {
-    top: 70%;
 }
 
 .main a,
