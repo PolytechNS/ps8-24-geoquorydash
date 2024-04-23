@@ -14,7 +14,7 @@ RUN npm install
 COPY back .
 
 # Pour copier les fichiers sources de l’application dans le conteneur
-COPY GeoquorydashCordova/www/front ./front
+COPY GeoquorydashCordova/www ./front
 
 # Pour exposer le port sur lequel l’application d’exécute
 EXPOSE 8000
