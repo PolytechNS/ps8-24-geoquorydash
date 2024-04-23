@@ -106,10 +106,15 @@ class GameOnlineManager {
             }];
             return waitingRoomId;
         } else {
-            this.gameRequestsWaitingRooms[data.waitingRoomId].push({
-                userId : data.userIdReceiver,
-                socket : socket
-            });
+            try {
+                this.gameRequestsWaitingRooms[data.waitingRoomId].push({
+                    userId : data.userIdReceiver,
+                    socket : socket
+                });
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         }
     }
 
