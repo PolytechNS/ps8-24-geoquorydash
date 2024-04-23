@@ -25,13 +25,12 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     color: white;
+    font-family: 'PUSAB', sans-serif;
+    -webkit-text-stroke-width: 0.3px;
+    -webkit-text-stroke-color: black;
     font-size: 30px;
     font-weight: bold;
     text-align: center;
-    font-family: 'PUSAB', sans-serif;
-    background: -webkit-linear-gradient(#ffef00, #986f00);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     opacity: 0;
     transition: opacity 0.3s ease;
     pointer-events: none;
@@ -46,6 +45,7 @@ body {
 .profile-picture:hover {
     opacity: 0.4;
 }
+
 
 
 
@@ -344,7 +344,7 @@ body {
 #modal-options-container {
     background-color: white;
     margin: auto;
-    padding: 2vh 2vw;
+    padding: 4vh 2vw;
     border-radius: 10px;
     position: fixed;
     z-index: 999;
@@ -357,13 +357,20 @@ body {
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 10px;
+    grid-gap: 35px;
 }
 
 .photo-grid img {
     width: 100%;
-    height: auto;
+    height: 100%;
     border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }
+
+.photo-grid img:hover {
+    transform: scale(1.3);
+}
+
 
 
