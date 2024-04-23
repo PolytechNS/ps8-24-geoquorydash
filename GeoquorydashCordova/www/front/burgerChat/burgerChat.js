@@ -31,7 +31,7 @@ burgerChatButton.addEventListener('click', async () => {
 });
 
 async function loadBurgerChat() {
-    const response = await fetch('./burgerChat/burgerChat.html');
+    const response = await fetch('../burgerChat/burgerChat.html');
     const html = await response.text();
     burgerChatContainer.innerHTML = html;
 
