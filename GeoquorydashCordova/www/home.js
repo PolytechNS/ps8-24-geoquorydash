@@ -568,3 +568,21 @@ function handleFriendRequest(action, friendUsername) {
 }
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    var openAccountPage = document.getElementById("openAccountPage");
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+    var openModal = urlParams.get('openModal');
+    console.log("on passe ici");
+    if (openModal === 'true') {
+        accountModal.style.display = "flex";
+        var newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        console.log("true");
+    }else{
+        accountModal.style.display = "none";
+        console.log("false")
+    }
+
+});
+

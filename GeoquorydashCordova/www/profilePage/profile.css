@@ -56,7 +56,7 @@ body {
     padding-left: 1vw;
 }
 
-#profilePictureContainer {
+.profilePictureContainer {
     width: 20%;
     padding-top: 20%;
     position: relative;
@@ -73,7 +73,7 @@ body {
     object-fit: cover;
 }
 
-#usernameContainer {
+.usernameContainer {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -106,9 +106,9 @@ body {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
-    height: 50%;
-    width: 20vw;
-    border-radius: 35px;
+    height: 30%;
+    width: 23%;
+    border-radius: 10px;
     margin-left: 5vw;
     cursor: pointer;
 }
@@ -148,7 +148,7 @@ body {
     cursor: pointer;
 }
 
-#rankContainer {
+.rankContainer {
     width: 24%;
     padding-top: 24%;
     position: relative;
@@ -175,14 +175,14 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
-#rankImageContainer {
+.rankImageContainer {
     width: 80%;
     height: auto;
     background-size: 100% 100%;
     background-repeat: no-repeat;
 }
 
-#rankImageContainer img {
+.rankImageContainer img {
     width: 100%;
     height: 100%;
     object-fit: cover;

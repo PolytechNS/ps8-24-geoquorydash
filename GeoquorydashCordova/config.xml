@@ -8,7 +8,7 @@
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
-    <content src="front/home.html" />
+    <content src="home.html" />
     <preference name="scheme" value="http" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
