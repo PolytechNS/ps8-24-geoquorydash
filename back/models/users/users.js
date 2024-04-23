@@ -30,6 +30,7 @@ async function findUserIdByUsername(username) {
 }
 
 async function findUsernameById(id) {
+    console.log("id:", id)
     if (!id) return null;
     const client = new MongoClient(uri);
     try {
