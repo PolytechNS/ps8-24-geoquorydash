@@ -169,7 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ProfileService.button(username, currentUser)
                     .then(buttonData => {
                         if (buttonData.button === 'friends') {
-                            updateButtonImage('../img/profile/friend.png');
+                            updateButtonImage('../img/profile/delete.png');
                         } else if(buttonData.button === 'pending') {
                             updateButtonImage('../img/profile/cancel.png');
                         } else {
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             .catch(error => {
                                 console.error('Error sending friend request:', error);
                             });
-                    } else if (addFriendBtn.style.backgroundImage.includes('friend.png')) {
+                    } else if (addFriendBtn.style.backgroundImage.includes('delete.png')) {
                         // Confirmation de suppression d'ami
                         if (confirm("Êtes-vous sûr de vouloir supprimer cet ami ?")) {
                             // Si l'utilisateur confirme, supprimez l'ami
