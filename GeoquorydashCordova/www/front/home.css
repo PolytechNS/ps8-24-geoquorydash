@@ -77,38 +77,39 @@ body {
     width: 65vw;
     height: 86vh;
     
-    padding: 0 80px 100px 80px;
+    padding: 0 calc(min(3.5vh, 3vw) + min(5.5vh, 5vw)) min(11vh, 10vw) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw));
 
     background: 
     /* top-left corner */
-    url("img/home/top_left_corner.png") top left/100px 100px no-repeat,
+    url("img/home/top_left_corner.png") top left/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
     /* top-right corner */
-    url("img/home/top_right_corner.png") top right/100px 100px no-repeat,
+    url("img/home/top_right_corner.png") top right/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
     /* bottom-left corner */
-    url("img/home/bottom_left_corner.png") bottom 50px left/100px 50px no-repeat,
+    url("img/home/bottom_left_corner.png") bottom min(5.5vh, 5vw) left/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
     /* bottom-right corner */
-    url("img/home/bottom_right_corner.png") bottom 50px right/100px 50px no-repeat,
+    url("img/home/bottom_right_corner.png") bottom min(5.5vh, 5vw) right/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
     /* bottom-middle corner */
-    url("img/home/bottom_middle_block.png") bottom/130px 100px no-repeat,
+    url("img/home/bottom_middle_block.png") bottom/min(14.5vh, 13vw) min(11vh, 10vw) no-repeat,
     /* top wall */
-    url("img/home/top_bar.png") top left 95px/calc(65vw - 190px) 100px no-repeat,
+    url("img/home/top_bar.png") top left min(10vh, 9vw)/calc(65vw - min(20vh, 18vw)) min(11vh, 10vw) no-repeat,
     /* bottom wall */
-    url("img/home/bottom_bar.png") bottom 20px left 95px/calc(65vw - 190px) 80px no-repeat,
+    url("img/home/bottom_bar.png") bottom min(2vh, 2vw) left min(10.75vh, 9.75vw)/calc(65vw - min(21.5vh, 19.5vw)) min(9vh, 8vw) no-repeat,
     /* left wall */
-    url("img/home/left_bar.png") top 90px left 30px/50px calc(86vh - 150px) no-repeat,
+    url("img/home/left_bar.png") top min(10vh, 9vw) left min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat,
     /* right wall */
-    url("img/home/right_bar.png") top 90px right 30px/50px calc(86vh - 150px) no-repeat;
+    url("img/home/right_bar.png") top min(10vh, 9vw) right min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat;
     /*top 100px -> à 100px du haut de l'élément / right -> à droite / 100px -> largeur de l'image / calc… -> hauteur de l'image*/
 }
 
 .title-page-image {
+    box-sizing: border-box;
     display: block;
     margin-left: auto;
     margin-right: auto;
-    height: 85px;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    max-width: calc(65vw - 200px);
+    height: min(11vh, 10vw);
+    width: auto;
+    max-width: calc(65vw - min(20vh, 18vw));
+    padding: 1.5vh 2vw 1.5vh 2vw;
 }
 
 .buttons {
