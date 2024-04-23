@@ -135,29 +135,21 @@ function popUp(text) {
 function confirmationPopup(askTextButtonInteraction) {
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
-    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
-    
-    var btn = document.createElement('button');
-    btn.textContent = 'OK';
-    btn.id = 'confirmButton';
-    modalContent.appendChild(btn);
-    
-    var span =document.createElement('span');
-    span.innerHTML = '&times;';
-    span.classList.add('close');
-    modalContent.appendChild(span);
-    
-    // Quand l'utilisateur clique sur <span> (x), fermez la modale
-    span.onclick = function() {
-        modal.style.display = "none";
-        askTextButtonInteraction();
-    }
 
-    // Quand l'utilisateur clique sur le bouton de confirmation
-    btn.onclick = function() {
+    // Texte de la pop-up
+    document.querySelector('.modal-content p').textContent = 'Match trouvé!';
+
+    // Création du bouton OK
+    var okButton = document.createElement('button');
+    okButton.textContent = 'OK';
+    okButton.id = 'confirmButton';
+    modalContent.appendChild(okButton);
+
+    // Quand l'utilisateur clique sur le bouton OK, ferme la modale et exécute askTextButtonInteraction
+    okButton.onclick = function() {
         modal.style.display = "none";
         askTextButtonInteraction();
-    }
+    };
 }
 
 function progress(timeleft, timetotal, currentPlayerID) {
