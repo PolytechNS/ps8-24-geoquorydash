@@ -30,15 +30,13 @@ async function findUserIdByUsername(username) {
 }
 
 async function findUsernameById(id) {
-    console.log("id:", id)
-    if (!id) return null;
     const client = new MongoClient(uri);
     try {
         await client.connect();
         const database = client.db('myapp_db');
         const usersCollection = database.collection('users');
         const user = await usersCollection.findOne({_id: new ObjectId(id)});
-        return user.username? user.username : null;
+        return user ? user.username : null;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw error;
