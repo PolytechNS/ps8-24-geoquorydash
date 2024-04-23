@@ -335,13 +335,7 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    if(player.id === undefined){
-        alert("M.Vella a gagné !");
-    } else if(player.id === 'player1'){
-        alert("Le joueur 1 a gagné !");
-    } else {
-        alert("Le joueur 2 a gagné !");
-    }
+    alert("Le joueur a gagné !");
     window.location.href = '/gameType/gameType.html';
 }
 
