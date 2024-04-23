@@ -417,3 +417,9 @@ label img {
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
 }
+
+@media screen and (max-width: 767px) and (orientation: landscape) {
+    .top-image {
+        display: none;
+    }
+}
