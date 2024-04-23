@@ -197,6 +197,13 @@ function displayPossibleMove(possibleMove) {
             clearTimeout(timeout);
         }
         timeout = setTimeout(() => {
+            allElements.forEach(function(cell) {
+                if (cell.moveEventListener) {
+                    cell.removeEventListener('click', cell.moveEventListener);
+                    cell.moveEventListener = null;
+                    cell.classList.remove('blinking');
+                }
+            });
             gameSocket.emit('timeout', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
         }, 5000);
     }
