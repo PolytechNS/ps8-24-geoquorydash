@@ -65,8 +65,7 @@ async function getRanking(req, res) {
         const stats = await retrieveAllStatsFromDatabase();
         const rankedPlayers = calculateHybridRanking(stats);
         var userId = await getUserIdByUsername(token);
-        console.log("userId", userId);
-        const userIndex = rankedPlayers.findIndex(playerId => playerId.equals(userId));
+*        const userIndex = rankedPlayers.findIndex(playerId => playerId.equals(userId));
         const userRanking = userIndex !== -1 ? userIndex + 1 : 0;
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.end(JSON.stringify({ ranking: userRanking }));
