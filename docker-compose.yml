@@ -14,3 +14,6 @@ services:
     image: mongo
     ports:
       - "27017:27017"
+    volumes:
+      - ./mongod.conf:/etc/mongo/mongod.conf  # Assurez-vous que le fichier mongod.conf existe dans votre répertoire local
+    command: ["mongod", "--config", "/etc/mongo/mongod.conf"]
