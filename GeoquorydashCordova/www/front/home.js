@@ -586,3 +586,22 @@ document.addEventListener("DOMContentLoaded", function() {
 
 });
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    const profileButton = document.getElementById('settingPage');
+    profileButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        if (token) {
+            AuthService.username(token)
+                .then(authUsername => {
+                    window.location.href = `./settingsPage/settings.html?username=${authUsername}`;
+                    
+                })
+                .catch(error => {
+                    console.error('Error fetching username:', error);
+                });
+        } else {
+            alert('Vous devez être connecté pour accéder aux paramètres');
+        }
+    });
+});
