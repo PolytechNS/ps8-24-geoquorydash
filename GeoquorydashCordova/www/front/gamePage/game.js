@@ -260,7 +260,6 @@ function socketMovePlayer(i, j) {
 
 function canToggleBarrier() {
     const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
-    console.log("current player 1:" + (currentPlayerID === 'player1') + " player1 count:" + player1BarrierCount + " current player 2:" + (currentPlayerID === 'player2') + " player2 count:" + player2BarrierCount);
     if ((currentPlayerID === 'player1' && player1BarrierCount < 0) || (currentPlayerID === 'player2' && player2BarrierCount < 0)) {
         return false;
     }
@@ -336,7 +335,11 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    alert("Le joueur " + player.id + " a gagne !");
+    if(player.id === undefined){
+        alert("M.Vella a gagné !");
+    } else {
+        alert("Le joueur " + player.id + " a gagne !");
+    }
     window.location.href = '/gameType/gameType.html';
 }
 
