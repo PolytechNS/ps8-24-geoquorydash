@@ -1,12 +1,28 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="ps8.geoquorydash" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="ps8.geoquorydash" version="1.0.0"
+        xmlns="http://www.w3.org/ns/widgets"
+        xmlns:cdv="http://cordova.apache.org/ns/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android">
     <name>Geoquorydash</name>
     <description>Sample Apache Cordova App</description>
     <author email="dev@cordova.apache.org" href="https://cordova.apache.org">
         Apache Cordova Team
     </author>
     <content src="front/home.html" />
+    <preference name="scheme" value="http" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
+
+    <access origin="*" />
+    <allow-navigation href="http://localhost/*" />
+    <allow-navigation href="http://geoquorydash.ps8.academy/*" />
+
+    <preference name="hostname" value="geoquorydash.ps8.academy" />
+
+    <platform name="android">
+        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+            <application android:usesCleartextTraffic="true" />
+        </edit-config>
+    </platform>
     <preference name="orientation" value="landscape" />
 </widget>
