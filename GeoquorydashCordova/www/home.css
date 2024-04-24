@@ -148,17 +148,36 @@ body {
 
 @media screen and (max-width: 630px){
     #connect_text_1{
-
         font-size: 5vw;
-
-
     }
-
     #connect_text_2 {
         font-size: 4vw;
     }
 }
 
+.usernameSignUp{
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+    background-image: linear-gradient(181deg, #f8a218, #fde147);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+}
+.usernameLogIn{
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+    background-image: linear-gradient(181deg, #f8a218, #fde147);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+#passwordSignUp{
+    color: #fec32c;
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+}
 
 .account-text-container {
     width: 95%;
@@ -196,10 +215,26 @@ body {
     align-items: center;
     flex-direction: row;
     gap: 2vw;
+    flex-wrap: wrap;
+}
+
+#connectedMSG{
+    font-family: 'Pusab', sans-serif;
+    font-size: 4vw;
+    color: #fec32c;
+    letter-spacing: 2px;
+}
+
+#disconnectTip{
+    font-family: 'Pusab', sans-serif;
+    font-size: 2vw;
+    color: #ffffff;
+    margin-top: 5vh;
+    letter-spacing: 2px;
 }
 
 #signUpButtonValidation, #loginButton {
-    width: 25vw;
+    width: 30vw;
     height: auto;
 }
 

@@ -36,9 +36,8 @@
             <div class="account-text-container">
                 <h1 class="information-image" id="connect_text_1">VOUS N'ÊTES PAS CONNECTÉ</h1>
                 <h2  class="information-image" id="connect_text_2">VEUILLEZ CRÉER UN COMPTE SI VOUS SOUHAITEZ CONSERVER VOS DONNÉES</h2>
-
-                <img src="./img/account/connected_text.png" alt="sentence" class="information-image" id="deconnect_text_1" style="display: none;">
-                <img src="./img/account/deconnect_below.png" alt="sentence" class="information-image" id="deconnect_text_2" style="display: none;">
+                <div id="connectedMSG" style="display: none">VOUS ÊTES CONNECTÉ</div>
+                <div id="disconnectTip" style="display: none">VOUS POUVEZ VOUS DÉCONNECTER EN APPUYANT SUR LE BOUTON CI-DESSOUS</div>
             </div>
 
 
@@ -58,11 +57,11 @@
         <form id="signupForm">
             <div class="credentials">
                 <div id="signupUsernameBlock">
-                    <label for="usernameInputSignUp"><img src="./img/account/username.png" alt="Username"></label>
+                    <label  for="usernameInputSignUp"><a class="usernameSignUp">NOM D'UTILISATEUR</a></label>
                     <input type="text" id="usernameInputSignUp" name="username">
                 </div>
                 <div id="signupPasswordBlock">
-                    <label for="passwordInputSignUp"><img src="./img/account/password.png" alt="Password"></label>
+                    <label  for="passwordInputSignUp"><a class="usernameSignUp" >MOT DE PASSE</a></label>
                     <input type="password" id="passwordInputSignUp" name="password">
 
                 </div>
@@ -82,11 +81,11 @@
         <form id="loginForm">
             <div class="credentials">
                 <div id="loginUsernameBlock">
-                    <label for="usernameInputLogIn"><img src="./img/account/username.png" alt="Username"></label>
+                    <label for="usernameInputLogIn"><a class="usernameLogIn">NOM D'UTILISATEUR</a></label>
                     <input type="text" id="usernameInputLogIn" name="username">
                 </div>
                 <div id="loginPasswordBlock">
-                    <label for="passwordInputLogIn"><img src="./img/account/password.png" alt="Password"></label>
+                    <label for="passwordInputLogIn"><a class="usernameLogIn">MOT DE PASSE</a></label>
                     <input type="password" id="passwordInputLogIn" name="password">
                 </div>
             </div>
