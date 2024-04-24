@@ -20,6 +20,9 @@ body {
     width: 100vw;
     height: 100vh;
 }
+#burger-chat-button{
+    cursor: pointer;
+}
 
 .top-image {
     width: 80%;
