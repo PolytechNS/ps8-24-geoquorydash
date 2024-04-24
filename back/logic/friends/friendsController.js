@@ -139,7 +139,7 @@ async function acceptFriend(req, res) {
                 { $pull: { friendRequests: targetUser }, $addToSet: { friends: targetUser } }
             );
             const currentUserId = await findUserIdByUsername(currentUser);
-            if (usersConnected.usersConnected[currentUser.toString()]) {
+            if (usersConnected.usersConnected[currentUserId.toString()]) {
                 const currentUserInDB = await usersCollection.findOne({ username: currentUser });
                 usersConnected.usersConnected[currentUserId.toString()].emit('updateFriendRequest', currentUserInDB.friendRequests);
             }

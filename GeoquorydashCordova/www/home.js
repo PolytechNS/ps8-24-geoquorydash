@@ -160,6 +160,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const requestResults = document.getElementById('requestResults');
     const noPendingDemandText = document.getElementById('no_pending_demand_text');
 
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+                        }
+                    });
+            });
+    }
+
     openFriendsPage.addEventListener("click", function(e) {
         if(token) {
             e.preventDefault();
