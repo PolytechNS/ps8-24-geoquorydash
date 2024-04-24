@@ -72,8 +72,13 @@ userSocket.on('friendRequest', function(fromUsername) {
     setTimeout(() => {
         popup.firstElementChild.classList.add('active');
     }, 100);
-    
-    
+
+    // const openFriendsPage = document.getElementById("openFriendsPage");
+    // if (openFriendsPage) {
+    //     const notif = openFriendsPage.querySelector('.notif');
+    //     notif.classList.add('active');
+    // }
+
     // On fait disparaître la popup après 3 secondes
     setTimeout(() => {
         popup.firstElementChild.classList.remove('active');
@@ -81,6 +86,21 @@ userSocket.on('friendRequest', function(fromUsername) {
     setTimeout(() => {
         popup.style.display = 'none';
     }, 3300);
+});
+
+userSocket.on('updateFriendRequest', function(friendRequests) {
+    const openFriendsPage = document.getElementById("openFriendsPage");
+    console.log('friendRequests', friendRequests, friendRequests.length);
+    try {
+        const notif = openFriendsPage.querySelector('.notif');
+        if (friendRequests.length > 0) {
+            notif.classList.add('active');
+        } else {
+            notif.classList.remove('active');
+        }
+    } catch (error) {
+        console.log('no notif element');
+    }
 });
 
 

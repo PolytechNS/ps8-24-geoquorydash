@@ -417,3 +417,32 @@ label img {
     -webkit-text-stroke-color: black;
     letter-spacing: 0.1vw;
 }
+
+#openFriendsPage {
+    position: relative; /* Makes this a positioning context for absolute elements inside */
+    display: inline-block; /* Keeps the link block-sized but only as large as its content */
+}
+
+#openFriendsPage img.default {
+    display: block; /* Ensures the image fills the area of the link */
+    width: 8vw; /* Adjust the size as needed */
+    height: auto;
+}
+
+@keyframes fade-in-out {
+    0%, 100% { opacity: 0; }  /* Start and end fully transparent */
+    50% { opacity: 1; }      /* Fully opaque at the midpoint */
+}
+
+#openFriendsPage img.notif {
+    position: absolute; /* Positions the notification image absolutely within the link */
+    top: 0; /* Align to the top of the parent */
+    left: 0; /* Align to the left of the parent */
+    width: 8vw; /* Adjusted width */
+    height: auto; /* Maintain aspect ratio */
+    opacity: 0; /* Start fully transparent */
+}
+
+#openFriendsPage img.notif.active {
+    animation: fade-in-out 1s infinite; /* Apply the animation */
+}

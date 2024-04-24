@@ -68,6 +68,21 @@ document.addEventListener("DOMContentLoaded", function() {
             accountModal.style.display = "none";
         }
     });
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            const openFriendsPage = document.getElementById("openFriendsPage");
+                            const notif = openFriendsPage.querySelector('.notif');
+                            notif.classList.add('active');
+                        }
+                    });
+            });
+    }
+                
 });
 
 // PAGE HOME -> PAGE SIGNUP
