@@ -129,7 +129,7 @@ function popUp(text) {
     textContent.textContent = text;
     modalContent.appendChild(textContent);
 
-    modal.style.display = "block";
+    modal.style.display = "flex";
 }
 
 function confirmationPopup(askTextButtonInteraction) {
