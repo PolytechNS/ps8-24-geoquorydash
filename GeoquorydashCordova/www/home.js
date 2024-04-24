@@ -32,6 +32,7 @@ var handleDeconnexionClick = function(event) {
 // PAGE HOME -> PAGE ACCOUNT
 document.addEventListener("DOMContentLoaded", function() {
     var openAccountPage = document.getElementById("openAccountPage");
+    var closeAccountModalButton = document.getElementById("close-account-modal-button");
 
     openAccountPage.addEventListener("click", function(e) {
         e.preventDefault();
@@ -63,6 +64,10 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    closeAccountModalButton.addEventListener("click", function() {
+        accountModal.style.display = "none";
+    });
+
     window.addEventListener("click", function(event) {
         if (event.target === accountModal) {
             accountModal.style.display = "none";
@@ -73,11 +78,18 @@ document.addEventListener("DOMContentLoaded", function() {
 // PAGE HOME -> PAGE SIGNUP
 document.addEventListener("DOMContentLoaded", function() {
     var openSignupPage = document.getElementById("openSignupPage");
+    var closeSignupModalButton = document.getElementById("close-signup-modal-button");
 
     openSignupPage.addEventListener("click", function(e) {
         e.preventDefault();
         accountModal.style.display = "none";
         signupModal.style.display = "flex";
+    });
+
+    closeSignupModalButton.addEventListener("click", function() {
+        document.getElementById('signupForm').querySelector('[name="username"]').value = '';
+        document.getElementById('signupForm').querySelector('[name="password"]').value = '';
+        signupModal.style.display = "none";
     });
 
     window.addEventListener("click", function(event) {
@@ -92,11 +104,18 @@ document.addEventListener("DOMContentLoaded", function() {
 // PAGE HOME -> PAGE LOGIN
 document.addEventListener("DOMContentLoaded", function() {
     var openLoginPage = document.getElementById("openLoginPage");
+    var closeLoginModalButton = document.getElementById("close-login-modal-button");
 
     openLoginPage.addEventListener("click", function(e) {
         e.preventDefault();
         accountModal.style.display = "none";
         loginModal.style.display = "flex";
+    });
+
+    closeLoginModalButton.addEventListener("click", function() {
+        document.getElementById('loginForm').querySelector('[name="username"]').value = '';
+        document.getElementById('loginForm').querySelector('[name="password"]').value = '';
+        loginModal.style.display = "none";
     });
 
     window.addEventListener("click", function(event) {
@@ -111,6 +130,7 @@ document.addEventListener("DOMContentLoaded", function() {
 // PAGE LOGIN -> PAGE SIGNUP
 document.addEventListener("DOMContentLoaded", function() {
     var openSignupPage = document.getElementById("signupButton");
+    var closeSignupModalButton = document.getElementById("close-signup-modal-button");
 
     openSignupPage.addEventListener("click", function(e) {
         e.preventDefault();
@@ -118,6 +138,12 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
         loginModal.style.display = "none";
         signupModal.style.display = "flex";
+    });
+
+    closeSignupModalButton.addEventListener("click", function() {
+        document.getElementById('signupForm').querySelector('[name="username"]').value = '';
+        document.getElementById('signupForm').querySelector('[name="password"]').value = '';
+        signupModal.style.display = "none";
     });
 
     window.addEventListener("click", function(event) {
@@ -139,6 +165,7 @@ document.addEventListener("DOMContentLoaded", function() {
     var openFriendsListTab = document.getElementById("openFriendsListTab");
     var openFriendsSearchTab = document.getElementById("openFriendsSearchTab");
     var openFriendsRequestTab = document.getElementById("openFriendsRequestTab");
+    var closeFriendsModalButton = document.getElementById("close-friends-modal-button");
 
     const friendsResults = document.getElementById('friendsResults');
     const addFriendsText = document.getElementById('add_friends_text');
@@ -234,6 +261,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
+    closeFriendsModalButton.addEventListener("click", function() {
+        document.getElementById('friendsForm').reset();
+        document.getElementById('searchResults').innerHTML = '';
+        friendsModal.style.display = "none";
+        friendsListTab.style.display = "none";
+        friendsSearchTab.style.display = "none";
+        friendsRequestTab.style.display = "none";
+    });
+
     window.addEventListener("click", function(event) {
         if (event.target === friendsModal) {
             document.getElementById('friendsForm').reset();
@@ -250,6 +286,7 @@ document.addEventListener("DOMContentLoaded", function() {
 document.addEventListener("DOMContentLoaded", function() {
     var statModal = document.getElementById("statModal");
     var openStatPage = document.getElementById("openStatPage");
+    var closeStatModalButton = document.getElementById("close-stat-modal-button");
 
     openStatPage.addEventListener("click", function(e) {
         if (token){
@@ -280,6 +317,10 @@ document.addEventListener("DOMContentLoaded", function() {
         } else {
             alert('Vous devez être connecté pour consulter vos statistiques');
         }
+    });
+
+    closeStatModalButton.addEventListener("click", function() {
+        statModal.style.display = "none";
     });
 
     window.addEventListener("click", function(event) {
@@ -386,6 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
 document.addEventListener("DOMContentLoaded", function() {
     var openRankPage = document.getElementById("openRankPage");
     const rankResults = document.getElementById('rankResults');
+    var closeRankModalButton = document.getElementById("close-rank-modal-button");
 
     openRankPage.addEventListener("click", function (e) {
         e.preventDefault();
@@ -416,6 +458,10 @@ document.addEventListener("DOMContentLoaded", function() {
             rankResults.appendChild(li);
         });
     }
+
+    closeRankModalButton.addEventListener("click", function() {
+        rankModal.style.display = "none";
+    });
 
     window.addEventListener("click", function(event) {
         if (event.target === rankModal) {
