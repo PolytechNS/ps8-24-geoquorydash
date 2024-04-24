@@ -574,3 +574,40 @@ function handleFriendRequest(action, friendUsername) {
 }
 
 
+document.addEventListener("DOMContentLoaded", function() {
+    var openAccountPage = document.getElementById("openAccountPage");
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+    var openModal = urlParams.get('openModal');
+    console.log("on passe ici");
+    if (openModal === 'true') {
+        accountModal.style.display = "flex";
+        var newUrl = window.location.pathname;
+        window.history.replaceState({}, document.title, newUrl);
+        console.log("true");
+    }else{
+        accountModal.style.display = "none";
+        console.log("false")
+    }
+
+});
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const profileButton = document.getElementById('settingPage');
+    profileButton.addEventListener('click', function(event) {
+        event.preventDefault();
+        if (token) {
+            AuthService.username(token)
+                .then(authUsername => {
+                    window.location.href = `./settingsPage/settings.html?username=${authUsername}`;
+
+                })
+                .catch(error => {
+                    console.error('Error fetching username:', error);
+                });
+        } else {
+            alert('Vous devez être connecté pour accéder aux paramètres');
+        }
+    });
+});

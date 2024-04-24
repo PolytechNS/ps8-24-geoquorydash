@@ -336,7 +336,7 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    alert("Le joueur " + player.id + " a gagne !");
+    alert("Le joueur a gagné !");
     window.location.href = '/gameType/gameType.html';
 }
 

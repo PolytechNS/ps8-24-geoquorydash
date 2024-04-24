@@ -6,16 +6,13 @@ import { AchievementsService } from '../Services/achievementsService.js';
 import userSocket from "../sockets/userSocketConnection.js";
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("On est dans la page de profil");
     const myProfile = document.querySelector('.profile-container-me');
     const profile = document.querySelector('.profile-container-friend');
     const addFriendBtn = document.getElementById('add-friend-btn');
 
     const params = new URLSearchParams(window.location.search);
     let username = params.get('username');
-    if(username) {
-        console.log("Le username associé à cette page est : " + username);
-    } else {
+    if(!username) {
         console.log("Pas de username associé à cette page pour le moment");
     }
     const token = localStorage.getItem('token');
@@ -24,18 +21,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(authUsername => {
                 if(!username) {
                     username = authUsername;
-                    console.log("Je connais maintenant mon username, et c'est : " + username);
                     updateMyProfileContent(username);
                     retrieveAchievements();
                 } else {
                     if (authUsername === username) {
-                        console.log("Je connaissais déjà mon username, et c'est : " + username);
                         updateMyProfileContent(username);
                         retrieveAchievements();
                     } else {
-                        console.log("C'est un ami, et son username est : " + username);
                         updateFriendProfileContent(username);
-                        console.log("NEXT FUNCTION");
                         retrieveAchievements(username);
                     }
                 }
@@ -43,67 +36,30 @@ document.addEventListener('DOMContentLoaded', () => {
             .catch(error => {
                 console.error('Error fetching username:', error);
             });
-        /*if (!username) {
-            AuthService.username(token)
-                .then(authUsername => {
-                    username = authUsername;
-                    console.log("Je connais maintenant mon username, et c'est : " + username);
-                    updateMyProfileContent(username);
-                    retrieveAchievements();
-                })
-                .catch(error => {
-                    console.error('Error fetching username:', error);
-                });
-
-        } else {
-            AuthService.username(token)
-                .then(authUsername => {
-                    if (authUsername === username) {
-                        updateMyProfileContent(username);
-                        retrieveAchievements();
-                        console.log("C'est moi");
-                    } else {
-                        updateFriendProfileContent(username);
-                        retrieveAchievements(username);
-                        console.log("C'est un ami");
-                    }
-                })
-                .catch(error => {
-                    console.error('Error fetching username:', error);
-                });
-        }*/
     }
 
     function retrieveAchievements(friendUsername) {
         AuthService.username(token)
             .then(authUsername => {
                 if (friendUsername) {
-                    console.log("Cette recherche d'achievement concerne un ami, qui a pour username : " + friendUsername);
                     authUsername = friendUsername;
-                } else {
-                    console.log("Cette recherche d'achievement me concerne moi, et mon username est : " + authUsername);
                 }
                 /**** CETTE PARTIE EST UNE SIMPLE MISE À JOUR DES ACHIEVEMENTS D'AMI ****/
                 FriendsService.getFriends(authUsername)
                     .then(friends => {
                         const numberOfFriends = friends.length;
-                        console.log("Nombre d'amis : " + numberOfFriends);
                         AchievementsService.updateFriendsAchievements(authUsername, numberOfFriends)
                             .then(() => {
                                 /**** FIN DE LA MISE À JOUR DES ACHIEVEMENTS D'AMI ****/
                                 AchievementsService.getAchievements(authUsername).then(data => {
-                                    console.log(data.achievementsStructure);
                                     const achievements = data.achievementsStructure.achievements;
                                     var achievementsContainer = null;
                                     if(friendUsername) {
-                                        console.log("C'est un ami dans l'id");
                                         achievementsContainer = document.getElementById('friendAchievementsContainer');
                                     } else {
-                                        console.log("C'est moi dans l'id");
                                         achievementsContainer = document.getElementById('achievementsContainer');
                                     }
                                     achievements.forEach(achievement => {
-                                        console.log("Un de plus");
                                         const achievementElement = document.createElement('div');
                                         achievementElement.classList.add('achievement');
                                         const imageContainer = document.createElement('div');
@@ -127,7 +83,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                         achievementElement.appendChild(achievementContent);
                                         achievementsContainer.appendChild(achievementElement);
                                     });
-                                    console.log("Fini");
                                 }).catch(error => {
                                     console.error('Erreur lors de la récupération des achievements:', error);
                                     alert('Erreur lors de la récupération des achievements.');
@@ -169,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 ProfileService.button(username, currentUser)
                     .then(buttonData => {
                         if (buttonData.button === 'friends') {
-                            updateButtonImage('../img/profile/friend.png');
+                            updateButtonImage('../img/profile/delete.png');
                         } else if(buttonData.button === 'pending') {
                             updateButtonImage('../img/profile/cancel.png');
                         } else {
@@ -217,7 +172,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (profileData.profilePicture) {
                     myProfilePictureElement.src = profileData.profilePicture;
                 } else {
-                    console.log("Pas de photo de profil");
                     myProfilePictureElement.src = '../img/profile/picture.png';
                 }
             })
@@ -257,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             .catch(error => {
                                 console.error('Error sending friend request:', error);
                             });
-                    } else if (addFriendBtn.style.backgroundImage.includes('friend.png')) {
+                    } else if (addFriendBtn.style.backgroundImage.includes('delete.png')) {
                         // Confirmation de suppression d'ami
                         if (confirm("Êtes-vous sûr de vouloir supprimer cet ami ?")) {
                             // Si l'utilisateur confirme, supprimez l'ami
@@ -308,9 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOptionsContainer = document.getElementById('modal-options-container');
 
     myProfilePictureElement.addEventListener('click', () => {
-        if(confirm("Voulez-vous changer votre photo de profil ?")) {
-            modalContainer.style.display = 'block';
-        }
+        modalContainer.style.display = 'block';
+
     });
 
     modalOptionsContainer.addEventListener('click', (event) => {
