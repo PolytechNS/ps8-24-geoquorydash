@@ -25,6 +25,7 @@ var handleDeconnexionClick = function(event) {
         alert('Vous êtes déconnecté');
         const modal = window.parent.document.querySelector('.modal');
         modal.style.display = 'none';
+        window.plugins.OneSignal.logout();
     }
 };
 
@@ -72,6 +73,7 @@ document.addEventListener("DOMContentLoaded", function() {
     if (token) {
         AuthService.username(token)
             .then(authUsername => {
+                window.plugins.OneSignal.login(authUsername.toString());
                 FriendsService.getRequests(authUsername)
                     .then(requests => {
                         if (requests.length > 0){
@@ -82,8 +84,34 @@ document.addEventListener("DOMContentLoaded", function() {
                     });
             });
     }
-                
 });
+
+
+document.addEventListener('deviceready', OneSignalInit, false);
+
+function OneSignalInit() {
+    // Initialise OneSignal avec votre App ID
+    window.plugins.OneSignal.initialize("08eb66f6-d744-4291-b6b9-ff5ae40aa7a2");
+    // window.plugins.OneSignal.logout();
+
+    // Active le niveau de log détaillé pour OneSignal (6 pour le debug)
+    window.plugins.OneSignal.Debug.setLogLevel(6);
+
+    // Ajout d'un écouteur pour les clics sur les notifications
+    // Remarque : Assurez-vous que la méthode `addEventListener` pour les notifications est bien disponible et correctement définie dans index.js.
+    // Le code original utilise une syntaxe TypeScript pour la déclaration de l'event, il faut la convertir en JavaScript pur.
+    const listener = function(event) {
+        const notificationPayload = JSON.stringify(event);
+        console.log(notificationPayload);
+    };
+    window.plugins.OneSignal.Notifications.addEventListener("click", listener);
+
+    // Demande la permission pour les notifications
+    // Assurez-vous que la méthode `requestPermission` est bien disponible et correctement définie dans index.js.
+    window.plugins.OneSignal.Notifications.requestPermission(true).then(function(accepted) {
+        console.log("User accepted notifications: " + accepted);
+    });
+}
 
 // PAGE HOME -> PAGE SIGNUP
 document.addEventListener("DOMContentLoaded", function() {
@@ -399,6 +427,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
                 updateToken();
+                window.plugins.OneSignal.login(username.toString());
             })
             .catch(error => {
                 console.error('Login error:', error);

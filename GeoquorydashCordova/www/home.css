@@ -419,30 +419,29 @@ label img {
 }
 
 #openFriendsPage {
-    position: relative; /* Makes this a positioning context for absolute elements inside */
-    display: inline-block; /* Keeps the link block-sized but only as large as its content */
+    position: relative;
+    display: inline-block;
 }
 
 #openFriendsPage img.default {
-    display: block; /* Ensures the image fills the area of the link */
-    width: 8vw; /* Adjust the size as needed */
+    width: 8vw;
     height: auto;
 }
 
 @keyframes fade-in-out {
-    0%, 100% { opacity: 0; }  /* Start and end fully transparent */
-    50% { opacity: 1; }      /* Fully opaque at the midpoint */
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
 }
 
 #openFriendsPage img.notif {
-    position: absolute; /* Positions the notification image absolutely within the link */
-    top: 0; /* Align to the top of the parent */
-    left: 0; /* Align to the left of the parent */
-    width: 8vw; /* Adjusted width */
-    height: auto; /* Maintain aspect ratio */
-    opacity: 0; /* Start fully transparent */
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 8vw;
+    height: auto;
+    opacity: 0;
 }
 
 #openFriendsPage img.notif.active {
-    animation: fade-in-out 1s infinite; /* Apply the animation */
+    animation: fade-in-out 1s infinite;
 }

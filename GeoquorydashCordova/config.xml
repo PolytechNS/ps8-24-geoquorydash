@@ -9,7 +9,6 @@
         Apache Cordova Team
     </author>
     <content src="home.html" />
-    <preference name="scheme" value="http" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
 
@@ -17,12 +16,22 @@
     <allow-navigation href="http://localhost/*" />
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
+    <preference name="scheme" value="http" />
     <preference name="hostname" value="geoquorydash.ps8.academy" />
+    <preference name="AndroidXEnabled" value="true" />
+    <preference name="orientation" value="landscape" />
 
     <platform name="android">
-        <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+            <uses-permission android:name="android.permission.VIBRATE" />
+        </config-file>
     </platform>
-    <preference name="orientation" value="landscape" />
+
 </widget>
