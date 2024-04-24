@@ -25,4 +25,5 @@
         </edit-config>
     </platform>
     <preference name="orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
 </widget>
