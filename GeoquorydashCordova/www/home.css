@@ -143,6 +143,20 @@ body {
     margin-bottom: 0;
     font-size: 2vw;
     line-height: 1;
+    letter-spacing: 2px;
+}
+
+@media screen and (max-width: 630px){
+    #connect_text_1{
+
+        font-size: 5vw;
+
+
+    }
+
+    #connect_text_2 {
+        font-size: 4vw;
+    }
 }
 
 
