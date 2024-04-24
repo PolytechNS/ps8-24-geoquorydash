@@ -357,7 +357,7 @@ body {
 .photo-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    grid-gap: 35px;
+    grid-gap: 5vh;
 }
 
 .photo-grid img {
