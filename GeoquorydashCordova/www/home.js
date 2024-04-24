@@ -68,6 +68,21 @@ document.addEventListener("DOMContentLoaded", function() {
             accountModal.style.display = "none";
         }
     });
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            const openFriendsPage = document.getElementById("openFriendsPage");
+                            const notif = openFriendsPage.querySelector('.notif');
+                            notif.classList.add('active');
+                        }
+                    });
+            });
+    }
+                
 });
 
 // PAGE HOME -> PAGE SIGNUP
@@ -144,6 +159,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const addFriendsText = document.getElementById('add_friends_text');
     const requestResults = document.getElementById('requestResults');
     const noPendingDemandText = document.getElementById('no_pending_demand_text');
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+                        }
+                    });
+            });
+    }
 
     openFriendsPage.addEventListener("click", function(e) {
         if(token) {
