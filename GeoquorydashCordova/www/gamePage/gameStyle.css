@@ -180,5 +180,6 @@ body {
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     font: 150% 'joystix', sans-serif;
+    font-size: 4vh;
     text-align: center;
 }

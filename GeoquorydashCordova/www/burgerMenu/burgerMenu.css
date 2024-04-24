@@ -107,21 +107,28 @@
         border-radius: 10px;
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         font: 150% 'joystix', sans-serif;
+        font-size: 3vh;
         text-align: center;
     }
 
     button {
         padding: 1vh 2vw;
-        font-size: 4vh;
         font-weight: bold;
         background-image: url('../img/gameType/button.png');
         background-size: 100% 100%;
         background-repeat: no-repeat;
         background-position: center;
         color: white;
-        width: 95%;
-        min-height: 12vh;
+        width: 50%;
+        min-height: 8vh;
         margin: 2vh;
         border-radius: 1vh;
         cursor: pointer;
+        font: 150% 'joystix', sans-serif;
+        font-size: min(3vh, 1.5vw); ;
+    }
+
+    .modal-content p,
+    .modal-content button {
+        margin: 2%;
     }
