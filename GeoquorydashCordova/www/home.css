@@ -77,7 +77,7 @@ body {
     width: 65vw;
     height: 86vh;
     
-    padding: 0 calc(min(3.5vh, 3vw) + min(5.5vh, 5vw)) min(11vh, 10vw) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw));
+    padding: calc(-1px) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw) - 1px) calc(min(11vh, 10vw) - 1px) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw) - 1px);
 
     background: 
     /* top-left corner */
