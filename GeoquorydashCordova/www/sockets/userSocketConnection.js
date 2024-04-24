@@ -90,7 +90,6 @@ userSocket.on('friendRequest', function(fromUsername) {
 
 userSocket.on('updateFriendRequest', function(friendRequests) {
     const openFriendsPage = document.getElementById("openFriendsPage");
-    console.log('friendRequests', friendRequests, friendRequests.length);
     try {
         const notif = openFriendsPage.querySelector('.notif');
         if (friendRequests.length > 0) {
@@ -100,6 +99,17 @@ userSocket.on('updateFriendRequest', function(friendRequests) {
         }
     } catch (error) {
         console.log('no notif element');
+    }
+
+    try {
+        const openFriendsRequestTab = document.getElementById("openFriendsRequestTab");
+        if (friendRequests.length > 0) {
+            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+        } else {
+            openFriendsRequestTab.src = '../img/friends/requestButton.png';
+        }
+    } catch (error) {
+        console.log('no request tab element');
     }
 });
 
