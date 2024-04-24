@@ -405,14 +405,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
         results.forEach((result, index) => {
             const li = document.createElement('li');
-            const link = document.createElement('a');
-            link.onclick = function(event) {
+            const div = document.createElement('div');
+            div.textContent = `${index + 1}. ${result.username}`;
+            li.appendChild(div);
+            li.style.cursor = 'pointer';
+            li.addEventListener('click', function(event) {
                 event.preventDefault();
                 window.location.href = `./profilePage/profile.html?username=${result.username}`;
-            };
-            link.textContent = `${index + 1}. ${result.username}`;
-            link.target = "_blank";
-            li.appendChild(link);
+            });
             rankResults.appendChild(li);
         });
     }
@@ -457,14 +457,14 @@ function displayFriendsResults(results, friendsResults) {
 
     results.forEach(result => {
         const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.onclick = function(event) {
+        const div = document.createElement('div');
+        div.textContent = result.username;
+        li.appendChild(div);
+        li.style.cursor = 'pointer';
+        li.addEventListener('click', function(event) {
             event.preventDefault();
             window.location.href = `./profilePage/profile.html?username=${result.username}`;
-        };
-        link.textContent = result.username;
-        link.target = "_blank";
-        li.appendChild(link);
+        });
         friendsResults.appendChild(li);
     });
 }
@@ -474,14 +474,14 @@ function displaySearchResults(results, searchResults) {
 
     results.forEach(result => {
         const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.onclick = function(event) {
+        const div = document.createElement('div');
+        div.textContent = result.username;
+        li.appendChild(div);
+        li.style.cursor = 'pointer';
+        li.addEventListener('click', function(event) {
             event.preventDefault();
             window.location.href = `./profilePage/profile.html?username=${result.username}`;
-        };
-        link.textContent = result.username;
-        link.target = "_blank";
-        li.appendChild(link);
+        });
         searchResults.appendChild(li);
     });
 }
@@ -491,29 +491,35 @@ function displayRequestResults(results, requestResults) {
 
     results.forEach(result => {
         const li = document.createElement('li');
-        const link = document.createElement('a');
-        link.onclick = function(event) {
+        const div = document.createElement('div');
+        div.textContent = result;
+        li.appendChild(div);
+        li.style.cursor = 'pointer';
+        li.addEventListener('click', function(event) {
             event.preventDefault();
-            window.location.href = `./profilePage/profile.html?username=${result}`;
-        };
-        link.textContent = result;
-        link.target = "_blank";
+            window.location.href = `./profilePage/profile.html?username=${result.username}`;
+        });
 
         const acceptDeniedContainer = document.createElement('div');
         acceptDeniedContainer.classList.add('accept-denied-container');
 
         const acceptButton = document.createElement('button');
         acceptButton.classList.add('accept');
-        acceptButton.addEventListener('click', () => handleFriendRequest('accept', result));
+        acceptButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Arrête la propagation de l'événement au parent
+            handleFriendRequest('accept', result);
+        });
 
         const deniedButton = document.createElement('button');
         deniedButton.classList.add('denied');
-        deniedButton.addEventListener('click', () => handleFriendRequest('deny', result));
+        deniedButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Arrête la propagation de l'événement au parent
+            handleFriendRequest('accept', result);
+        });
 
         acceptDeniedContainer.appendChild(acceptButton);
         acceptDeniedContainer.appendChild(deniedButton);
 
-        li.appendChild(link);
         li.appendChild(acceptDeniedContainer);
         requestResults.appendChild(li);
     });
