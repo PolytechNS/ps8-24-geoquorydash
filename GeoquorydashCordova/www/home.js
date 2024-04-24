@@ -385,20 +385,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // PAGE HOME -> PAGE RANK
 document.addEventListener("DOMContentLoaded", function() {
     var openRankPage = document.getElementById("openRankPage");
+    const rankResults = document.getElementById('rankResults');
 
     openRankPage.addEventListener("click", function (e) {
         e.preventDefault();
         rankModal.style.display = "flex";
-    });
-
-    const rankResults = document.getElementById('rankResults');
-    StatService.getAllRanking()
+        StatService.getAllRanking()
         .then(rank => {
+            console.log("ON MET À JOUR LES RANKS");
             displayRankResults(rank.ranking);
         })
         .catch(error => {
             console.error('Error fetching rank:', error);
         });
+    });
 
     function displayRankResults(results) {
         rankResults.innerHTML = '';
