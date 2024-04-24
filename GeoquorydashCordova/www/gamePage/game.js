@@ -160,7 +160,15 @@ function handleCellAction(cell, i, j, actionType, playerID) {
             if (canToggleBarrier()) {
                 socketToggleWall(cell, cell2, cell3, isVertical);
             } else {
-                alert("Vous n'avez plus de barrières disponibles !");
+                var modal = document.getElementById("myModalTemp");
+                var modalContent = document.querySelector('.modal-content-temp');
+                var textContent = document.querySelector('.modal-content-temp p')
+                textContent.textContent = "Vous n'avez plus de barrières disponibles !";
+                modal.style.display = "flex";
+                // Fermer la popup automatiquement après 4 secondes
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 1000);
             }
         }
     }
@@ -267,6 +275,7 @@ function socketMovePlayer(i, j) {
 
 function canToggleBarrier() {
     const { player1BarrierCount, player2BarrierCount } = calculatePlayerBarrierCount();
+    console.log("current player 1:" + (currentPlayerID === 'player1') + " player1 count:" + player1BarrierCount + " current player 2:" + (currentPlayerID === 'player2') + " player2 count:" + player2BarrierCount);
     if ((currentPlayerID === 'player1' && player1BarrierCount < 0) || (currentPlayerID === 'player2' && player2BarrierCount < 0)) {
         return false;
     }
@@ -334,7 +343,17 @@ function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-    alert("Placement de barrière impossible");
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+
+    var textContent = document.querySelector('.modal-content p')
+    textContent.textContent = "Placement de barrière impossible !";
+
+    modal.style.display = "flex";
+
+    document.getElementById('confirmBtn').addEventListener('click', () => {
+        modal.style.display = "none";
+    });
 }
 
 function getPlayerElementById(playerId) {
@@ -342,8 +361,19 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    alert("Le joueur a gagné !");
-    window.location.href = '/gameType/gameType.html';
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+
+    var textContent = document.querySelector('.modal-content p')
+    textContent.textContent = "Le joueur a gagné !";
+
+    modal.style.display = "flex";
+
+    var okButton = document.getElementById('confirmButton');
+    okButton.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/gameType/gameType.html';
+    };
 }
 
 window.onbeforeunload = function(e) {
