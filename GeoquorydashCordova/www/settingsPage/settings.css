@@ -17,6 +17,10 @@ body {
 #burger-chat-button{
     cursor: pointer;
 }
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 #burger-menu-button{
     cursor: pointer;
 }

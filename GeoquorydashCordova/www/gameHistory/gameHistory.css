@@ -11,6 +11,10 @@ body {
     position: relative;
     overflow: hidden;
 }
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 
 ul {
     list-style-type: none;

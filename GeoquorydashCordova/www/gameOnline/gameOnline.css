@@ -141,6 +141,10 @@ body {
     border-radius: 2vh;
 }
 
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 .progress-bar div {
     height: 70%;
     align-self: center;
