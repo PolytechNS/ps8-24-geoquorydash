@@ -17,7 +17,7 @@
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
     <preference name="scheme" value="http" />
-    <preference name="hostname" value="geoquorydash.ps8.academy" />
+    <preference name="hostname" value="35.181.197.96" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="orientation" value="landscape" />
 
