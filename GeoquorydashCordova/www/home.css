@@ -447,12 +447,13 @@ label img {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     border: none;
-    width: 7vh;
-    min-width: 3vw;
-    height: 7vh;
-    min-height: 3vw;
+    width: min(7vh, 3vw);
+    min-width: min(7vh, 3vw);
+    height: min(13vh, 4vw);
+    min-height: min(13vh, 4vw);
     cursor: pointer;
     border-radius: 50%;
+    margin: 0 !important;
 }
 
 #requestResults li button.accept {
@@ -475,6 +476,7 @@ label img {
     align-items: center;
     width: fit-content;
     gap: 1vw;
+    margin-right: 5%;
 }
 
 @font-face {
