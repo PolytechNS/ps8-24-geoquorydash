@@ -73,7 +73,11 @@ document.addEventListener("DOMContentLoaded", function() {
     if (token) {
         AuthService.username(token)
             .then(authUsername => {
-                window.plugins.OneSignal.login(authUsername.toString());
+                try {
+                    window.plugins.OneSignal.login(authUsername.toString());
+                } catch (error) {
+                    console.error('Error logging in OneSignal:', error);
+                }
                 FriendsService.getRequests(authUsername)
                     .then(requests => {
                         if (requests.length > 0){
@@ -427,7 +431,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
                 updateToken();
-                window.plugins.OneSignal.login(username.toString());
+                try {
+                    window.plugins.OneSignal.login(username.toString());
+                } catch (error) {
+                    console.error('Error logging in OneSignal:', error);
+                }
             })
             .catch(error => {
                 console.error('Login error:', error);
