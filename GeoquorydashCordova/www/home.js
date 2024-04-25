@@ -2,6 +2,7 @@ import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
 import { FriendsService } from './Services/friendsService.js';
 import { AchievementsService } from './Services/achievementsService.js';
+import { isMobileDevice } from './js/utils.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
@@ -662,23 +663,27 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 document.addEventListener("DOMContentLoaded", function() {
-    var connect = navigator.connection.type;
-    if(connect.toString() === "none"){
-        console.log("noneIsTheNetwork");
-        document.getElementById("networkError").style.display = "block";
-    }
-    if(connect.toString() === "wifi"){
-        console.log("wifiIsTheNetwork");
+
+    if (isMobileDevice()) {
+        var connect = navigator.connection.type;
+        if (connect.toString() === "none") {
+            console.log("noneIsTheNetwork");
+            document.getElementById("networkError").style.display = "block";
+        }
+        if (connect.toString() === "wifi") {
+            console.log("wifiIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+        }
+        if (connect.toString() === "cellular") {
+            console.log("cellularIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+        }
+    } else {
+        console.log("noMobileDevice");
         document.getElementById("networkError").style.display = "none";
-
-
-    }
-    if(connect.toString() === "cellular"){
-        console.log("cellularIsTheNetwork");
-        document.getElementById("networkError").style.display = "none";
-
     }
 });
+
 
 window.addEventListener('online', function(event) {
     location.reload();

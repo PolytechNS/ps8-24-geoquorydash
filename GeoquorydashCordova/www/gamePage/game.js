@@ -1,4 +1,6 @@
+import { isMobileDevice } from "../js/utils.js";
 import gameSocket from "../sockets/gameSocketConnection.js";
+
 
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
@@ -351,25 +353,28 @@ window.onbeforeunload = function(e) {
 export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
 
 document.addEventListener("DOMContentLoaded", function() {
-    var connect = navigator.connection.type;
-    if(connect.toString() === "none"){
-        console.log("noneIsTheNetwork");
-        document.getElementById("gameHistoryButton").style.opacity = "0.5";
-        document.getElementById("gameHistoryButton").style.pointerEvents = "none";
-        document.getElementById("networkError").style.display = "block";
+    if(isMobileDevice()) {
+        var connect = navigator.connection.type;
+        if (connect.toString() === "none") {
+            console.log("noneIsTheNetwork");
 
-    }
-    if(connect.toString() === "wifi"){
-        console.log("wifiIsTheNetwork");
+            document.getElementById("networkError").style.display = "block";
+
+        }
+        if (connect.toString() === "wifi") {
+            console.log("wifiIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+
+
+        }
+        if (connect.toString() === "cellular") {
+            console.log("cellularIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+
+
+        }
+    }else{
         document.getElementById("networkError").style.display = "none";
-
-
-    }
-    if(connect.toString() === "cellular"){
-        console.log("cellularIsTheNetwork");
-        document.getElementById("networkError").style.display = "none";
-
-
     }
 });
 
