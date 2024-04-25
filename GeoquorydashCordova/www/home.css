@@ -163,27 +163,27 @@ body {
 }
 
 .usernameSignUp{
+    color: #fec32c;
     font-family: 'Pusab', sans-serif;
     font-size: 3vw;
-    background-image: linear-gradient(181deg, #f8a218, #fde147);
-    background-size: 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     padding-top: 10%;
 
 
 }
 .usernameLogIn{
+    color: #fec32c;
     font-family: 'Pusab', sans-serif;
     font-size: 3vw;
-    background-image: linear-gradient(181deg, #f8a218, #fde147);
-    background-size: 100%;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
     padding-top: 10%;
 }
 
-#passwordSignUp{
+.passwordSignUp{
+    color: #fec32c;
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+}
+
+.passwordLogIn{
     color: #fec32c;
     font-family: 'Pusab', sans-serif;
     font-size: 3vw;
