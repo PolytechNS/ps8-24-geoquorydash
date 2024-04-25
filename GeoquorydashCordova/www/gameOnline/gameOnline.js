@@ -9,19 +9,12 @@ let canClick = false; // Variable pour suivre si le bouton est cliquable
 window.onload = function() {
     localStorage.setItem('gameStateID', 'waitingForMatch');
     gameSocket.emit('findMatch', localStorage.getItem('token'));
-
-    var modal = document.getElementById("myModalWait");
-    var modalContent = document.querySelector('.modal-content-wait');
-
-    var textContent = document.querySelector('.modal-content-wait p')
-    textContent.textContent = "En attente d'un adversaire...";
-    modalContent.appendChild(textContent);
-
-    modal.style.display = "flex";
+    popUp('En attente d\'un adversaire...');
 }
 
 gameSocket.on('matchFound', function(roomId) {
     localStorage.setItem('roomId', roomId);
+    popUp('En attente d\'un adversaire...');
     confirmationPopup(askTextButtonInteraction);
 });
 
