@@ -120,10 +120,6 @@ body {
     src: url('../font/joystix_monospace.otf');
 }
 
-<<<<<<< HEAD
-.modal-temp {
-    display: none;
-=======
 #configAndSaveContainer {
     display: flex;
     flex-direction: column;
@@ -199,7 +195,6 @@ body {
     background-repeat: no-repeat;
     background-position: center;
     color: white;
-<<<<<<< HEAD
     width: 50%;
     min-height: 8vh;
     margin: 2vh;
@@ -213,13 +208,4 @@ body {
 .modal-content-temp button {
     margin: 2%;
 }
-=======
-    z-index: 10;
-}
-#prevBtn {
-    left: 10px;
-}
-#nextBtn {
-    right: 10px;
-}
->>>>>>> 98203318b8594e244719acca41aa5306a357dec5
+
