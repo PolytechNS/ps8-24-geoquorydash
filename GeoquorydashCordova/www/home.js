@@ -47,8 +47,8 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('connect_text_2').style.display = 'none';
 
             deconnexionButton.style.display = 'block';
-            document.getElementById('deconnect_text_1').style.display = 'block';
-            document.getElementById('deconnect_text_2').style.display = 'block';
+            document.getElementById('connectedMSG').style.display = 'block';
+            document.getElementById('disconnectTip').style.display = 'block';
             deconnexionButton.removeEventListener('click', handleDeconnexionClick);
             deconnexionButton.addEventListener('click', handleDeconnexionClick);
         } else {
@@ -59,8 +59,8 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById('connect_text_2').style.display = 'block';
     
             deconnexionButton.style.display = "none";
-            document.getElementById('deconnect_text_1').style.display = 'none';
-            document.getElementById('deconnect_text_2').style.display = 'none';
+            document.getElementById('connectedMSG').style.display = 'none';
+            document.getElementById('disconnectTip').style.display = 'none';
         }
     });
 
