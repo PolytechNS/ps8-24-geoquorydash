@@ -425,15 +425,6 @@ label img {
     width: 80%;
 }
 
-/* #searchBlock {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    height: 100%;
-    width: 100%;
-} */
-
 #okButton {
     height: 30%;
     min-height: 4vw;
