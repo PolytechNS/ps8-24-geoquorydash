@@ -41,4 +41,6 @@
             <application android:usesCleartextTraffic="true" />
         </edit-config>
     </platform>
+
+    <icon src="./www/img/icon.png" />
 </widget>
