@@ -123,7 +123,7 @@
     text-align: center;
 }
 
-.modal-content button, .modal-content-temp button, .modal-content-end button, .modal-content-temp-deco button, .modal-content-temp-sign button, .modal-content-temp-log button, modal-content button{
+.modal-content button, .modal-content-temp button, .modal-content-end button, .modal-content-temp-deco button, .modal-content-temp-sign button, .modal-content-temp-log button, modal-content button, .modal-content-erreur button {
     padding: 0;
     font-weight: bold;
     background-image: url('../img/gameType/button.png');

@@ -61,29 +61,71 @@ window.onload = function() {
         if (gameStateID && token) {
             gameSocket.emit('resumeGame', gameStateID, token);
         } else {
-            alert('Une erreur est survenue. Veuillez vous reconnecter.');
-            window.location.href = '/home.html';
+            var modal = document.getElementById("modalErreur");
+            var modalContent = document.querySelector('.modal-content-erreur');
+            document.querySelector('.modal-content-erreur p').textContent = 'Une erreur est survenue. Veuillez vous reconnecter.';
+
+            var btn = document.getElementById("erreurBtn");
+
+            modal.style.display = "flex";
+
+            btn.onclick = function() {
+                modal.style.display = "none";
+                window.location.href = '/home.html';
+            }
         }
     }
 };
 
 gameSocket.on('tokenInvalid', function() {
     localStorage.removeItem('token');
-    alert('Votre session a expiré. Veuillez vous reconnecter.');
-    window.location.href = '/home.html';
+    var modal = document.getElementById("modalErreur");
+    var modalContent = document.querySelector('.modal-content-erreur');
+    document.querySelector('.modal-content-erreur p').textContent = 'Votre session a expiré. Veuillez vous reconnecter.';
+
+    var btn = document.getElementById("erreurBtn");
+
+    modal.style.display = "flex";
+
+    btn.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/home.html';
+    }
 });
 
 gameSocket.on('databaseConnectionError', function() {
-    alert('Probleme de connexion avec la base de données. Veuillez réessayer plus tard.');
+    var modal = document.getElementById("modalErreur");
+    var modalContent = document.querySelector('.modal-content-erreur');
+    document.querySelector('.modal-content-erreur p').textContent = 'Probleme de connexion avec la base de données. Veuillez réessayer plus tard.';
+
+    var btn = document.getElementById("erreurBtn");
+
+    modal.style.display = "flex";
+
+    btn.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/home.html';
+    }
 });
 
 
 
 
 gameSocket.on('gameAlreadyInProgress', function(gameStateId) {
-    alert('Une partie est déjà en cours.');
-    window.location.href = '/gameLocal/gameLocal.html';
-    localStorage.setItem('gameStateID', gameStateId);
+    var modal = document.getElementById("modalErreur");
+    var modalContent = document.querySelector('.modal-content-erreur');
+    document.querySelector('.modal-content-erreur p').textContent = 'Une partie est déjà en cours.';
+
+    var btn = document.getElementById("erreurBtn");
+
+    modal.style.display = "flex";
+
+    btn.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/gameLocal/gameLocal.html';
+        localStorage.setItem('gameStateID', gameStateId);
+
+    }
 });
 
 gameSocket.on('updateSkin', function(skinURL1, skinURL2) {
