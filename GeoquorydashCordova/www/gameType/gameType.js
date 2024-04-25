@@ -12,13 +12,19 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById("gameFriendButton").style.opacity = "0.5";
         document.getElementById("gameOnlineButton").style.pointerEvents = "none";
         document.getElementById("gameFriendButton").style.pointerEvents = "none";
+        document.getElementById("networkError").style.display = "block";
+
     }
     if(connect.toString() === "wifi"){
         console.log("wifiIsTheNetwork");
+        document.getElementById("networkError").style.display = "none";
+
 
     }
     if(connect.toString() === "cellular"){
         console.log("cellularIsTheNetwork");
+        document.getElementById("networkError").style.display = "none";
+
 
     }
 });
