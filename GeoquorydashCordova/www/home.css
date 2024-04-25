@@ -403,6 +403,28 @@ label img {
     list-style-type: none;*/
 }
 
+@media (min-aspect-ratio: 23/9) {
+    #friendsSearchTab {
+        flex-direction: row; /* Change l'orientation de column à row */
+    }
+    #friendsForm {
+        height: 70% !important;
+        width: 40% !important;
+    }
+    #searchResults {
+        width: 50% !important;
+    }
+    #searchInput {
+        margin-bottom: 9% !important;
+        margin-top: 2%;
+    }
+    #okButton {
+        height: 10vh !important;
+        min-height: 1.5vw !important;
+    }
+
+}
+
 #friendsButtonContainer {
     display: flex;
     justify-content: space-between;
@@ -412,6 +434,7 @@ label img {
 #friendsButtonContainer img {
     width: calc(100% * 1/3);
     height: auto;
+    max-height: min(12vh, 12vw);
     cursor: pointer;
 }
 
@@ -432,6 +455,16 @@ label img {
     height: 40%;
     width: 80%;
 }
+
+#friendsForm label {
+    display: flex;
+    justify-content: center;
+}
+
+#friendsForm label img{
+    max-height: 5vw;
+}
+
 
 #okButton {
     height: 30%;
@@ -522,8 +555,15 @@ label img {
 }
 
 #searchResults li {
-    height: 30%;
+    height: 26%;
     margin-bottom: 2vh;
+    max-height: 38px;
+    min-height: 1.5vw;
+
+}
+
+#searchResults li:hover {
+    background-color: #c5c5c5;
 }
 
 #rankResults li div, #friendsResults li div, #requestResults li div, #searchResults li div {
