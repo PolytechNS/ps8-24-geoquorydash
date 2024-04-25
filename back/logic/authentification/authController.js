@@ -28,7 +28,8 @@ async function signup(req, res) {
                 password,
                 profilePicture: null,
                 friends: [],
-                friendRequests: []
+                friendRequests: [],
+                skinURL: "Cube002.png"
             };
 
             let usersCollectionResponse = await usersCollection.insertOne(newUser);
@@ -109,6 +110,104 @@ async function username(req, res) {
     }
 }
 
+async function updateSkin(req, res) {
+    console.log("On passe dans la méthode skin");
+    const authHeader = req.headers.authorization;
+    let token;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+
+        parseJSON(req, async (err, { skinURL }) => {
+            if (err) {
+                console.log('Invalid JSON:', err);
+                res.writeHead(400, { 'Content-Type': 'text/plain' });
+                res.end('Invalid JSON');
+                return;
+            }
+
+            const userID = verifyAndValidateUserID(token);
+            if (userID) {
+                try {
+                    const usersCollection = await createUserCollection();
+                    const user = await usersCollection.findOne({ _id: new ObjectId(userID) });
+                    if (user) {
+                        const updateResult = await usersCollection.updateOne(
+                            { _id: new ObjectId(userID) },
+                            { $set: { skinURL: skinURL } }
+                        );
+                        if (updateResult.modifiedCount === 1) {
+                            res.writeHead(200, { 'Content-Type': 'application/json' });
+                            res.end(JSON.stringify({ message: 'Skin updated successfully' }));
+                        } else {
+                            console.log("Failed to update skin");
+                            res.writeHead(500, { 'Content-Type': 'text/plain' });
+                            res.end('Failed to update skin');
+                        }
+                    } else {
+                        console.log("user not found");
+                        res.writeHead(404, { 'Content-Type': 'text/plain' });
+                        res.end('User not found');
+                    }
+                } catch (error) {
+                    console.log("error")
+                    console.error('Error fetching user data:', error);
+                    res.writeHead(500, { 'Content-Type': 'text/plain' });
+                    res.end('Internal server error');
+                }
+            } else {
+                console.log("unauthorized");
+                res.writeHead(401, { 'Content-Type': 'text/plain' });
+                res.end('Unauthorized');
+            }
+        });
+
+    } else {
+        console.log("invalid or missing");
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid or missing Authorization header');
+    }
+}
+
+async function getSkin(req, res) {
+    console.log("On est dans la méthode getSkin");
+    const authHeader = req.headers.authorization;
+    let token;
+
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.split(' ')[1];
+
+        const userID = verifyAndValidateUserID(token);
+        if (userID) {
+            try {
+                const usersCollection = await createUserCollection();
+                const user = await usersCollection.findOne({ _id: new ObjectId(userID) });
+                if (user) {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ skinURL: user.skinURL }));
+                } else {
+                    console.log("user not found");
+                    res.writeHead(404, { 'Content-Type': 'text/plain' });
+                    res.end('User not found');
+                }
+            } catch (error) {
+                console.log("error")
+                console.error('Error fetching user data:', error);
+                res.writeHead(500, { 'Content-Type': 'text/plain' });
+                res.end('Internal server error');
+            }
+        } else {
+            console.log("unauthorized");
+            res.writeHead(401, { 'Content-Type': 'text/plain' });
+            res.end('Unauthorized');
+        }
+    } else {
+        console.log("invalid or missing");
+        res.writeHead(400, { 'Content-Type': 'text/plain' });
+        res.end('Invalid or missing Authorization header');
+    }
+}
+
 function verifyAndValidateUserID(token) {
     try {
         const tokenData = verifyToken(token);
@@ -127,4 +226,4 @@ function verifyAndValidateUserID(token) {
 }
 
 
-module.exports = { signup, login, username, verifyAndValidateUserID };
+module.exports = { signup, login, username, updateSkin, getSkin, verifyAndValidateUserID };

@@ -5,6 +5,7 @@ const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
 const {createGameStateInDatabase} = require("../../models/game/gameState");
 const usersConnected = require("../../usersConnected");
 const statManager = require("../stat/statManager");
+const skinManager = require("../skin/skinManager");
 
 class GameOnlineManager {
     waitingPlayers = {};
@@ -61,6 +62,11 @@ class GameOnlineManager {
         socket2.join(roomId);
 
         io.of('/api/game').to(roomId).emit('matchFound', roomId);
+
+        const skinURL1 = await skinManager.getSkinURL(player1);
+        const skinURL2 = await skinManager.getSkinURL(player2);
+        console.log("skinURL1 : " + skinURL1 + " skinURL2 : " + skinURL2);
+        io.of('/api/game').to(roomId).emit('updateSkin', skinURL2, skinURL1);
 
         socket1.emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0], true);
         socket2.emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1], true);
