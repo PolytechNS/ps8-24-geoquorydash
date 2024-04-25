@@ -132,7 +132,7 @@ body {
     animation: blinkingEffect 1s linear infinite;
 }
 
-.modal, .modal-temp, .modal-erreurs{
+.modal, .modal-temp, .modal-erreur{
     display: none;
     position: absolute;
     left: 0;
