@@ -375,13 +375,9 @@ window.onbeforeunload = function(e) {
 }
 
 function updateSkin(skinURL1, skinURL2) {
-    console.log("RIEN");
-    console.log("skinURL : " + skinURL1);
     document.getElementById('player2').style.backgroundImage = `url("../img/skin/${skinURL1}")`;
     if(skinURL2) {
         document.getElementById('player1').style.backgroundImage = `url("../img/skin/${skinURL2}")`;
-    } else {
-        console.log("MA BEUTEU");
     }
 }
 
