@@ -9,12 +9,15 @@ var loginModal = document.getElementById("loginModal");
 var rankModal = document.getElementById("rankModal");
 
 
+
+
 var token;
 updateToken();
 
 function updateToken() {
     token = localStorage.getItem('token');
 }
+
 
 
 var handleDeconnexionClick = function(event) {
