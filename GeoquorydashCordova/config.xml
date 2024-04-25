@@ -17,7 +17,7 @@
     <allow-navigation href="http://localhost/*" />
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
-    <preference name="hostname" value="geoquorydash.ps8.academy" />
+    <preference name="hostname" value="localhost:8000" />
 
     <platform name="android">
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
