@@ -48,7 +48,15 @@ function setupSaveButton(token){
         });
 
         SettingsService.saveConfiguration(token, { textInGameInteraction: textInGameInteraction }).then(() => {
-            alert('Configuration enregistrée');
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Votre configuration a bien été enregistrée.";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         });
     }
 }

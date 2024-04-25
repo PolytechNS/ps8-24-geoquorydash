@@ -90,6 +90,10 @@ body {
     background-size: cover;
     filter: url(#svgTintRed);
 }
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 
 .player2 {
     background-image: url('../img/Skin005.png');
@@ -128,7 +132,7 @@ body {
     animation: blinkingEffect 1s linear infinite;
 }
 
-.modal, .modal-temp {
+.modal, .modal-temp, .modal-erreur {
     display: none;
     position: absolute;
     left: 0;
@@ -141,7 +145,7 @@ body {
     justify-content: center;
 }
 
-.modal-content, .modal-content-temp, .modal-content-end {
+.modal-content, .modal-content-temp, .modal-content-end, .modal-content-erreur {
     position: absolute;
     background-color: #fefefe;
     padding: 2%;

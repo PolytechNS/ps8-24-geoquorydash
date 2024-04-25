@@ -38,6 +38,12 @@ body {
 
 }
 
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
+
+
 
 .profilePictureContainer:hover .overlay-text {
     opacity: 1;
