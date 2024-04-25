@@ -17,10 +17,6 @@ body {
 #burger-chat-button{
     cursor: pointer;
 }
-.rotate {
-    transform: rotate(180deg);
-    transition: transform 0.3s ease;
-}
 #burger-menu-button{
     cursor: pointer;
 }
@@ -165,56 +161,19 @@ body {
 }
 
 .boutons {
->>>>>>> 98203318b8594e244719acca41aa5306a357dec5
     position: absolute;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0,0,0,0.4);
-    backdrop-filter: blur(2px); 
-}
-
-.modal-content-temp {
-    position: absolute;
-    background-color: #fefefe;
-    padding: 2%;
-    border: 6px solid black;
-    width: auto;
-    max-width: 30%;
-    min-width: 5%;
-    height: auto;
-    max-height: 80%;
-    min-height: 5%;
-    overflow: auto;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    font: 150% 'joystix', sans-serif;
-    font-size: 3vh;
-    text-align: center;
-}
-
-.modal-content-temp button {
-    padding: 0;
-    font-weight: bold;
-    background-image: url('../img/gameType/button.png');
-    background-size: 100% 100%;
-    background-repeat: no-repeat;
-    background-position: center;
-    color: white;
-    width: 50%;
-    min-height: 8vh;
-    margin: 2vh;
-    border-radius: 1vh;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 2em;
     cursor: pointer;
-    font-family: 'joystix', sans-serif;
-    font-size: min(2vh, 1.5vw);
+    color: white;
+    z-index: 10;
 }
-
-.modal-content-temp p,
-.modal-content-temp button {
-    margin: 2%;
+#prevBtn {
+    left: 10px;
 }
-
+#nextBtn {
+    right: 10px;
+}
