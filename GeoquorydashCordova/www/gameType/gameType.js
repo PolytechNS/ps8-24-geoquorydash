@@ -9,7 +9,7 @@ gameRequestBtn.addEventListener('click', () => {
 document.addEventListener("DOMContentLoaded", function() {
     if(isMobileDevice()) {
         var connect = navigator.connection.type;
-        if (connect.toString() === "none") {
+        if (connect === "none") {
             console.log("noneIsTheNetwork");
             document.getElementById("gameOnlineButton").style.opacity = "0.5";
             document.getElementById("gameFriendButton").style.opacity = "0.5";
@@ -18,13 +18,13 @@ document.addEventListener("DOMContentLoaded", function() {
             document.getElementById("networkError").style.display = "block";
 
         }
-        if (connect.toString() === "wifi") {
+        if (connect === "wifi") {
             console.log("wifiIsTheNetwork");
             document.getElementById("networkError").style.display = "none";
 
 
         }
-        if (connect.toString() === "cellular") {
+        if (connect === "cellular") {
             console.log("cellularIsTheNetwork");
             document.getElementById("networkError").style.display = "none";
 
