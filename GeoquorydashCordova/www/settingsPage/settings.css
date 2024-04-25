@@ -1,7 +1,7 @@
 /* Style général */
 body {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
     flex-direction: column;
     height: 100vh;
@@ -34,7 +34,7 @@ body {
 #save-button {
     cursor: pointer;
     border-radius: 5px;
-    margin-top: 4vh;
+    margin-top: 2vh;
     height: 8vh;
     width: auto;
 }
@@ -116,27 +116,39 @@ body {
     src: url('../font/joystix_monospace.otf');
 }
 
+#configAndSaveContainer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
 .carousel-container {
     position: relative;
-    max-height: 60%;
-    margin-top: 3%;
-    width: 33%;
-    margin-bottom: 5%;
+    width: 67.3vh;
+    height: 40vh;
     overflow: hidden;
 }
 
 .carousel-wrapper {
     display: flex;
+    width: auto; /* Pour trois slides, chacun de 100% de large */
+    height: 100%;
+    transition: transform 0.5s ease;
 }
 
 .carousel-slide {
+    width: auto;
+    height: 100%;
     display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .carousel-slide img {
-    max-width: 100%;
-    display: block;
-    transition: transform 0.5s ease;
+    height: 100%; /* Les images s'adaptent à la taille du slide */
+    width: auto;
 }
 
 .boutons {
@@ -148,12 +160,11 @@ body {
     font-size: 2em;
     cursor: pointer;
     color: white;
+    z-index: 10;
 }
-
 #prevBtn {
     left: 10px;
 }
-
 #nextBtn {
     right: 10px;
 }
