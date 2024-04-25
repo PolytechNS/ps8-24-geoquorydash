@@ -1,4 +1,6 @@
+import { isMobileDevice } from "../js/utils.js";
 import gameSocket from "../sockets/gameSocketConnection.js";
+
 
 const board = document.getElementById('board');
 const player1 = createPlayer('player1', 'blue');
@@ -374,6 +376,40 @@ window.onbeforeunload = function(e) {
     gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
 }
 
+
+document.addEventListener("DOMContentLoaded", function() {
+    if(isMobileDevice()) {
+        var connect = navigator.connection.type;
+        if (connect === "none") {
+            console.log("noneIsTheNetwork");
+
+            document.getElementById("networkError").style.display = "block";
+
+        }
+        if (connect === "wifi") {
+            console.log("wifiIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+
+
+        }
+        if (connect === "cellular") {
+            console.log("cellularIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+
+
+        }
+    }else{
+        document.getElementById("networkError").style.display = "none";
+    }
+});
+
+window.addEventListener('online', function(event) {
+    location.reload();
+});
+
+window.addEventListener('offline', function(event) {
+    location.reload();
+});
 function updateSkin(skinURL1, skinURL2) {
     document.getElementById('player2').style.backgroundImage = `url("../img/skin/${skinURL1}")`;
     if(skinURL2) {
@@ -382,3 +418,4 @@ function updateSkin(skinURL1, skinURL2) {
 }
 
 export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts, updateSkin };
+

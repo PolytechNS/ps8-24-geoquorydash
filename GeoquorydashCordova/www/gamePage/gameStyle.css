@@ -16,6 +16,13 @@ body {
     align-items: center;
 }
 
+#networkError{
+    width: 8vh;
+    position: absolute;
+    top: 1vh;
+    right: 4vh;
+}
+
 .player-info {
     display: flex;
     flex-direction: column;
