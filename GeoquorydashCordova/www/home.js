@@ -471,6 +471,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 modal.style.display = "none";
             }, 1000);
+            return;
         } else if (password === '') {
             var modal = document.getElementById("myModalTempSign");
             var modalContent = document.querySelector('.modal-content-temp-sign');
@@ -481,6 +482,7 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 modal.style.display = "none";
             }, 1000);
+            return;
         }
         AuthService.signUp(username, password)
             .then(data => {
