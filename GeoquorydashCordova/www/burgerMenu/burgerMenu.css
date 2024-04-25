@@ -60,16 +60,17 @@
 }
 
 .burger-menu ul li img {
-    width: 20vw;
+    height: auto;
+    width: 100%;
 }
 
 #accueilButton img {
-    height: 8vh;
+    height: auto;
     width: 100%;
 }
 
 #deconnexionButton img {
-    height: 6vh;
+    height: auto;
     width: 100%;
 }
 
