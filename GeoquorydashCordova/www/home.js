@@ -7,6 +7,7 @@ var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
 var rankModal = document.getElementById("rankModal");
+var skinModal = document.getElementById("skinModal");
 
 
 var token;
@@ -470,6 +471,57 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 });
 
+// PAGE HOME -> PAGE SKIN
+document.addEventListener("DOMContentLoaded", function() {
+    var openSkinPage = document.getElementById("openSkinPage");
+    var closeSkinModalButton = document.getElementById("close-skin-modal-button");
+    const skinImages = document.querySelectorAll('#possible-skins img');
+    const displaySkinImage = document.querySelector('#display-skin img');
+
+    openSkinPage.addEventListener("click", function (e) {
+        e.preventDefault();
+        skinModal.style.display = "flex";
+
+        AuthService.getSkin(token)
+        .then(data => {
+            console.log("On a bien reçu le skin : " + data.skinURL);
+            displaySkinImage.src = 'img/skin/' + data.skinURL;
+        })
+        .catch(error => {
+            console.error('Erreur de récuparéation du skin :', error);
+        });
+
+        var url = null;
+        var filename = null;
+        skinImages.forEach(image => {
+            image.addEventListener('click', function() {
+                url = image.src; // 'img/skin/Cube001.png' par exemple
+                filename = url.split('/').pop(); // 'Cube001.png' par exemple
+                console.log("URL : " + url + "filename : " + filename);
+
+                AuthService.udpateSkin(token, filename)
+                .then(data => {
+                    console.log("Réponse du back : " + data.message);
+                })
+                .catch(error => {
+                    console.error('Error udpating skin:', error);
+                });
+                displaySkinImage.src = image.src;
+            });
+        });
+    });
+
+    closeSkinModalButton.addEventListener("click", function() {
+        skinModal.style.display = "none";
+    });
+
+    window.addEventListener("click", function(event) {
+        if (event.target === skinModal) {
+            skinModal.style.display = "none";
+        }
+    });
+});
+
 
 /**************** FONCTIONS DE GESTION DES AMIS ****************/
 function displayFriendsListTab(friendsResults, addFriendsText) {
@@ -657,3 +709,15 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 });
+
+window.addEventListener('load', resizeImageBasedOnHeight);
+window.addEventListener('resize', resizeImageBasedOnHeight);
+
+function resizeImageBasedOnHeight() {
+    const image = document.querySelector('.top-image');
+    if (image.offsetHeight >= 40 * window.innerHeight / 100) {
+        image.style.width = 'auto';
+    } else {
+        image.style.width = '80%';
+    }
+}

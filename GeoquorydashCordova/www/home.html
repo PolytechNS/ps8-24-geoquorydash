@@ -10,20 +10,21 @@
 </head>
 <body>
 
-<a id="burger-chat-button" class="burger-chat-button"><img src="img/chat/chat.png" alt="Chat"></a>
-<div id="burger-chat-container"></div>
+    <a id="burger-chat-button" class="burger-chat-button"><img src="img/chat/chat.png" alt="Chat"></a>
+    <div id="burger-chat-container"></div>
 
 <div id="homePageContent">
     <img src="img/home/title.png" alt="Title" class="top-image">
     <div class="main">
-        <a id="profilePage" href="#"><img src="img/home/button_skin.png" alt="Profile"></a>
-        <a href="gameType/gameType.html" class="btn-game"><img src="img/home/button_game.png" alt="Game"></a>
+        <a id="profilePage" href="#"><img src="img/home/button_profile.png" alt="Profile"></a>
+        <a href="gameType/gameType.html"><img id="play-button" src="img/home/button_game.png" alt="Game"></a>
         <a id="settingPage" href="#"><img src="img/home/button_settings.png" alt="Settings"></a>
     </div>
     <div class="secondary">
         <a href="#" id="openFriendsPage"><img src="img/home/button_friends.png" alt="Friends"></a>
         <a href="#" id="openStatPage"><img src="img/home/button_stat.png" alt="Stat"></a>
         <a href="#" id="openRankPage"><img src="img/home/button_success.png" alt="Rank"></a>
+        <a href="#" id="openSkinPage"><img src="img/home/button_skin.png" alt="Skin"></a>
         <a href="#" id="openAccountPage"><img src="img/home/button_account.png" alt="Account"></a>
     </div>
 </div>
@@ -200,7 +201,49 @@
 
 </div>
 
+    <div id="skinModal" class="modal">
+        <div class="modal-content">
+            <img src="./img/skin/avatar.png" alt="title" class="title-page-image">
 
+            <div id="close-skin-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
+
+            <div id="skin-elements">
+
+                <div id="display-skin">
+                    <div id="skin-platform"></div>
+                    <img src="img/skin/Cube002.png" alt="chosenSkin">
+                </div>
+
+                <div class="horizontal-bar"></div>
+
+                <div id="possible-skins">
+                    <img src="img/skin/Cube001.png" alt="skin1">
+                    <img src="img/skin/Cube002.png" alt="skin2">
+                    <img src="img/skin/Cube003.png" alt="skin3">
+                    <img src="img/skin/Cube004.png" alt="skin4">
+                    <img src="img/skin/Cube005.png" alt="skin5">
+                    <img src="img/skin/Cube006.png" alt="skin6">
+                    <img src="img/skin/Cube007.png" alt="skin7">
+                    <img src="img/skin/Cube008.png" alt="skin8">
+                    <img src="img/skin/Cube009.png" alt="skin9">
+                    <img src="img/skin/Cube010.png" alt="skin10">
+                    <img src="img/skin/Cube011.png" alt="skin11">
+                    <img src="img/skin/Cube012.png" alt="skin12">
+                    <img src="img/skin/Cube013.png" alt="skin13">
+                    <img src="img/skin/Cube014.png" alt="skin14">
+                    <img src="img/skin/Cube015.png" alt="skin15">
+                    <img src="img/skin/Cube016.png" alt="skin16">
+                    <img src="img/skin/Cube017.png" alt="skin17">
+                    <img src="img/skin/Cube018.png" alt="skin18">
+                    <img src="img/skin/Cube019.png" alt="skin19">
+                    <img src="img/skin/Cube020.png" alt="skin20">
+                </div>
+            </div>
+            
+        </div>
+    </div>
 
 <script type="module" src="home.js"></script>
 <script src="./sockets/socket.io.js"></script>

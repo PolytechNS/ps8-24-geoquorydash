@@ -18,11 +18,30 @@
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
     <preference name="hostname" value="localhost:8000" />
+    <preference name="AndroidXEnabled" value="true" />
+
+    <preference name="LottieRemoteEnabled" value="false" />
+    <preference name="LottieAnimationLocation" value="www/lottie/first_anim.json" />
+    <preference name="LottieLoopAnimation" value="true" />
+    <preference name="LottieBackgroundColor" value="#345128" />
+    <preference name="LottieEnableHardwareAcceleration" value="true" />
+    <preference name="LottieFullScreen" value="true" />
+    <preference name="LottieHideTimeout" value="5000" />
+    <preference name="LottieCacheDisabled" value="true" />
+
+    <preference name="SplashScreenDelay" value="0"/>
+    <preference name="AutoHideSplashScreen" value="true"/>
 
     <platform name="android">
+        <preference name="GradlePluginKotlinEnabled" value="true" />
+        <preference name="GradlePluginKotlinVersion" value="1.7.22" />
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
+        <!-- <preference name="LottieAnimationLocationLight" value="./www/img/Skin002.png" />
+        <preference name="LottieBackgroundColor" value="#fff000a3" />
+        <preference name="LottieWidth" value="350" />
+        <preference name="LottieHeight" value="350" /> -->
     </platform>
     <preference name="orientation" value="landscape" />
     <preference name="Fullscreen" value="true" />
