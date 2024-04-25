@@ -1,5 +1,4 @@
-import {OneSignal_API_KEY, OneSignal_APP_ID} from "../js/config.js";
-
+const {OneSignal_APP_ID, OneSignal_API_KEY} = require("../../utils/constants");
 
 /**
  * Sends a push notification using OneSignal API.
@@ -19,7 +18,6 @@ async function sendMobileNotification(message, externalIds) {
         contents: { en: message },
         include_external_user_ids: externalIds
     });
-
     try {
         const response = await fetch(url, {
             method: 'POST',
@@ -36,4 +34,4 @@ async function sendMobileNotification(message, externalIds) {
     }
 }
 
-export { sendMobileNotification };
+module.exports = sendMobileNotification;
