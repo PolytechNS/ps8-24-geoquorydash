@@ -197,6 +197,13 @@ function displayPossibleMove(possibleMove) {
             clearTimeout(timeout);
         }
         timeout = setTimeout(() => {
+            allElements.forEach(function(cell) {
+                if (cell.moveEventListener) {
+                    cell.removeEventListener('click', cell.moveEventListener);
+                    cell.moveEventListener = null;
+                    cell.classList.remove('blinking');
+                }
+            });
             gameSocket.emit('timeout', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
         }, 5000);
     }
@@ -348,4 +355,15 @@ window.onbeforeunload = function(e) {
     gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
 }
 
-export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
+function updateSkin(skinURL1, skinURL2) {
+    console.log("RIEN");
+    console.log("skinURL : " + skinURL1);
+    document.getElementById('player2').style.backgroundImage = `url("../img/skin/${skinURL1}")`;
+    if(skinURL2) {
+        document.getElementById('player1').style.backgroundImage = `url("../img/skin/${skinURL2}")`;
+    } else {
+        console.log("MA BEUTEU");
+    }
+}
+
+export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts, updateSkin };

@@ -16,127 +16,146 @@
     <div id="homePageContent">
         <img src="img/home/title.png" alt="Title" class="top-image">
         <div class="main">
-            <a id="profilePage" href="#"><img src="img/home/button_skin.png" alt="Profile"></a>
-            <a href="gameType/gameType.html" class="btn-game"><img src="img/home/button_game.png" alt="Game"></a>
-            <a href="settingsPage/settings.html"><img src="img/home/button_settings.png" alt="Settings"></a>
+            <a id="profilePage" href="#"><img src="img/home/button_profile.png" alt="Profile"></a>
+            <a href="gameType/gameType.html" class="btn-game"><img id="play-button" src="img/home/button_game.png" alt="Game"></a>
+            <a id="settingPage" href="#"><img src="img/home/button_settings.png" alt="Settings"></a>
         </div>
         <div class="secondary">
-            <a href="#" id="openFriendsPage"><img src="img/home/button_friends.png" alt="Friends"></a>
+            <a href="#" id="openFriendsPage">
+                <img src="img/home/button_friends.png" alt="Friends" class="default">
+                <img src="img/home/button_friends_notif.png" alt="Friends Notification" class="notif">
+            </a>
             <a href="#" id="openStatPage"><img src="img/home/button_stat.png" alt="Stat"></a>
             <a href="#" id="openRankPage"><img src="img/home/button_success.png" alt="Rank"></a>
+            <a href="#" id="openSkinPage"><img src="img/home/button_skin.png" alt="Skin"></a>
             <a href="#" id="openAccountPage"><img src="img/home/button_account.png" alt="Account"></a>
         </div>
     </div>
 
-    <div id="accountModal" class="modal">
-        <div class="modal-content">
-            <img src="./img/account/title_account.png" alt="title" class="title-page-image">
+<div id="accountModal" class="modal">
+    <div class="modal-content">
+        <img src="./img/account/title_account.png" alt="title" class="title-page-image">
+            <div id="close-account-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <div id="account-elements">
                 <div class="account-text-container">
-                    <img src="./img/account/first_account.png" alt="sentence" class="information-image" id="connect_text_1">
-                    <img src="./img/account/second_account.png" alt="sentence" class="information-image" id="connect_text_2">
-                    <img src="./img/account/connected_text.png" alt="sentence" class="information-image" id="deconnect_text_1" style="display: none;">
-                    <img src="./img/account/deconnect_below.png" alt="sentence" class="information-image" id="deconnect_text_2" style="display: none;">
+                    <h1 class="information-image" id="connect_text_1">VOUS N'ÊTES PAS CONNECTÉ</h1>
+                    <h2  class="information-image" id="connect_text_2">VEUILLEZ CRÉER UN COMPTE SI VOUS SOUHAITEZ CONSERVER VOS DONNÉES</h2>
+                    <div id="connectedMSG" style="display: none">VOUS ÊTES CONNECTÉ</div>
+                    <div id="disconnectTip" style="display: none">VOUS POUVEZ VOUS DÉCONNECTER EN APPUYANT SUR LE BOUTON CI-DESSOUS</div>
                 </div>
-                
-
-                <div class="buttons">
-                    <img src="./img/account/button_signup.png" alt="signup" id="openSignupPage">
-                    <img src="./img/account/button_login.png" alt="login" id="openLoginPage">
-                    <img src="./img/account/button_logout.png" alt="logout" id="logout-btn" style="display: none;">
-                </div>
+            <div class="buttons">
+                <img src="./img/account/button_signup.png" alt="signup" id="openSignupPage">
+                <img src="./img/account/button_login.png" alt="login" id="openLoginPage">
+                <img src="./img/account/button_logout.png" alt="logout" id="logout-btn" style="display: none;">
             </div>
         </div>
     </div>
+</div>
 
-    <div id="signupModal" class="modal">
-        <div class="modal-content">
-            <img src="./img/account/title_signup.png" alt="title" class="title-page-image">
+<div id="signupModal" class="modal">
+    <div class="modal-content">
+        <img src="./img/account/title_signup.png" alt="title" class="title-page-image">
+         <div id="close-signup-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <form id="signupForm">
                 <div class="credentials">
                     <div id="signupUsernameBlock">
-                        <label for="usernameInputSignUp"><img src="./img/account/username.png" alt="Username"></label>
+                        <label  for="usernameInputSignUp"><a class="usernameSignUp">NOM D'UTILISATEUR</a></label>
                         <input type="text" id="usernameInputSignUp" name="username">
                     </div>
                     <div id="signupPasswordBlock">
                         <label for="passwordInputSignUp"><img src="./img/account/password.png" alt="Password"></label>
                         <input type="password" id="passwordInputSignUp" name="password">
-
                     </div>
-                </div>
-                
-                <div class="validationBlock">
-                    <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButtonValidation">
-                </div>
-            </form>
-        </div>
-    </div>
+            </div>
 
-    <div id="loginModal" class="modal">
-        <div class="modal-content">
-            <img src="./img/account/title_login.png" alt="title" class="title-page-image">
+            <div class="validationBlock">
+                <input type="image" src="./img/account/button_signup.png" alt="Signup" id="signUpButtonValidation">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+        <img src="./img/account/title_login.png" alt="title" class="title-page-image">
+            <div id="close-login-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <form id="loginForm">
                 <div class="credentials">
                     <div id="loginUsernameBlock">
-                        <label for="usernameInputLogIn"><img src="./img/account/username.png" alt="Username"></label>
+                        <label for="usernameInputLogIn"><a class="usernameLogIn">NOM D'UTILISATEUR</a></label>
                         <input type="text" id="usernameInputLogIn" name="username">
                     </div>
                     <div id="loginPasswordBlock">
                         <label for="passwordInputLogIn"><img src="./img/account/password.png" alt="Password"></label>
                         <input type="password" id="passwordInputLogIn" name="password">
                     </div>
-                </div>
-                
-                <div class="validationBlock">
-                    <input type="image" src="./img/account/button_login.png" alt="Login" id="loginButton">
-                    <img src="./img/account/title_signup.png" alt="signup" id="signupButton">
-                </div>
-            </form>
-        </div>
-    </div>
 
-    <div id="friendsModal" class="modal">
-        <div class="modal-content">
-            <img src="./img/friends/title_friends.png" alt="title" class="title-page-image">
+            </div>
+
+            <div class="validationBlock">
+                <input type="image" src="./img/account/button_login.png" alt="Login" id="loginButton">
+                <img src="./img/account/title_signup.png" alt="signup" id="signupButton">
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="friendsModal" class="modal">
+    <div class="modal-content">
+        <img src="./img/friends/title_friends.png" alt="title" class="title-page-image">
+
+            <div id="close-friends-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <div id="friends-elements">
 
-                <div id="friendsListTab" class="friendsTab">
-                    <ul id="friendsResults"></ul>
-                    <img src="./img/friends/add_friends.png" alt="Ajouter" class="information-image" id="add_friends_text">
-                </div>
-                
-                <div id="friendsSearchTab" class="friendsTab">
-                    <form id="friendsForm">
-                        <label for="searchInput"><img src="./img/friends/search.png" alt="Search"></label>
-                        <input type="text" id="searchInput" name="search">
-                        <input type="image" src="../img/friends/ok.png" alt="OK" id="okButton">
-                    </form>
-    
-                    <ul id="searchResults"></ul>
-                </div>
+            <div id="friendsListTab" class="friendsTab">
+                <ul id="friendsResults"></ul>
+                <img src="./img/friends/add_friends.png" alt="Ajouter" class="information-image" id="add_friends_text">
+            </div>
 
-                <div id="friendsRequestTab" class="friendsTab">
-                    <ul id="requestResults"></ul>
-                    <img src="./img/friends/no_pending_demand.png" alt="Ajouter" class="information-image" id="no_pending_demand_text">
-                </div>
+            <div id="friendsSearchTab" class="friendsTab">
+                <form id="friendsForm">
+                    <label for="searchInput"><img src="./img/friends/search.png" alt="Search"></label>
+                    <input type="text" id="searchInput" name="search">
+                    <input type="image" src="../img/friends/ok.png" alt="OK" id="okButton">
+                </form>
 
-                <div id="friendsButtonContainer">
-                    <img src="./img/friends/listButton.png" alt="List" id="openFriendsListTab">
-                    <img src="./img/friends/searchButton.png" alt="Search" id="openFriendsSearchTab">
-                    <img src="./img/friends/requestButton.png" alt="Requests" id="openFriendsRequestTab">
-                </div>
+                <ul id="searchResults"></ul>
+            </div>
+
+            <div id="friendsRequestTab" class="friendsTab">
+                <ul id="requestResults"></ul>
+                <img src="./img/friends/no_pending_demand.png" alt="Ajouter" class="information-image" id="no_pending_demand_text">
+            </div>
+
+            <div id="friendsButtonContainer">
+                <img src="./img/friends/listButton.png" alt="List" id="openFriendsListTab">
+                <img src="./img/friends/searchButton.png" alt="Search" id="openFriendsSearchTab">
+                <img src="./img/friends/requestButton.png" alt="Requests" id="openFriendsRequestTab">
             </div>
         </div>
     </div>
+</div>
 
-    <div id="statModal" class="modal">
-        <div class="modal-content">
+<div id="statModal" class="modal">
+    <div class="modal-content">
 
-            <img src="./img/stats/title_statistiques.png" alt="title" class="title-page-image">
+        <img src="./img/stats/title_statistiques.png" alt="title" class="title-page-image">
+
+            <div id="close-stat-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <div class="stat-elements">
                 <div class="stat-item">
@@ -165,14 +184,65 @@
                 </div>
             </div>
         </div>
-    </div>
 
-    <div id="rankModal" class="modal">
-        <div class="modal-content">
-            <img src="./img/friends/classement.png" alt="title" class="title-page-image">
+</div>
+
+<div id="rankModal" class="modal">
+    <div class="modal-content">
+        <img src="./img/friends/classement.png" alt="title" class="title-page-image">
+
+            <div id="close-rank-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
             <div id="rank-elements">
                 <ul id="rankResults"></ul>
+            </div>
+
+        </div>
+
+
+</div>
+
+    <div id="skinModal" class="modal">
+        <div class="modal-content">
+            <img src="./img/skin/avatar.png" alt="title" class="title-page-image">
+
+            <div id="close-skin-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
+
+            <div id="skin-elements">
+
+                <div id="display-skin">
+                    <div id="skin-platform"></div>
+                    <img src="img/skin/Cube002.png" alt="chosenSkin">
+                </div>
+
+                <div class="horizontal-bar"></div>
+
+                <div id="possible-skins">
+                    <img src="img/skin/Cube001.png" alt="skin1">
+                    <img src="img/skin/Cube002.png" alt="skin2">
+                    <img src="img/skin/Cube003.png" alt="skin3">
+                    <img src="img/skin/Cube004.png" alt="skin4">
+                    <img src="img/skin/Cube005.png" alt="skin5">
+                    <img src="img/skin/Cube006.png" alt="skin6">
+                    <img src="img/skin/Cube007.png" alt="skin7">
+                    <img src="img/skin/Cube008.png" alt="skin8">
+                    <img src="img/skin/Cube009.png" alt="skin9">
+                    <img src="img/skin/Cube010.png" alt="skin10">
+                    <img src="img/skin/Cube011.png" alt="skin11">
+                    <img src="img/skin/Cube012.png" alt="skin12">
+                    <img src="img/skin/Cube013.png" alt="skin13">
+                    <img src="img/skin/Cube014.png" alt="skin14">
+                    <img src="img/skin/Cube015.png" alt="skin15">
+                    <img src="img/skin/Cube016.png" alt="skin16">
+                    <img src="img/skin/Cube017.png" alt="skin17">
+                    <img src="img/skin/Cube018.png" alt="skin18">
+                    <img src="img/skin/Cube019.png" alt="skin19">
+                    <img src="img/skin/Cube020.png" alt="skin20">
+                </div>
             </div>
             
         </div>

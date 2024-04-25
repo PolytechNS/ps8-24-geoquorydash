@@ -5,6 +5,7 @@ const {createGameInDatabase} = require("../../models/game/gameDataBaseManager");
 const {createGameStateInDatabase} = require("../../models/game/gameState");
 const usersConnected = require("../../usersConnected");
 const statManager = require("../stat/statManager");
+const skinManager = require("../skin/skinManager");
 
 class GameOnlineManager {
     waitingPlayers = {};
@@ -62,6 +63,11 @@ class GameOnlineManager {
 
         io.of('/api/game').to(roomId).emit('matchFound', roomId);
 
+        const skinURL1 = await skinManager.getSkinURL(player1);
+        const skinURL2 = await skinManager.getSkinURL(player2);
+        console.log("skinURL1 : " + skinURL1 + " skinURL2 : " + skinURL2);
+        io.of('/api/game').to(roomId).emit('updateSkin', skinURL2, skinURL1);
+
         socket1.emit("updateBoard", gameState, fogOfWar.invertedVisibilityMap(visibilityMap), gameStateId, gameManager.getPlayers(gameStateId)[0], true);
         socket2.emit("updateBoard", gameState, visibilityMap, gameStateId, gameManager.getPlayers(gameStateId)[1], true);
     }
@@ -106,18 +112,23 @@ class GameOnlineManager {
             }];
             return waitingRoomId;
         } else {
-            this.gameRequestsWaitingRooms[data.waitingRoomId].push({
-                userId : data.userIdReceiver,
-                socket : socket
-            });
+            try {
+                this.gameRequestsWaitingRooms[data.waitingRoomId].push({
+                    userId : data.userIdReceiver,
+                    socket : socket
+                });
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         }
     }
 
 
 
     emitUpdateBoard(gameStateID, roomId){
-        console.log(gameStateID, roomId);
-        console.log(this.gameInSession[roomId]);
+        // console.log(gameStateID, roomId);
+        // console.log(this.gameInSession[roomId]);
         const socket1 = this.gameInSession[roomId][0];
         const socket2 = this.gameInSession[roomId][1];
         let visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;

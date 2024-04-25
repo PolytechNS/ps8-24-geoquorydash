@@ -4,6 +4,7 @@ var gameSocket = io('/api/game', {
     }
 });
 import { updateBoardDisplay } from '../gamePage/fogOfWar.js';
+import { updateSkin } from '../gamePage/game.js';
 import {
     displayPossibleMove,
     endGame,
@@ -83,6 +84,10 @@ gameSocket.on('gameAlreadyInProgress', function(gameStateId) {
     alert('Une partie est déjà en cours.');
     window.location.href = '/gameLocal/gameLocal.html';
     localStorage.setItem('gameStateID', gameStateId);
+});
+
+gameSocket.on('updateSkin', function(skinURL1, skinURL2) {
+    updateSkin(skinURL1, skinURL2);
 });
 
 export default gameSocket;

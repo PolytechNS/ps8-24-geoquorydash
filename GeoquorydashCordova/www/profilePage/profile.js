@@ -262,9 +262,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOptionsContainer = document.getElementById('modal-options-container');
 
     myProfilePictureElement.addEventListener('click', () => {
-        if(confirm("Voulez-vous changer votre photo de profil ?")) {
-            modalContainer.style.display = 'block';
-        }
+        modalContainer.style.display = 'block';
+
     });
 
     modalOptionsContainer.addEventListener('click', (event) => {
@@ -296,6 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+
+
+
 
 
 
