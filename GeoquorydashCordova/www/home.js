@@ -661,7 +661,15 @@ document.addEventListener("DOMContentLoaded", function() {
                 });
             });
         } else {
-            alert("Vous devez être connecté pour accéder à vos skins");
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos skins";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         }
 
     });
@@ -860,7 +868,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     console.error('Error fetching username:', error);
                 });
         } else {
-            alert('Vous devez être connecté pour accéder aux paramètres');
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos paramètres";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         }
     });
 });
