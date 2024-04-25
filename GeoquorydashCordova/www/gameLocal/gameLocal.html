@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../friendRequestNotification/friendRequestNotification.css">
 </head>
 <body>
+  <img id="networkError" src="../img/NetworkError.png" alt="Background" class="background">
 
 <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
 <div id="burger-menu-container"></div>
@@ -22,11 +23,13 @@
   <a href="../gameHistory/gameHistory.html" id="gameHistoryButton"><img src="../img/gameType/history.png" alt="Game"></a>
 </div>
 
-<script src="../burgerChat/burgerChat.js" type="module"></script>
-<script src="../burgerMenu/burgerMenu.js" type="module"></script>
-<script src="../friendRequestNotification/friendRequestNotification.js" type="module"></script>
 
-<script src="../sockets/socket.io.js"></script>
-<script type="module" src="../sockets/userSocketConnection.js"></script>
+  <script src="../burgerChat/burgerChat.js" type="module"></script>
+  <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+  <script src="../friendRequestNotification/friendRequestNotification.js" type="module"></script>
+  <script src="./gameLocal.js" type="module"></script>
+  <script src="../sockets/socket.io.js"></script>
+  <script type="module" src="../sockets/userSocketConnection.js"></script>
+
 </body>
 </html>

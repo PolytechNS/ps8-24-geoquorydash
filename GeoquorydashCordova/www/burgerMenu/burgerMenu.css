@@ -11,7 +11,8 @@
 }
 
 .show {
-    display: block;
+    display: flex;
+    justify-content: center;
     transform: translateX(0);
 }
 
@@ -34,32 +35,43 @@
 }
 
 .burger-menu ul {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
     list-style-type: none;
     padding-top: 10vh;
+    width: 100%;
+    padding-inline-start: 0;
     margin: 0;
 }
 
 .burger-menu ul li {
+    display: flex;
+    justify-content: center;
+    width: 80%;
     margin-bottom: 5vh;
 }
 
 .burger-menu ul li a {
     text-decoration: none;
     color: #fff;
-    font-size: 8vh;
     display: block;
+    width: 100%;
 }
 
 .burger-menu ul li img {
-    width: 20vw;
+    height: auto;
+    width: 100%;
 }
 
 #accueilButton img {
-    height: 8vh;
+    height: auto;
+    width: 100%;
 }
 
 #deconnexionButton img {
-    height: 6vh;
+    height: auto;
+    width: 100%;
 }
 
 .overlay {
