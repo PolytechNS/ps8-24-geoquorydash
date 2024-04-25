@@ -29,13 +29,24 @@ async function loadBurgerMenu() {
     }
 
     deconnexionButton.addEventListener('click', function(event) {
-        event.preventDefault();
+        var modal = document.getElementById("myModal");
+        var modalContent = document.querySelector('.modal-content');
 
-        if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+        var textContent = document.querySelector('.modal-content p')
+        textContent.textContent = "Êtes-vous sûr de vouloir vous déconnecter?";
+
+        modal.style.display = "flex";
+
+        var okButton = document.getElementById('confirmBtn');
+        okButton.onclick = function() {
             localStorage.clear();
-            alert('Vous êtes déconnecté');
+            modal.style.display = "none";
             window.location.href = '../home.html';
-        }
+        };
+
+        var cancelButton = document.getElementById('cancelBtn');
+        cancelButton.onclick = function() {
+            modal.style.display = "none";
+        };
     });
 }
-

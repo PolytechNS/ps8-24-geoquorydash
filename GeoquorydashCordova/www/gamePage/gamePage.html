@@ -12,28 +12,41 @@
 <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
 <div id="burger-menu-container"></div>
 
-  <div class="game-container">
-    <div class="player-info" id="player1-info">
-      <span class="player-name"><img src="../img/game/bot.png" alt="M.Vella"></span>
-      <span class="player-stock" id="player1-barrier-count">10</span>
-    </div>
-    <div class="board" id="board"></div>
-    <div class="player-info" id="player2-info">
-      <span class="player-name"><img src="../img/game/joueur.png" alt="Joueur"></span>
-      <span class="player-stock" id="player2-barrier-count">10</span>
-    </div>
+<div class="game-container">
+  <div class="player-info" id="player1-info">
+    <span class="player-name"><img src="../img/game/bot.png" alt="M.Vella"></span>
+    <span class="player-stock" id="player1-barrier-count">10</span>
   </div>
+  <div class="board" id="board"></div>
+  <div class="player-info" id="player2-info">
+    <span class="player-name"><img src="../img/game/joueur.png" alt="Joueur"></span>
+    <span class="player-stock" id="player2-barrier-count">10</span>
+  </div>
+</div>
 
-  <svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintRed"><feColorMatrix type="matrix" values="0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0  0 0 0 1 0" /></filter></svg>
-  <svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintGreen"><feColorMatrix type="matrix" values="0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2823529411764706 0.2823529411764706 0.2823529411764706  0 0  0 0 0 1 0" /></filter></svg>
+<svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintRed"><feColorMatrix type="matrix" values="0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0  0 0 0 1 0" /></filter></svg>
+<svg class="hidden" xmlns="http://www.w3.org/2000/svg"><filter id="svgTintGreen"><feColorMatrix type="matrix" values="0.2627450980392157 0.2627450980392157 0.2627450980392157  0 0 0.8156862745098039 0.8156862745098039 0.8156862745098039  0 0 0.2823529411764706 0.2823529411764706 0.2823529411764706  0 0  0 0 0 1 0" /></filter></svg>
 
-  <script type="module" src="game.js"></script>
-  <script type="module" src="./fogOfWar.js"></script>
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <p></p>
+    <button id="confirmBtn">OK</button>
+  </div>
+</div>
 
-  <script src="../sockets/socket.io.js"></script>
-  <script type="module" src="../sockets/userSocketConnection.js"></script>
-  <script type="module" src="../sockets/gameSocketConnection.js"></script>
-  <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+<div id="myModalTemp" class="modal-temp">
+  <div class="modal-content-temp">
+    <p></p>
+  </div>
+</div>
+
+<script type="module" src="game.js"></script>
+<script type="module" src="./fogOfWar.js"></script>
+
+<script src="../sockets/socket.io.js"></script>
+<script type="module" src="../sockets/userSocketConnection.js"></script>
+<script type="module" src="../sockets/gameSocketConnection.js"></script>
+<script src="../burgerMenu/burgerMenu.js" type="module"></script>
 
 </body>
 </html>

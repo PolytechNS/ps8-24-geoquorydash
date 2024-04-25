@@ -11,17 +11,40 @@ body {
     position: relative;
 }
 
+
+#burger-chat-button{
+    cursor: pointer;
+}
+#burger-menu-button{
+    cursor: pointer;
+}
+
 .buttons{
     position: absolute;
+
+
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    gap: 5vw;
+    width: 90vw;
+    height: auto;
+    gap: 2vw;
 }
 
-#gameLocalButton img, #gameOnlineButton img, #gameFriendButton img{
-    width: auto;
-    height: 20vh;
+.buttons a img {
+    max-width: 100%;
+    height: auto;
+    max-height: max(18vh, 11vw);
 }
 
+@media (max-aspect-ratio: 4/3) {
+    .buttons {
+        flex-direction: column;
+    }
 
+    .buttons a img {
+        width: 40vw;
+        height: auto;
+        max-height: 50vh;
+    }
+}
