@@ -2,12 +2,15 @@ import { AuthService } from './Services/authService.js';
 import { StatService } from "./Services/statService.js";
 import { FriendsService } from './Services/friendsService.js';
 import { AchievementsService } from './Services/achievementsService.js';
+import { isMobileDevice } from './js/utils.js';
 
 var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
 var rankModal = document.getElementById("rankModal");
 var skinModal = document.getElementById("skinModal");
+
+
 
 
 var token;
@@ -18,6 +21,7 @@ function updateToken() {
 }
 
 initializeAccountButtonImage(token);
+
 
 var handleDeconnexionClick = function(event) {
     event.preventDefault();
@@ -892,6 +896,37 @@ document.addEventListener("DOMContentLoaded", function() {
             }, 1000);
         }
     });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    if (isMobileDevice()) {
+        var connect = navigator.connection.type;
+        if (connect=== "none") {
+            console.log("noneIsTheNetwork");
+            document.getElementById("networkError").style.display = "block";
+        }
+        if (connect === "wifi") {
+            console.log("wifiIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+        }
+        if (connect === "cellular") {
+            console.log("cellularIsTheNetwork");
+            document.getElementById("networkError").style.display = "none";
+        }
+    } else {
+        console.log("noMobileDevice");
+        document.getElementById("networkError").style.display = "none";
+    }
+});
+
+
+window.addEventListener('online', function(event) {
+    location.reload();
+});
+
+window.addEventListener('offline', function(event) {
+    location.reload();
 });
 
 window.addEventListener('load', resizeImageBasedOnHeight);
