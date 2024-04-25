@@ -35,14 +35,27 @@ async function setGameStateInProgressBoolean(gameStatesId, isInProgress) {
         await client.connect();
         const database = client.db('myapp_db');
         const gameCollection = database.collection('gameStates');
-        await gameCollection.updateOne({_id: new ObjectId(gameStatesId)}, {$set: {inProgess: isInProgress}});
 
+        let objectId;
+        try {
+            objectId = new ObjectId(gameStatesId);
+        } catch (error) {
+            throw new Error("Invalid gameStatesId: Must be a 24 character hex string");
+        }
+
+        await gameCollection.updateOne({_id: objectId}, {$set: {inProgess: isInProgress}});
     } catch (error) {
-        console.error("Error connecting to MongoDB:", error);
-        throw new DatabaseConnectionError("Error connecting to MongoDB");
-
+        console.error("Error:", error);
+        if (error.message.includes("Invalid gameStatesId")) {
+            console.error("Invalid gameStatesId: Must be a 24 character hex string");
+        } else {
+            throw new DatabaseConnectionError("Error connecting to MongoDB", error);
+        }
+    } finally {
+        await client.close();
     }
 }
+
 
 async function getGameStateInProgress() {
     const client = new MongoClient(uri);

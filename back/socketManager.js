@@ -29,7 +29,7 @@ const setupSocket = (io) => {
                 // Initialiser une nouvelle partie qui ne sera pas stocker en BD car l'utilisateur n'est pas connecté
                 initializeGame({defaultOption, id: socket.id});
                 fogOfWar.updateBoardVisibility(socket.id);
-                socket.emit("updateBoard", gameManager.gameStateList[socket.id], fogOfWar.visibilityMapObjectList[socket.id].visibilityMap);
+                socket.emit("updateBoard", gameManager.gameStateList[socket.id], fogOfWar.visibilityMapObjectList[socket.id].visibilityMap, socket.id);
             } else {
                 // Initialiser une nouvelle partie apres verification du token et stocker en BD car l'utilisateur est connecté
                 const verificationResult = verifyAndValidateUserID(token);
