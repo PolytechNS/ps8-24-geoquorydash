@@ -17,6 +17,10 @@ body {
     top: 1vh;
     right: 4vh;
 }
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 #burger-chat-button{
     cursor: pointer;
 }

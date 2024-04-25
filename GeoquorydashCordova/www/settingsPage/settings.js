@@ -61,4 +61,20 @@ function setupSaveButton(token){
     }
 }
 
+document.getElementById('prevBtn').addEventListener('click', function() {
+    moveCarousel(-1);
+});
 
+document.getElementById('nextBtn').addEventListener('click', function() {
+    moveCarousel(1);
+});
+
+let currentSlide = 0;
+
+function moveCarousel(direction) {
+    const slides = document.querySelectorAll('.carousel-slide');
+    const totalSlides = slides.length;
+    currentSlide = (currentSlide + direction + totalSlides) % totalSlides; // Cela permet de boucler le carrousel
+    const movePercentage = -(100 * currentSlide);
+    document.querySelector('.carousel-wrapper').style.transform = `translateX(${movePercentage}%)`;
+}
