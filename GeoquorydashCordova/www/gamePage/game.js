@@ -205,13 +205,6 @@ function displayPossibleMove(possibleMove) {
             clearTimeout(timeout);
         }
         timeout = setTimeout(() => {
-            allElements.forEach(function(cell) {
-                if (cell.moveEventListener) {
-                    cell.removeEventListener('click', cell.moveEventListener);
-                    cell.moveEventListener = null;
-                    cell.classList.remove('blinking');
-                }
-            });
             gameSocket.emit('timeout', localStorage.getItem('token'), localStorage.getItem('gameStateID'), localStorage.getItem('roomId'));
         }, 5000);
     }
@@ -343,17 +336,14 @@ function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-    var modal = document.getElementById("myModal");
-    var modalContent = document.querySelector('.modal-content');
+    var modal = document.getElementById("myModalTemp");
+    var modalContent = document.querySelector('.modal-content-temp');
 
-    var textContent = document.querySelector('.modal-content p')
-    textContent.textContent = "Placement de barrière impossible !";
+    var textContent = document.querySelector('.modal-content-temp p')
+    textContent.textContent = text;
+    modalContent.appendChild(textContent);
 
     modal.style.display = "flex";
-
-    document.getElementById('confirmBtn').addEventListener('click', () => {
-        modal.style.display = "none";
-    });
 }
 
 function getPlayerElementById(playerId) {
@@ -369,7 +359,7 @@ function endGame(player) {
 
     modal.style.display = "flex";
 
-    var okButton = document.getElementById('confirmButton');
+    var okButton = document.getElementById('confirmBtn');
     okButton.onclick = function() {
         modal.style.display = "none";
         window.location.href = '/gameType/gameType.html';

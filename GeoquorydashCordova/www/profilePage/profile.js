@@ -85,7 +85,6 @@ document.addEventListener('DOMContentLoaded', () => {
                                     });
                                 }).catch(error => {
                                     console.error('Erreur lors de la récupération des achievements:', error);
-                                    alert('Erreur lors de la récupération des achievements.');
                                 });
                             })
                             .catch(error => {
@@ -136,8 +135,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
             })
             .catch(error => {
-            console.error('Error fetching current user:', error);
-        });
+                console.error('Error fetching current user:', error);
+            });
         StatService.getRanking(username)
             .then(ranking => {
                 if (ranking.ranking !== 0) {
@@ -187,43 +186,72 @@ document.addEventListener('DOMContentLoaded', () => {
             });
     }
 
+    function popUp(text) {
+        var modal = document.getElementById("myModal");
+        var modalContent = document.querySelector('.modal-content');
+
+        var textContent = document.querySelector('.modal-content p')
+        textContent.textContent = text;
+
+        modal.style.display = "flex";
+
+        return new Promise((resolve, reject) => {
+            document.getElementById('confirmBtn').addEventListener('click', () => {
+                resolve(true); // Résolu si l'utilisateur confirme
+                modal.style.display = "none";
+            });
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                resolve(false); // Résolu si l'utilisateur annule
+                modal.style.display = "none";
+            });
+        });
+    }
+
     addFriendBtn.addEventListener('click', () => {
         const token = localStorage.getItem('token');
         if (token) {
             AuthService.username(token)
                 .then(currentUser => {
                     if (addFriendBtn.style.backgroundImage.includes('add.png')) {
-                        FriendsService.addFriend(currentUser, username)
-                            .then(response => {
-                                userSocket.emit('addFriendRequest', currentUser, username);
-                                alert(response.message);
-                                updateButtonImage('../img/profile/cancel.png');
-                            })
-                            .catch(error => {
-                                console.error('Error sending friend request:', error);
+                        popUp("Voulez-vous ajouter cet ami ?")
+                            .then((confirmation) => {
+                                if (confirmation) {
+                                    FriendsService.addFriend(currentUser, username)
+                                        .then(response => {
+                                            userSocket.emit('addFriendRequest', currentUser, username);
+                                            updateButtonImage('../img/profile/cancel.png');
+                                        })
+                                        .catch(error => {
+                                            console.error('Error sending friend request:', error);
+                                        });
+                                }
                             });
                     } else if (addFriendBtn.style.backgroundImage.includes('cancel.png')) {
-                        FriendsService.cancelFriend(currentUser, username)
-                            .then(response => {
-                                alert(response.message);
-                                updateButtonImage('../img/profile/add.png');
-                            })
-                            .catch(error => {
-                                console.error('Error sending friend request:', error);
+                        popUp("Voulez-vous annuler la demande d'ami ?")
+                            .then((confirmation) => {
+                                if (confirmation) {
+                                    FriendsService.cancelFriend(currentUser, username)
+                                        .then(response => {
+                                            updateButtonImage('../img/profile/add.png');
+                                        })
+                                        .catch(error => {
+                                            console.error('Error sending friend request:', error);
+                                        });
+                                }
                             });
                     } else if (addFriendBtn.style.backgroundImage.includes('delete.png')) {
-                        // Confirmation de suppression d'ami
-                        if (confirm("Êtes-vous sûr de vouloir supprimer cet ami ?")) {
-                            // Si l'utilisateur confirme, supprimez l'ami
-                            FriendsService.removeFriend(currentUser, username)
-                                .then(response => {
-                                    alert(response.message);
-                                    updateButtonImage('../img/profile/add.png');
-                                })
-                                .catch(error => {
-                                    console.error('Error sending friend request:', error);
-                                });
-                        }
+                        popUp("Voulez-vous supprimer cet ami ?")
+                            .then((confirmation) => {
+                                if (confirmation) {
+                                    FriendsService.removeFriend(currentUser, username)
+                                        .then(response => {
+                                            updateButtonImage('../img/profile/add.png');
+                                        })
+                                        .catch(error => {
+                                            console.error('Error sending friend request:', error);
+                                        });
+                                }
+                            });
                     }
                 })
                 .catch(error => {
@@ -262,9 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const modalOptionsContainer = document.getElementById('modal-options-container');
 
     myProfilePictureElement.addEventListener('click', () => {
-        if(confirm("Voulez-vous changer votre photo de profil ?")) {
-            modalContainer.style.display = 'block';
-        }
+        modalContainer.style.display = 'block';
+
     });
 
     modalOptionsContainer.addEventListener('click', (event) => {
@@ -295,8 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
             modalContainer.style.display = 'none';
         }
     });
-});
 
+});
 
 
 

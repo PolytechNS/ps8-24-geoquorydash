@@ -26,12 +26,36 @@ document.addEventListener('DOMContentLoaded', function() {
             })
             .catch(error => {
                 console.error('Erreur lors de la récupération des données:', error);
-                alert('Erreur lors de la récupération des données');
-                window.location.href = '/home.html';
+                var modal = document.getElementById("myModal");
+                var modalContent = document.querySelector('.modal-content');
+
+                var textContent = document.querySelector('.modal-content p')
+                textContent.textContent = "Erreur lors de la récupération des données";
+
+                modal.style.display = "flex";
+
+                var okButton = document.getElementById('confirmBtn');
+                okButton.onclick = function() {
+                    localStorage.clear();
+                    modal.style.display = "none";
+                    window.location.href = '/home.html';
+                };
             });
     } else {
-        alert('Vous devez être connecté pour accéder à cette page');
-        window.location.href = '/home.html';
+        var modal = document.getElementById("myModal");
+        var modalContent = document.querySelector('.modal-content');
+
+        var textContent = document.querySelector('.modal-content p')
+        textContent.textContent = "Vous devez être connecté pour accéder à cette page";
+
+        modal.style.display = "flex";
+
+        var okButton = document.getElementById('confirmBtn');
+        okButton.onclick = function() {
+            localStorage.clear();
+            modal.style.display = "none";
+            window.location.href = '/home.html';
+        };
     }
 });
 

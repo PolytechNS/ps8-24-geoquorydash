@@ -12,7 +12,14 @@ window.onload = function() {
     const usernameToRequest = new URLSearchParams(window.location.search).get('toUsername');
     if (usernameToRequest){
         localStorage.setItem('gameStateID', 'waitingForMatch');
-        popUp('En attente de votre adversaire...')
+        var modal = document.getElementById("myModalWait");
+        var modalContent = document.querySelector('.modal-content-wait');
+
+        var textContent = document.querySelector('.modal-content-wait p')
+        textContent.textContent = "En attente d'un adversaire...";
+        modalContent.appendChild(textContent);
+
+        modal.style.display = "flex";
         gameSocket.emit('gameRequest', token, usernameToRequest);
     }
 

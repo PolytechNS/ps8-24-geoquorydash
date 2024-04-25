@@ -41,12 +41,14 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
     hideOldPossibleMoves(player);
 
     let playerCell = document.getElementById(`cell-${player.position.x}-${player.position.y}`);
+    console.log(getPlayerElementById(player.id));
     playerCell.appendChild(getPlayerElementById(player.id));
     playerCell.firstElementChild.style.opacity = 1;
     playerCell.style.opacity = 1;
 
     let otherPlayer = gameState.players.find(otherPlayer => otherPlayer.id !== player.id);
     let otherPlayerCell = document.getElementById(`cell-${otherPlayer.position.x}-${otherPlayer.position.y}`);
+    console.log(getPlayerElementById(otherPlayer.id));
     var otherPlayerInBoard = getPlayerElementById(otherPlayer.id);
     if (otherPlayerCell.style.opacity === '1'){
         otherPlayerCell.appendChild(otherPlayerInBoard);
@@ -70,13 +72,6 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
     } else {
         Array.from(barrierCells).forEach(barrierCell => {
             deactivateBarrierCellListeners(barrierCell);
-        });
-        Array.from(playerCells).forEach(function(cell) {
-            if (cell.moveEventListener) {
-                cell.removeEventListener('click', cell.moveEventListener);
-                cell.moveEventListener = null;
-                cell.classList.remove('blinking');
-            }
         });
         if (localStorage.getItem('roomId')) {
             progress(300, 300, otherPlayer.id)
@@ -140,21 +135,13 @@ function popUp(text) {
 function confirmationPopup(askTextButtonInteraction) {
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
+    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
 
-    // Texte de la pop-up
-    document.querySelector('.modal-content p').textContent = 'Match trouvé!';
-
-    // Création du bouton OK
-    var okButton = document.createElement('button');
-    okButton.textContent = 'OK';
-    okButton.id = 'confirmButton';
-    modalContent.appendChild(okButton);
-
-    // Quand l'utilisateur clique sur le bouton OK, ferme la modale et exécute askTextButtonInteraction
-    okButton.onclick = function() {
+    var btn = document.getElementById("confirmBtn");
+    btn.onclick = function() {
         modal.style.display = "none";
         askTextButtonInteraction();
-    };
+    }
 }
 
 function progress(timeleft, timetotal, currentPlayerID) {

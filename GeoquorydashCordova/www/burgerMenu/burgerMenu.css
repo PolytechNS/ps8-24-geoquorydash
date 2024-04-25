@@ -125,7 +125,7 @@ button {
     border-radius: 1vh;
     cursor: pointer;
     font: 150% 'joystix', sans-serif;
-    font-size: min(3vh, 1.5vw); ;
+    font-size: 0.8rem;
 }
 
 .modal-content p,
