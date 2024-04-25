@@ -342,7 +342,7 @@ function ImpossibleWallPlacementPopUp() {
     var modalContent = document.querySelector('.modal-content-temp');
 
     var textContent = document.querySelector('.modal-content-temp p')
-    textContent.textContent = text;
+    textContent.textContent = "Placement de barrières impossible !";
     modalContent.appendChild(textContent);
 
     modal.style.display = "flex";
