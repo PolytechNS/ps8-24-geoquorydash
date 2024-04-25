@@ -19,11 +19,39 @@ userSocket.on('updateSocket', function(data) {
 
 userSocket.on('gameRequest', function(payload) {
     console.log('gameRequest', payload);
-    if (window.confirm("Game request from " + payload.fromUsername + "\nDo you accept?")){
+    var modal = document.createElement('div');
+    modal.id = "myModalRequest";
+    modal.className = "modal-request";
+    modal.style.display = "flex";
+
+    var modalContent = document.createElement('div');
+    modalContent.className = "modal-content-request";
+    var p = document.createElement('p');
+    p.textContent = "Demande de partie de " + payload.fromUsername;
+
+    var confirmBtn = document.createElement('button');
+    confirmBtn.id = "confirmBtnRequest";
+    confirmBtn.textContent = "Accepter";
+
+    var cancelBtn = document.createElement('button');
+    cancelBtn.id = "cancelBtnRequest";
+    cancelBtn.textContent = "Refuser";
+
+    modalContent.appendChild(p);
+    modalContent.appendChild(confirmBtn);
+    modalContent.appendChild(cancelBtn);
+    modal.appendChild(modalContent);
+    document.body.appendChild(modal);
+
+    confirmBtn.onclick = function() {
+        modal.style.display = "none";
         window.location.href = `../gameAgainstFriend/gameAgainstFriend.html?fromUsername=${payload.fromUsername}`;
-    } else {
+    };
+
+    cancelBtn.onclick = function() {
         userSocket.emit('gameRequestDeclined', payload.fromUserId);
-    }
+        modal.style.display = "none";
+    };
 });
 
 userSocket.on('gameRequestAccepted', function(payload) {
@@ -32,11 +60,17 @@ userSocket.on('gameRequestAccepted', function(payload) {
 });
 
 userSocket.on('gameRequestDeclined', function(payload) {
+    var modalTemp = document.getElementById("myModalTemp");
+    modalTemp.style.display = "none";
+
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
     document.querySelector('.modal-content p').textContent = 'Demande de partie refusée ! Vous allez être redirigé vers la page d\'accueil.'
 
     var btn = document.getElementById("confirmBtn");
+
+    modal.style.display = "flex";
+
     btn.onclick = function() {
         modal.style.display = "none";
         window.location.href = '/';

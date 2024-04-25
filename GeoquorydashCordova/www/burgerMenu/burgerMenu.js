@@ -1,4 +1,5 @@
 const burgerMenuButton = document.getElementById('burger-menu-button');
+const menuIcon = document.getElementById('menu-icon');
 const burgerMenuContainer = document.getElementById('burger-menu-container');
 let burgerMenuLoaded = false;
 
@@ -11,6 +12,9 @@ burgerMenuButton.addEventListener('click', async () => {
     burgerMenu.classList.toggle('show');
 
     burgerMenuButton.classList.toggle('open', burgerMenu.classList.contains('show'));
+
+    // Toggle rotation of the menu icon
+    menuIcon.classList.toggle('rotate');
 });
 
 async function loadBurgerMenu() {

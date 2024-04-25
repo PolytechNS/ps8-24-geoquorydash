@@ -3,14 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jeux de plateau</title>
+  <title>En Partie Local</title>
   <link rel="stylesheet" href="gameStyle.css">
   <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
+  <link rel="icon" type="image/png" href="../img/icon.png">
+
 </head>
 <body>
 <img id="networkError" src="../img/NetworkError.png" alt="Background" class="background">
 
-<a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
+<a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu" id="menu-icon"></a>
+
 <div id="burger-menu-container"></div>
 
 <div class="game-container">
@@ -34,12 +37,19 @@
   </div>
 </div>
 
-<div id="modalEndGame" class="modal">
-  <div class="modal-content-end">
+  <div id="modalErreur" class="modal-erreur">
+  <div class="modal-content-erreur">
     <p></p>
-    <button id="confirmBtn">OK</button>
+    <button id="erreurBtn">OK</button>
   </div>
 </div>
+
+  <div id="modalEndGame" class="modal">
+    <div class="modal-content-end">
+      <p></p>
+      <button id="confirmBtn">OK</button>
+    </div>
+  </div>
 
 <script type="module" src="game.js"></script>
 <script type="module" src="./fogOfWar.js"></script>

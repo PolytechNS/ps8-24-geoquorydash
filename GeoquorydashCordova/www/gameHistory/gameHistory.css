@@ -11,6 +11,10 @@ body {
     position: relative;
     overflow: hidden;
 }
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 
 ul {
     list-style-type: none;
@@ -29,4 +33,21 @@ ul li {
 .modal {
     background-color: rgba(0,0,0,0.4);
     backdrop-filter: blur(2px);
+}
+
+button {
+    padding: 0;
+    font-weight: bold;
+    background-image: url('../img/gameType/button.png');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    color: white;
+    width: 50%;
+    min-height: 8vh;
+    margin: 2vh;
+    border-radius: 1vh;
+    cursor: pointer;
+    font-family: 'joystix', sans-serif;
+    font-size: min(2vh, 1.5vw);
 }

@@ -2,32 +2,58 @@
 <html lang="fr">
     <head>
         <meta charset="UTF-8">
-        <title>Signup</title>
+        <title>Paramètres</title>
         <link rel="stylesheet" href="settings.css">
-        <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
         <link rel="stylesheet" href="../burgerChat/burgerChat.css">
+        <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
         <link rel="stylesheet" href="../friendRequestNotification/friendRequestNotification.css">
+        <link rel="icon" type="image/png" href="../img/icon.png">
+
     </head>
     <body>
-        <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
-        <div id="burger-menu-container"></div>
+    <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu" id="menu-icon"></a>
+    <div id="burger-menu-container"></div>
 
         <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
         <div id="burger-chat-container"></div>
 
-        <div id="configurationContainer">
-            <div id="modal-container" class="modal">
-                <div id="modal-options-container" class="modal"></div>
+        <div id="content-container">
+            <div id="rules" class="carousel-container">
+                <div class="carousel-wrapper">
+                    <!-- Slides -->
+                    <div class="carousel-slide"><img src="../img/param/image1.png" alt="Rule 1"></div>
+                    <div class="carousel-slide"><img src="../img/param/image2.png" alt="Rule 2"></div>
+                    <div class="carousel-slide"><img src="../img/param/image3.png" alt="Rule 3"></div>
+                </div>
+                <!-- Boutons de navigation -->
+                <button class="boutons" id="prevBtn">←</button>
+                <button class="boutons" id="nextBtn">→</button>
             </div>
-            <div id="interaction-container"></div>
-        </div>
-        <a id="save-button"><img src="../img/param/save.png" alt="save"></a>
 
-        <script src="../burgerMenu/burgerMenu.js" type="module"></script>
+            <div id="configAndSaveContainer">
+                <div id="configurationContainer">
+                    <div id="modal-container" class="modal">
+                        <div id="modal-options-container"></div>
+                    </div>
+                    <div id="interaction-container"></div>
+                </div>
+                <a id="save-button"><img src="../img/param/save.png" alt="save"></a>
+            </div>
+        </div>
+        
+        
+
+        <div id="myModalTemp" class="modal-temp">
+            <div class="modal-content-temp">
+                <p></p>
+            </div>
+        </div>
+
         <script src="../burgerChat/burgerChat.js" type="module"></script>
         <script src="../friendRequestNotification/friendRequestNotification.js" type="module"></script>
 
         <script type="module" src="settings.js"></script>
+        <script type="module" src="../burgerMenu/burgerMenu.js"></script>
         <script src="../sockets/socket.io.js"></script>
         <script type="module" src="../sockets/userSocketConnection.js"></script>
     </body>
