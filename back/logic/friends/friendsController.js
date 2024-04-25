@@ -2,6 +2,7 @@ const { parseJSON } = require('../../utils/utils.js');
 const {createUserCollection, findUserIdByUsername} = require('../../models/users/users');
 const createNewChat = require('../chat/chatController').createNewChat;
 const usersConnected = require('../../usersConnected');
+const sendMobileNotification = require("./mobileNotificationsService");
 
 async function searchUsers(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -43,7 +44,16 @@ async function addFriend(req, res) {
                 { username: targetUser },
                 { $addToSet: { friendRequests: currentUser } }
             );
+
             if (result.modifiedCount > 0) {
+                const targetUserId = await findUserIdByUsername(targetUser);
+                const message = `${currentUser} has sent you a friend request!`;
+
+                if (usersConnected.usersConnected[targetUserId.toString()]) {
+                    const targetUserInDB = await usersCollection.findOne({ username: targetUser });
+                    usersConnected.usersConnected[targetUserId.toString()].emit('updateFriendRequest', targetUserInDB.friendRequests);
+                }
+                await sendMobileNotification(message, [targetUser.toString()])
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Votre demande d\'ami a bien été envoyée' }));
             } else {
@@ -59,7 +69,6 @@ async function addFriend(req, res) {
 }
 
 async function cancelFriend(req, res) {
-    console.log('cancelFriend');
     parseJSON(req, async (err, { currentUser, targetUser }) => {
         if (err) {
             res.writeHead(400, { 'Content-Type': 'text/plain' });
@@ -74,6 +83,11 @@ async function cancelFriend(req, res) {
                 { $pull: { friendRequests: currentUser } }
             );
             if (result.modifiedCount > 0) {
+                const targetUserId = await findUserIdByUsername(targetUser);
+                if (usersConnected.usersConnected[targetUserId.toString()]) {
+                    const targetUserInDB = await usersCollection.findOne({ username: targetUser });
+                    usersConnected.usersConnected[targetUserId.toString()].emit('updateFriendRequest', targetUserInDB.friendRequests);
+                }
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend request removed successfully' }));
             } else {
@@ -129,6 +143,11 @@ async function acceptFriend(req, res) {
                 { username: currentUser },
                 { $pull: { friendRequests: targetUser }, $addToSet: { friends: targetUser } }
             );
+            const currentUserId = await findUserIdByUsername(currentUser);
+            if (usersConnected.usersConnected[currentUserId.toString()]) {
+                const currentUserInDB = await usersCollection.findOne({ username: currentUser });
+                usersConnected.usersConnected[currentUserId.toString()].emit('updateFriendRequest', currentUserInDB.friendRequests);
+            }
             const result2 = await usersCollection.updateOne(
                 { username: targetUser },
                 { $pull: { friendRequests: currentUser }, $addToSet: { friends: currentUser } }
@@ -163,6 +182,11 @@ async function deniedFriend(req, res) {
                 { username: currentUser },
                 { $pull: { friendRequests: targetUser } }
             );
+            const currentUserId = await findUserIdByUsername(currentUser);
+            if (usersConnected.usersConnected[currentUserId.toString()]) {
+                const currentUserInDB = await usersCollection.findOne({ username: currentUser });
+                usersConnected.usersConnected[currentUserId.toString()].emit('updateFriendRequest', currentUserInDB.friendRequests);
+            }
             if (result.modifiedCount > 0) {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Friend request removed successfully' }));

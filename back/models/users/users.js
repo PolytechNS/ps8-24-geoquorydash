@@ -36,7 +36,7 @@ async function findUsernameById(id) {
         const database = client.db('myapp_db');
         const usersCollection = database.collection('users');
         const user = await usersCollection.findOne({_id: new ObjectId(id)});
-        return user? user.username : null;
+        return user ? user.username : null;
     } catch (error) {
         console.error("Error connecting to MongoDB:", error);
         throw error;

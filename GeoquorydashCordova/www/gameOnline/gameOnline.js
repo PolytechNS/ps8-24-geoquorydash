@@ -14,6 +14,7 @@ window.onload = function() {
 
 gameSocket.on('matchFound', function(roomId) {
     localStorage.setItem('roomId', roomId);
+    popUp('En attente d\'un adversaire...');
     confirmationPopup(askTextButtonInteraction);
 });
 

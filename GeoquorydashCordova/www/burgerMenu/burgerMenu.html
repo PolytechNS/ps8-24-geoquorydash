@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
 </head>
 <body>
+
 <nav class="burger-menu">
     <ul>
         <li><a href="../home.html" id="accueilButton"><img src="../img/menu/accueil.png" alt="Accueil"></a></li>
@@ -14,6 +15,16 @@
         <li><a href="../home.html?openModal=true" id="connexionButton"><img src="../img/account/title_login.png" alt="Connexion"></a></li>
     </ul>
 </nav>
-<div class="overlay"></div>
+
+<div class="overlay">
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p></p>
+            <button id="confirmBtn">Confirmer</button>
+            <button id="cancelBtn">Annuler</button>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>

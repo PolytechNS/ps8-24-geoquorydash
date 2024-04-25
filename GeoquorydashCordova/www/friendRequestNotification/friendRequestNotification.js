@@ -7,6 +7,9 @@
 const modalPopUp = document.createElement('div');
 modalPopUp.id = 'friend-request-modal';
 modalPopUp.className = 'modal-pop-up';
+modalPopUp.onclick = () => {
+    window.location.href = '/';
+};
 
 const modalPopUpContent = document.createElement('div');
 modalPopUpContent.className = 'modal-pop-up-content';

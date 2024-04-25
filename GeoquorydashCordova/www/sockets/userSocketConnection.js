@@ -1,3 +1,5 @@
+import {isMobileDevice} from "../js/utils.js";
+
 const token = localStorage.getItem('token');
 const location = window.location.pathname;
 var userSocket = io('/api/user', {
@@ -30,8 +32,15 @@ userSocket.on('gameRequestAccepted', function(payload) {
 });
 
 userSocket.on('gameRequestDeclined', function(payload) {
-    alert('Game request declined ');
-    window.location.href = '/';
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+    document.querySelector('.modal-content p').textContent = 'Demande de partie refusée ! Vous allez être redirigé vers la page d\'accueil.'
+
+    var btn = document.getElementById("confirmBtn");
+    btn.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/';
+    }
 });
 
 userSocket.on('message', function(data) {
@@ -65,6 +74,9 @@ userSocket.on('removeChatNotification', function(username) {
 });
 
 userSocket.on('friendRequest', function(fromUsername) {
+    if (isMobileDevice()) {
+        return;
+    }
     const popup = document.getElementById('friend-request-modal');
     
     // On affiche la popup
@@ -72,8 +84,13 @@ userSocket.on('friendRequest', function(fromUsername) {
     setTimeout(() => {
         popup.firstElementChild.classList.add('active');
     }, 100);
-    
-    
+
+    // const openFriendsPage = document.getElementById("openFriendsPage");
+    // if (openFriendsPage) {
+    //     const notif = openFriendsPage.querySelector('.notif');
+    //     notif.classList.add('active');
+    // }
+
     // On fait disparaître la popup après 3 secondes
     setTimeout(() => {
         popup.firstElementChild.classList.remove('active');
@@ -81,6 +98,32 @@ userSocket.on('friendRequest', function(fromUsername) {
     setTimeout(() => {
         popup.style.display = 'none';
     }, 3300);
+});
+
+
+userSocket.on('updateFriendRequest', function(friendRequests) {
+    const openFriendsPage = document.getElementById("openFriendsPage");
+    try {
+        const notif = openFriendsPage.querySelector('.notif');
+        if (friendRequests.length > 0) {
+            notif.classList.add('active');
+        } else {
+            notif.classList.remove('active');
+        }
+    } catch (error) {
+        console.log('no notif element');
+    }
+
+    try {
+        const openFriendsRequestTab = document.getElementById("openFriendsRequestTab");
+        if (friendRequests.length > 0) {
+            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+        } else {
+            openFriendsRequestTab.src = '../img/friends/requestButton.png';
+        }
+    } catch (error) {
+        console.log('no request tab element');
+    }
 });
 
 

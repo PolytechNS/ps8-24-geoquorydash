@@ -124,40 +124,23 @@ function displayWalls(gameState) {
 function popUp(text) {
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
-    
+
     var textContent = document.querySelector('.modal-content p')
     textContent.textContent = text;
     modalContent.appendChild(textContent);
 
-    modal.style.display = "block";
+    modal.style.display = "flex";
 }
 
 function confirmationPopup(askTextButtonInteraction) {
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
-    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
-    
-    var btn = document.createElement('button');
-    btn.textContent = 'OK';
-    btn.id = 'confirmButton';
-    modalContent.appendChild(btn);
-    
-    var span =document.createElement('span');
-    span.innerHTML = '&times;';
-    span.classList.add('close');
-    modalContent.appendChild(span);
-    
-    // Quand l'utilisateur clique sur <span> (x), fermez la modale
-    span.onclick = function() {
-        modal.style.display = "none";
-        askTextButtonInteraction();
-    }
+    document.querySelector('.modal-content p').textContent = 'Match trouvé!'
 
-    // Quand l'utilisateur clique sur le bouton de confirmation
-    btn.onclick = function() {
+    setTimeout(() => {
         modal.style.display = "none";
         askTextButtonInteraction();
-    }
+    }, 1000);
 }
 
 function progress(timeleft, timetotal, currentPlayerID) {

@@ -251,9 +251,14 @@ async function turn(id) {
 }
 
 function changeCurrentPlayer(gameStateID) {
-    gameManager.gameStateList[gameStateID].players.forEach(player => {
-        player.isCurrentPlayer = !player.isCurrentPlayer;
-    });
+    try{
+        gameManager.gameStateList[gameStateID].players.forEach(player => {
+            player.isCurrentPlayer = !player.isCurrentPlayer;
+        });
+    } catch (e) {
+        console.log(e);
+    }
+
     // currentPlayer = gameManager.getCurrentPlayer(gameStateID);
     // otherPlayer = gameManager.getOtherPlayer(gameStateID);
 }

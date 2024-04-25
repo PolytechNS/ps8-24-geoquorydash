@@ -16,6 +16,7 @@ export const FriendsService = {
             body: JSON.stringify({ currentUser, targetUser }),
         })
             .then(response => response.json());
+
     },
     getRequests(currentUser) {
         return fetch(`${API_ENDPOINT}/api/friends/requests`, {

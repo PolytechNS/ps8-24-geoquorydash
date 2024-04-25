@@ -31,5 +31,20 @@ export const AuthService = {
             headers: { 'Authorization': `Bearer ${token}` },
         })
             .then(response => response.json());
+    },
+    udpateSkin(token, skinURL) {
+        return fetch(`${API_ENDPOINT}/api/auth/updateskin`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+            body: JSON.stringify({ skinURL }),
+        })
+            .then(response => response.json());
+    },
+    getSkin(token, skinURL) {
+        return fetch(`${API_ENDPOINT}/api/auth/getskin`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` },
+        })
+            .then(response => response.json());
     }
 };

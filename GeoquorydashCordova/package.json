@@ -21,7 +21,16 @@
       "android"
     ],
     "plugins": {
-      "cordova-plugin-network-information": {}
+      "cordova-plugin-network-information": {},
+      "onesignal-cordova-plugin": {},
+      "cordova-plugin-lottie-splashscreen": {}
     }
+  },
+  "dependencies": {
+    "onesignal-cordova-plugin": "5.1.2"
+  },
+  "devDependencies": {
+    "cordova-android": "^12.0.1",
+    "cordova-plugin-lottie-splashscreen": "^0.10.0"
   }
 }

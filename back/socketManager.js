@@ -4,6 +4,7 @@ const gameOnlineManager = require('./logic/game/gameOnlineManager');
 const chatManager = require('./logic/chat/chatManager');
 const usersConnected = require("./usersConnected");
 const statManager = require('./logic/stat/statManager');
+const skinManager = require('./logic/skin/skinManager');
 const { movePlayer, getPossibleMove, toggleWall, initializeGame, changeCurrentPlayer, moveAI} = require("./logic/game/gameEngine");
 const { createGameInDatabase, moveUserPlayerInDatabase, moveAIPlayerInDatabase, modifyVisibilityMapInDatabase, toggleWallInDatabase,
     endGameInDatabase
@@ -49,6 +50,11 @@ const setupSocket = (io) => {
                 // Dans ce càs là, on joue contre le bot, donc on est le player2 et on commence à jouer
                 statManager.createTemporaryStat(userObjectID, null, "local", "player2");
                 console.log("Des stats temporaire viennent d'être ajoutées pour une game locale");
+
+                console.log("UserObjectID : " + userObjectID);
+                const skinURL = await skinManager.getSkinURL(userObjectID);
+                console.log("L'URL du skin est : " + skinURL);
+                socket.emit('updateSkin', skinURL,);
             }
 
         });
@@ -370,14 +376,18 @@ const setupSocket = (io) => {
         socket.on('gameRequestAccepted', async (token, usernameSenderRequest) => {
             const userIdReceiverRequest = verifyAndValidateUserID(token);
             if (userIdReceiverRequest) {
-                const userIdSenderRequest = await findUserIdByUsername(usernameSenderRequest);
-                const roomId = userIdSenderRequest + userIdReceiverRequest;
-                const data = {
-                    userIdReceiver: userIdReceiverRequest,
-                    waitingRoomId: roomId,
-                };
-                await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
-                await gameOnlineManager.tryMatchmakingFriend(io, roomId);
+                try {
+                    const userIdSenderRequest = await findUserIdByUsername(usernameSenderRequest);
+                    const roomId = userIdSenderRequest + userIdReceiverRequest;
+                    const data = {
+                        userIdReceiver: userIdReceiverRequest,
+                        waitingRoomId: roomId,
+                    };
+                    await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
+                    await gameOnlineManager.tryMatchmakingFriend(io, roomId);
+                } catch (error) {
+                    console.log("Une erreur inattendue est survenue : ", error.message);
+                }
             } else {
                 console.log(`User ${usernameSenderRequest} is not connected.`);
                 socket.emit('gameRequestDeclined');

@@ -9,34 +9,34 @@
     <link rel="stylesheet" href="../friendRequestNotification/friendRequestNotification.css">
 </head>
 <body>
-    <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
-    <div id="burger-menu-container"></div>
+<a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
+<div id="burger-menu-container"></div>
 
-    <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
-    <div id="burger-chat-container"></div>
+<a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
+<div id="burger-chat-container"></div>
 
-    <div class="profile-container-friend">
-        <div class="topPageContainer">
-            <div class="sub-container">
-                <div class="profilePictureContainer">
-                    <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
-                </div>
-                <div class="usernameContainer">
-                    <div class="username" id="username-friend"></div>
-                </div>
-                <div class="rankContainer">
-                    <div class="rank">
-                        <div class="rankImageContainer"><img src="../img/profile/rang.png" alt="Rank"></div>
-                        <div class="ranking" id="ranking-friend">/</div>
-                    </div>
+<div class="profile-container-friend">
+    <div class="topPageContainer">
+        <div class="sub-container">
+            <div class="profilePictureContainer">
+                <img src="" alt="Profile Picture" class="profile-picture" id="profile-picture-friend">
+            </div>
+            <div class="usernameContainer">
+                <div class="username" id="username-friend"></div>
+            </div>
+            <div class="rankContainer">
+                <div class="rank">
+                    <div class="rankImageContainer"><img src="../img/profile/rang.png" alt="Rank"></div>
+                    <div class="ranking" id="ranking-friend">/</div>
                 </div>
             </div>
-            <button id="add-friend-btn" class="custom-button"></button>
         </div>
-        <div id="friendAchievementsContainer">
-                
-        </div>
+        <button id="add-friend-btn" class="custom-button"></button>
     </div>
+    <div id="friendAchievementsContainer">
+
+    </div>
+</div>
 
     <div class="profile-container-me" style="display: none;">
         <div class="topPageContainer">
@@ -79,6 +79,14 @@
             </div>
         </div>
 
+    </div>
+
+    <div id="myModal" class="modal">
+        <div class="modal-content">
+            <p></p>
+            <button id="confirmBtn">Confirmer</button>
+            <button id="cancelBtn">Annuler</button>
+        </div>
     </div>
 
     <script src="profile.js" type="module"></script>

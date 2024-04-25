@@ -162,7 +162,15 @@ function handleCellAction(cell, i, j, actionType, playerID) {
             if (canToggleBarrier()) {
                 socketToggleWall(cell, cell2, cell3, isVertical);
             } else {
-                alert("Vous n'avez plus de barrières disponibles !");
+                var modal = document.getElementById("myModalTemp");
+                var modalContent = document.querySelector('.modal-content-temp');
+                var textContent = document.querySelector('.modal-content-temp p')
+                textContent.textContent = "Vous n'avez plus de barrières disponibles !";
+                modal.style.display = "flex";
+                // Fermer la popup automatiquement après 4 secondes
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 1000);
             }
         }
     }
@@ -330,7 +338,14 @@ function toggleBarrier(cell, cell2, cell3, isVertical, playerID) {
 }
 
 function ImpossibleWallPlacementPopUp() {
-    alert("Placement de barrière impossible");
+    var modal = document.getElementById("myModalTemp");
+    var modalContent = document.querySelector('.modal-content-temp');
+
+    var textContent = document.querySelector('.modal-content-temp p')
+    textContent.textContent = text;
+    modalContent.appendChild(textContent);
+
+    modal.style.display = "flex";
 }
 
 function getPlayerElementById(playerId) {
@@ -338,8 +353,19 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    alert("Le joueur a gagné !");
-    window.location.href = '/gameType/gameType.html';
+    var modal = document.getElementById("modalEndGame");
+    var modalContent = document.querySelector('.modal-content-end');
+
+    var textContent = document.querySelector('.modal-content-end p')
+    textContent.textContent = "Le joueur a gagné !";
+
+    modal.style.display = "flex";
+
+    var okButton = document.getElementById('confirmBtn');
+    okButton.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/gameType/gameType.html';
+    };
 }
 
 window.onbeforeunload = function(e) {
@@ -350,7 +376,6 @@ window.onbeforeunload = function(e) {
     gameSocket.emit('quitGame', localStorage.getItem('token'), localStorage.getItem('gameStateID'));
 }
 
-export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts };
 
 document.addEventListener("DOMContentLoaded", function() {
     if(isMobileDevice()) {
@@ -385,3 +410,16 @@ window.addEventListener('online', function(event) {
 window.addEventListener('offline', function(event) {
     location.reload();
 });
+function updateSkin(skinURL1, skinURL2) {
+    console.log("RIEN");
+    console.log("skinURL : " + skinURL1);
+    document.getElementById('player2').style.backgroundImage = `url("../img/skin/${skinURL1}")`;
+    if(skinURL2) {
+        document.getElementById('player1').style.backgroundImage = `url("../img/skin/${skinURL2}")`;
+    } else {
+        console.log("MA BEUTEU");
+    }
+}
+
+export { getPlayerElementById, askPossibleMove, displayPossibleMove, endGame, toggleBarrier, lockBarrier, ImpossibleWallPlacementPopUp, handleCellAction,activateBarrierCellListeners, deactivateBarrierCellListeners, updatePlayerBarrierCounts, updateSkin };
+

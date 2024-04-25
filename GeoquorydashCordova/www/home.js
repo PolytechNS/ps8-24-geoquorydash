@@ -8,6 +8,7 @@ var accountModal = document.getElementById("accountModal");
 var signupModal = document.getElementById("signupModal");
 var loginModal = document.getElementById("loginModal");
 var rankModal = document.getElementById("rankModal");
+var skinModal = document.getElementById("skinModal");
 
 
 
@@ -19,17 +20,32 @@ function updateToken() {
     token = localStorage.getItem('token');
 }
 
+initializeAccountButtonImage(token);
 
 
 var handleDeconnexionClick = function(event) {
     event.preventDefault();
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+    accountButtonImage.src = 'img/home/button_login.png';
+    var modal = document.getElementById("myModalTempDeco");
+    var modalContent = document.querySelector('.modal-content-temp-deco');
+
+    var textContent = document.querySelector('.modal-content-temp-deco p')
+    textContent.textContent = "Êtes-vous sûr de vouloir vous déconnecter?";
+
+    modal.style.display = "flex";
+
+    var okButton = document.getElementById('confirmBtn');
+    okButton.onclick = function() {
         localStorage.clear();
-        updateToken();
-        alert('Vous êtes déconnecté');
-        const modal = window.parent.document.querySelector('.modal');
-        modal.style.display = 'none';
-    }
+        modal.style.display = "none";
+        window.location.href = '../home.html';
+        window.plugins.OneSignal.logout();
+    };
+
+    var cancelButton = document.getElementById('cancelBtn');
+    cancelButton.onclick = function() {
+        modal.style.display = "none";
+    };
 };
 
 
@@ -77,7 +93,53 @@ document.addEventListener("DOMContentLoaded", function() {
             accountModal.style.display = "none";
         }
     });
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                try {
+                    window.plugins.OneSignal.login(authUsername.toString());
+                } catch (error) {
+                    console.error('Error logging in OneSignal:', error);
+                }
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            const openFriendsPage = document.getElementById("openFriendsPage");
+                            const notif = openFriendsPage.querySelector('.notif');
+                            notif.classList.add('active');
+                        }
+                    });
+            });
+    }
 });
+
+
+document.addEventListener('deviceready', OneSignalInit, false);
+
+function OneSignalInit() {
+    // Initialise OneSignal avec votre App ID
+    window.plugins.OneSignal.initialize("08eb66f6-d744-4291-b6b9-ff5ae40aa7a2");
+    // window.plugins.OneSignal.logout();
+
+    // Active le niveau de log détaillé pour OneSignal (6 pour le debug)
+    window.plugins.OneSignal.Debug.setLogLevel(6);
+
+    // Ajout d'un écouteur pour les clics sur les notifications
+    // Remarque : Assurez-vous que la méthode `addEventListener` pour les notifications est bien disponible et correctement définie dans index.js.
+    // Le code original utilise une syntaxe TypeScript pour la déclaration de l'event, il faut la convertir en JavaScript pur.
+    const listener = function(event) {
+        const notificationPayload = JSON.stringify(event);
+        console.log(notificationPayload);
+    };
+    window.plugins.OneSignal.Notifications.addEventListener("click", listener);
+
+    // Demande la permission pour les notifications
+    // Assurez-vous que la méthode `requestPermission` est bien disponible et correctement définie dans index.js.
+    window.plugins.OneSignal.Notifications.requestPermission(true).then(function(accepted) {
+        console.log("User accepted notifications: " + accepted);
+    });
+}
 
 // PAGE HOME -> PAGE SIGNUP
 document.addEventListener("DOMContentLoaded", function() {
@@ -176,6 +238,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const requestResults = document.getElementById('requestResults');
     const noPendingDemandText = document.getElementById('no_pending_demand_text');
 
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+                        }
+                    });
+            });
+    }
+
     openFriendsPage.addEventListener("click", function(e) {
         if(token) {
             e.preventDefault();
@@ -187,7 +261,15 @@ document.addEventListener("DOMContentLoaded", function() {
             
             displayFriendsListTab(friendsResults, addFriendsText);
         } else {
-            alert('Vous devez être connecté pour accéder à vos amis');
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos amis";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         }
         
     });
@@ -316,10 +398,26 @@ document.addEventListener("DOMContentLoaded", function() {
                 })
                 .catch(error => {
                     console.error('Erreur lors de la récupération des données:', error);
-                    alert('Erreur lors de la récupération des données');
+                    var modal = document.getElementById("myModalTemp");
+                    var modalContent = document.querySelector('.modal-content-temp');
+                    var textContent = document.querySelector('.modal-content-temp p')
+                    textContent.textContent = "Lors de la récupération des données, une erreur est survenue";
+                    modal.style.display = "flex";
+                    // Fermer la popup automatiquement après 4 secondes
+                    setTimeout(() => {
+                        modal.style.display = "none";
+                    }, 1000);
                 });
         } else {
-            alert('Vous devez être connecté pour consulter vos statistiques');
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos statistiques";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         }
     });
 
@@ -347,7 +445,15 @@ document.addEventListener("DOMContentLoaded", function() {
                      console.error('Error fetching username:', error);
                 });
          } else {
-              alert('Vous devez être connecté pour accéder à votre profil');
+             var modal = document.getElementById("myModalTemp");
+             var modalContent = document.querySelector('.modal-content-temp');
+             var textContent = document.querySelector('.modal-content-temp p')
+             textContent.textContent = "Vous devez être connecté pour accéder à votre profil";
+             modal.style.display = "flex";
+             // Fermer la popup automatiquement après 4 secondes
+             setTimeout(() => {
+                 modal.style.display = "none";
+             }, 1000);
          }
     });
 });
@@ -360,40 +466,77 @@ document.addEventListener('DOMContentLoaded', () => {
         const username = signupForm.querySelector('[name="username"]').value;
         const password = signupForm.querySelector('[name="password"]').value;
         if (username === '') {
-            alert('Veuillez renseigner un nom d’utilisateur');
+            var modal = document.getElementById("myModalTempSign");
+            var modalContent = document.querySelector('.modal-content-temp-sign');
+            var textContent = document.querySelector('.modal-content-temp-sign p')
+            textContent.textContent = "Vous devez renseigner un nom d'utilisateur";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
             return;
         } else if (password === '') {
-            alert('Veuillez renseigner un mot de passe');
+            var modal = document.getElementById("myModalTempSign");
+            var modalContent = document.querySelector('.modal-content-temp-sign');
+            var textContent = document.querySelector('.modal-content-temp-sign p')
+            textContent.textContent = "Vous devez renseigner un mot de passe";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
             return;
         }
         AuthService.signUp(username, password)
             .then(data => {
-                console.log("On vient de se signup");
                 StatService.associateStatToNewUser(username)
                 .then(data2 => {
-                    console.log("L'association s'est bien passée");
                 })
                 .catch(error => {
                     console.error('Statistics error:', error);
                 });
                 AchievementsService.associateAchievementsToNewUser(username)
                 .then(data3 => {
-                    console.log("La création d'achievements s'est bien passée");
                 })
                 .catch(error => {
                     console.error('Statistics error:', error);
                 });
-                signupModal.style.display = "none";
-                loginModal.style.display= "flex";
-                alert('Inscription effectuée');
+                var modal = document.getElementById("myModalTempSign");
+                var modalContent = document.querySelector('.modal-content-temp-sign');
+                var textContent = document.querySelector('.modal-content-temp-sign p')
+                textContent.textContent = "Inscription réussie, vous pouvez maintenant vous connecter";
+                modal.style.display = "flex";
+                // Fermer la popup automatiquement après 4 secondes
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    signupModal.style.display = "none";
+                    loginModal.style.display= "flex";
+                }, 1000);
             })
             .catch(error => {
                 console.error('Signup error:', error);
                 // Utilisez le message d'erreur pour déterminer la nature de l'erreur
                 if (error.message === 'Username already exists') {
-                    alert('Ce nom d’utilisateur existe déjà. Veuillez en choisir un autre.');
+                    var modal = document.getElementById("myModalTempSign");
+                    var modalContent = document.querySelector('.modal-content-temp-sign');
+                    var textContent = document.querySelector('.modal-content-temp-sign p')
+                    textContent.textContent = "Ce nom d'utilisateur est déjà pris, veuillez en choisir un autre";
+                    modal.style.display = "flex";
+                    // Fermer la popup automatiquement après 4 secondes
+                    setTimeout(() => {
+                        modal.style.display = "none";
+                    }, 1000);
                 } else {
-                    alert('Inscription impossible, veuillez réessayer.');
+                    var modal = document.getElementById("myModalTempSign");
+                    var modalContent = document.querySelector('.modal-content-temp-sign');
+                    var textContent = document.querySelector('.modal-content-temp-sign p')
+                    textContent.textContent = "Une erreur est survenue lors de l'inscription, veuillez réessayer";
+                    modal.style.display = "flex";
+                    // Fermer la popup automatiquement après 4 secondes
+                    setTimeout(() => {
+                        modal.style.display = "none";
+                    }, 1000);
                 }
             });
         document.getElementById('signupForm').querySelector('[name="username"]').value = '';
@@ -403,6 +546,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // MODULE DE CONNEXION
 document.addEventListener('DOMContentLoaded', () => {
+    const accountButtonImage = document.getElementById('accountButtonImage');
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -410,17 +554,38 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = loginForm.querySelector('[name="password"]').value;
         console.log(username);
         console.log(password);
+        accountButtonImage.src = 'img/home/button_logout.png';
 
         AuthService.login(username, password)
             .then(data => {
                 localStorage.setItem('token', data.token);
-                alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
-                updateToken();
+                var modal = document.getElementById("myModalTemp");
+                var modalContent = document.querySelector('.modal-content-temp');
+                var textContent = document.querySelector('.modal-content-temp p')
+                textContent.textContent = "Bienvenue " + username + " !";
+                modal.style.display = "flex";
+                // Fermer la popup automatiquement après 4 secondes
+                setTimeout(() => {
+                    modal.style.display = "none";
+                    updateToken();
+                    try {
+                        window.plugins.OneSignal.login(username.toString());
+                    } catch (error) {
+                        console.error('Error logging in OneSignal:', error);
+                    }                }, 1000);
             })
             .catch(error => {
                 console.error('Login error:', error);
-                alert('Identifiant inexistant ou mot de passe incorrect, veuillez reessayer ou vous inscrire.');
+                var modal = document.getElementById("myModalTempLog");
+                var modalContent = document.querySelector('.modal-content-temp-log');
+                var textContent = document.querySelector('.modal-content-temp-log p')
+                textContent.textContent = "Nom d'utilisateur ou mot de passe incorrect";
+                modal.style.display = "flex";
+                // Fermer la popup automatiquement après 4 secondes
+                setTimeout(() => {
+                    modal.style.display = "none";
+                }, 1000);
             });
         document.getElementById('loginForm').querySelector('[name="username"]').value = '';
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
@@ -438,7 +603,6 @@ document.addEventListener("DOMContentLoaded", function() {
         rankModal.style.display = "flex";
         StatService.getAllRanking()
         .then(rank => {
-            console.log("ON MET À JOUR LES RANKS");
             displayRankResults(rank.ranking);
         })
         .catch(error => {
@@ -470,6 +634,70 @@ document.addEventListener("DOMContentLoaded", function() {
     window.addEventListener("click", function(event) {
         if (event.target === rankModal) {
             rankModal.style.display = "none";
+        }
+    });
+});
+
+// PAGE HOME -> PAGE SKIN
+document.addEventListener("DOMContentLoaded", function() {
+    var openSkinPage = document.getElementById("openSkinPage");
+    var closeSkinModalButton = document.getElementById("close-skin-modal-button");
+    const skinImages = document.querySelectorAll('#possible-skins img');
+    const displaySkinImage = document.querySelector('#display-skin img');
+
+    openSkinPage.addEventListener("click", function (e) {
+        if(token) {
+            e.preventDefault();
+            skinModal.style.display = "flex";
+
+            AuthService.getSkin(token)
+            .then(data => {
+                console.log("On a bien reçu le skin : " + data.skinURL);
+                displaySkinImage.src = 'img/skin/' + data.skinURL;
+            })
+            .catch(error => {
+                console.error('Erreur de récuparéation du skin :', error);
+            });
+
+            var url = null;
+            var filename = null;
+            skinImages.forEach(image => {
+                image.addEventListener('click', function() {
+                    url = image.src; // 'img/skin/Cube001.png' par exemple
+                    filename = url.split('/').pop(); // 'Cube001.png' par exemple
+                    console.log("URL : " + url + "filename : " + filename);
+
+                    AuthService.udpateSkin(token, filename)
+                    .then(data => {
+                        console.log("Réponse du back : " + data.message);
+                    })
+                    .catch(error => {
+                        console.error('Error udpating skin:', error);
+                    });
+                    displaySkinImage.src = image.src;
+                });
+            });
+        } else {
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos skins";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
+        }
+
+    });
+
+    closeSkinModalButton.addEventListener("click", function() {
+        skinModal.style.display = "none";
+    });
+
+    window.addEventListener("click", function(event) {
+        if (event.target === skinModal) {
+            skinModal.style.display = "none";
         }
     });
 });
@@ -644,8 +872,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const profileButton = document.getElementById('settingPage');
-    profileButton.addEventListener('click', function(event) {
+    const settingButton = document.getElementById('settingPage');
+    settingButton.addEventListener('click', function(event) {
         event.preventDefault();
         if (token) {
             AuthService.username(token)
@@ -657,7 +885,15 @@ document.addEventListener("DOMContentLoaded", function() {
                     console.error('Error fetching username:', error);
                 });
         } else {
-            alert('Vous devez être connecté pour accéder aux paramètres');
+            var modal = document.getElementById("myModalTemp");
+            var modalContent = document.querySelector('.modal-content-temp');
+            var textContent = document.querySelector('.modal-content-temp p')
+            textContent.textContent = "Vous devez être connecté pour accéder à vos paramètres";
+            modal.style.display = "flex";
+            // Fermer la popup automatiquement après 4 secondes
+            setTimeout(() => {
+                modal.style.display = "none";
+            }, 1000);
         }
     });
 });
@@ -692,3 +928,23 @@ window.addEventListener('online', function(event) {
 window.addEventListener('offline', function(event) {
     location.reload();
 });
+
+window.addEventListener('load', resizeImageBasedOnHeight);
+window.addEventListener('resize', resizeImageBasedOnHeight);
+
+function initializeAccountButtonImage(token) {
+    if(token) {
+        accountButtonImage.src = 'img/home/button_logout.png';
+    } else {
+        accountButtonImage.src = 'img/home/button_login.png';
+    }
+}
+
+// function resizeImageBasedOnHeight() {
+//     const image = document.querySelector('.top-image');
+//     if (image.offsetHeight >= 40 * window.innerHeight / 100) {
+//         image.style.width = 'auto';
+//     } else {
+//         image.style.width = '80%';
+//     }
+// }
