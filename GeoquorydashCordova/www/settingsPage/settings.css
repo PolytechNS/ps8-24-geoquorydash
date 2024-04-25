@@ -115,3 +115,45 @@ body {
     font-family: 'joystix';
     src: url('../font/joystix_monospace.otf');
 }
+
+.carousel-container {
+    position: relative;
+    max-height: 60%;
+    margin-top: 3%;
+    width: 33%;
+    margin-bottom: 5%;
+    overflow: hidden;
+}
+
+.carousel-wrapper {
+    display: flex;
+}
+
+.carousel-slide {
+    display: flex;
+}
+
+.carousel-slide img {
+    max-width: 100%;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.boutons {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 2em;
+    cursor: pointer;
+    color: white;
+}
+
+#prevBtn {
+    left: 10px;
+}
+
+#nextBtn {
+    right: 10px;
+}
