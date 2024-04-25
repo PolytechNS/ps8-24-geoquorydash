@@ -31,16 +31,17 @@
 <div id="accountModal" class="modal">
     <div class="modal-content">
         <img src="./img/account/title_account.png" alt="title" class="title-page-image">
-
-        <div id="account-elements">
-            <div class="account-text-container">
-                <h1 class="information-image" id="connect_text_1">VOUS N'ÊTES PAS CONNECTÉ</h1>
-                <h2  class="information-image" id="connect_text_2">VEUILLEZ CRÉER UN COMPTE SI VOUS SOUHAITEZ CONSERVER VOS DONNÉES</h2>
-                <div id="connectedMSG" style="display: none">VOUS ÊTES CONNECTÉ</div>
-                <div id="disconnectTip" style="display: none">VOUS POUVEZ VOUS DÉCONNECTER EN APPUYANT SUR LE BOUTON CI-DESSOUS</div>
+            <div id="close-account-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
             </div>
 
-
+            <div id="account-elements">
+                <div class="account-text-container">
+                    <h1 class="information-image" id="connect_text_1">VOUS N'ÊTES PAS CONNECTÉ</h1>
+                    <h2  class="information-image" id="connect_text_2">VEUILLEZ CRÉER UN COMPTE SI VOUS SOUHAITEZ CONSERVER VOS DONNÉES</h2>
+                    <div id="connectedMSG" style="display: none">VOUS ÊTES CONNECTÉ</div>
+                    <div id="disconnectTip" style="display: none">VOUS POUVEZ VOUS DÉCONNECTER EN APPUYANT SUR LE BOUTON CI-DESSOUS</div>
+                </div>
             <div class="buttons">
                 <img src="./img/account/button_signup.png" alt="signup" id="openSignupPage">
                 <img src="./img/account/button_login.png" alt="login" id="openLoginPage">
@@ -53,18 +54,20 @@
 <div id="signupModal" class="modal">
     <div class="modal-content">
         <img src="./img/account/title_signup.png" alt="title" class="title-page-image">
+         <div id="close-signup-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
-        <form id="signupForm">
-            <div class="credentials">
-                <div id="signupUsernameBlock">
-                    <label  for="usernameInputSignUp"><a class="usernameSignUp">NOM D'UTILISATEUR</a></label>
-                    <input type="text" id="usernameInputSignUp" name="username">
-                </div>
-                <div id="signupPasswordBlock">
-                    <label  for="passwordInputSignUp"><a class="usernameSignUp" >MOT DE PASSE</a></label>
-                    <input type="password" id="passwordInputSignUp" name="password">
-
-                </div>
+            <form id="signupForm">
+                <div class="credentials">
+                    <div id="signupUsernameBlock">
+                        <label  for="usernameInputSignUp"><a class="usernameSignUp">NOM D'UTILISATEUR</a></label>
+                        <input type="text" id="usernameInputSignUp" name="username">
+                    </div>
+                    <div id="signupPasswordBlock">
+                        <label for="passwordInputSignUp"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputSignUp" name="password">
+                    </div>
             </div>
 
             <div class="validationBlock">
@@ -77,17 +80,21 @@
 <div id="loginModal" class="modal">
     <div class="modal-content">
         <img src="./img/account/title_login.png" alt="title" class="title-page-image">
+            <div id="close-login-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
 
-        <form id="loginForm">
-            <div class="credentials">
-                <div id="loginUsernameBlock">
-                    <label for="usernameInputLogIn"><a class="usernameLogIn">NOM D'UTILISATEUR</a></label>
-                    <input type="text" id="usernameInputLogIn" name="username">
-                </div>
-                <div id="loginPasswordBlock">
-                    <label for="passwordInputLogIn"><a class="usernameLogIn">MOT DE PASSE</a></label>
-                    <input type="password" id="passwordInputLogIn" name="password">
-                </div>
+            <form id="loginForm">
+                <div class="credentials">
+                    <div id="loginUsernameBlock">
+                        <label for="usernameInputLogIn"><a class="usernameLogIn">NOM D'UTILISATEUR</a></label>
+                        <input type="text" id="usernameInputLogIn" name="username">
+                    </div>
+                    <div id="loginPasswordBlock">
+                        <label for="passwordInputLogIn"><img src="./img/account/password.png" alt="Password"></label>
+                        <input type="password" id="passwordInputLogIn" name="password">
+                    </div>
+
             </div>
 
             <div class="validationBlock">
@@ -102,7 +109,11 @@
     <div class="modal-content">
         <img src="./img/friends/title_friends.png" alt="title" class="title-page-image">
 
-        <div id="friends-elements">
+            <div id="close-friends-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
+
+            <div id="friends-elements">
 
             <div id="friendsListTab" class="friendsTab">
                 <ul id="friendsResults"></ul>
@@ -138,44 +149,55 @@
 
         <img src="./img/stats/title_statistiques.png" alt="title" class="title-page-image">
 
-        <div class="stat-elements">
-            <div class="stat-item">
-                <img src="./img/stats/number_games_played.png" alt="sentence" class="stat-image">
-                <span></span>
+            <div id="close-stat-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
             </div>
-            <div class="stat-item">
-                <img src="./img/stats/playing_time.png" alt="sentence" class="stat-image">
-                <span></span>
-            </div>
-            <div class="stat-item">
-                <img src="./img/stats/number_victory.png" alt="sentence" class="stat-image">
-                <span></span>
-            </div>
-            <div class="stat-item">
-                <img src="./img/stats/number_moves.png" alt="sentence" class="stat-image">
-                <span></span>
-            </div>
-            <div class="stat-item">
-                <img src="./img/stats/number_walls_installed.png" alt="sentence" class="stat-image">
-                <span></span>
-            </div>
-            <div class="stat-item">
-                <img src="./img/stats/fastest_win.png" alt="sentence" class="stat-image">
-                <span></span>
+
+            <div class="stat-elements">
+                <div class="stat-item">
+                    <img src="./img/stats/number_games_played.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
+                <div class="stat-item">
+                    <img src="./img/stats/playing_time.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
+                <div class="stat-item">
+                    <img src="./img/stats/number_victory.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
+                <div class="stat-item">
+                    <img src="./img/stats/number_moves.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
+                <div class="stat-item">
+                    <img src="./img/stats/number_walls_installed.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
+                <div class="stat-item">
+                    <img src="./img/stats/fastest_win.png" alt="sentence" class="stat-image">
+                    <span></span>
+                </div>
             </div>
         </div>
-    </div>
+
 </div>
 
 <div id="rankModal" class="modal">
     <div class="modal-content">
         <img src="./img/friends/classement.png" alt="title" class="title-page-image">
 
-        <div id="rank-elements">
-            <ul id="rankResults"></ul>
+            <div id="close-rank-modal-button" class="close-modal-button">
+                <img src="img/red_cross.png" alt="CloseModal">
+            </div>
+
+            <div id="rank-elements">
+                <ul id="rankResults"></ul>
+            </div>
+
         </div>
 
-    </div>
+
 </div>
 
 
