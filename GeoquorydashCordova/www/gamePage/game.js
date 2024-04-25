@@ -335,10 +335,15 @@ function ImpossibleWallPlacementPopUp() {
     var modalContent = document.querySelector('.modal-content-temp');
 
     var textContent = document.querySelector('.modal-content-temp p')
-    textContent.textContent = text;
+    textContent.textContent = "Placement de barrières impossible !";
     modalContent.appendChild(textContent);
 
     modal.style.display = "flex";
+
+    // Fermer la popup automatiquement après 4 secondes
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 1000);
 }
 
 function getPlayerElementById(playerId) {
