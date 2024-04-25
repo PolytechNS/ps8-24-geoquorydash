@@ -633,3 +633,9 @@ button {
 .modal-content button {
     margin: 2%;
 }
+
+#no_pending_demand_text {
+    height: min(40vh, 15vw);
+    width: auto;
+    max-width: 85%;
+}
