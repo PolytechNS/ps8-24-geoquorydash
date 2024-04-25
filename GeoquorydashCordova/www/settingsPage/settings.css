@@ -30,6 +30,10 @@ body {
     max-width: 85%;
 }
 
+.rotate {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease;
+}
 /* Bouton de sauvegarde */
 #save-button {
     cursor: pointer;
