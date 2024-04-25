@@ -269,7 +269,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Fermer la popup automatiquement après 4 secondes
             setTimeout(() => {
                 modal.style.display = "none";
-            }, 1000);
+            }, 2000);
         }
         
     });
@@ -406,7 +406,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     // Fermer la popup automatiquement après 4 secondes
                     setTimeout(() => {
                         modal.style.display = "none";
-                    }, 1000);
+                    }, 3000);
                 });
         } else {
             var modal = document.getElementById("myModalTemp");
@@ -417,7 +417,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Fermer la popup automatiquement après 4 secondes
             setTimeout(() => {
                 modal.style.display = "none";
-            }, 1000);
+            }, 2000);
         }
     });
 
@@ -453,7 +453,7 @@ document.addEventListener("DOMContentLoaded", function() {
              // Fermer la popup automatiquement après 4 secondes
              setTimeout(() => {
                  modal.style.display = "none";
-             }, 1000);
+             }, 2000);
          }
     });
 });
@@ -512,7 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     modal.style.display = "none";
                     signupModal.style.display = "none";
                     loginModal.style.display= "flex";
-                }, 1000);
+                }, 2000);
             })
             .catch(error => {
                 console.error('Signup error:', error);
@@ -526,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Fermer la popup automatiquement après 4 secondes
                     setTimeout(() => {
                         modal.style.display = "none";
-                    }, 1000);
+                    }, 2000);
                 } else {
                     var modal = document.getElementById("myModalTempSign");
                     var modalContent = document.querySelector('.modal-content-temp-sign');
@@ -536,7 +536,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Fermer la popup automatiquement après 4 secondes
                     setTimeout(() => {
                         modal.style.display = "none";
-                    }, 1000);
+                    }, 2000);
                 }
             });
         document.getElementById('signupForm').querySelector('[name="username"]').value = '';
@@ -573,7 +573,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         window.plugins.OneSignal.login(username.toString());
                     } catch (error) {
                         console.error('Error logging in OneSignal:', error);
-                    }                }, 1000);
+                    }
+                }, 1000);
             })
             .catch(error => {
                 console.error('Login error:', error);
@@ -585,7 +586,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Fermer la popup automatiquement après 4 secondes
                 setTimeout(() => {
                     modal.style.display = "none";
-                }, 1000);
+                }, 2000);
             });
         document.getElementById('loginForm').querySelector('[name="username"]').value = '';
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';
@@ -686,7 +687,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Fermer la popup automatiquement après 4 secondes
             setTimeout(() => {
                 modal.style.display = "none";
-            }, 1000);
+            }, 2000);
         }
 
     });
@@ -893,7 +894,7 @@ document.addEventListener("DOMContentLoaded", function() {
             // Fermer la popup automatiquement après 4 secondes
             setTimeout(() => {
                 modal.style.display = "none";
-            }, 1000);
+            }, 2000);
         }
     });
 });

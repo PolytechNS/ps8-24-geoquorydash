@@ -56,7 +56,7 @@ function setupSaveButton(token){
             // Fermer la popup automatiquement après 4 secondes
             setTimeout(() => {
                 modal.style.display = "none";
-            }, 1000);
+            }, 2000);
         });
     }
 }
