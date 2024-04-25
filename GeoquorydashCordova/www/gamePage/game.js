@@ -346,6 +346,11 @@ function ImpossibleWallPlacementPopUp() {
     modalContent.appendChild(textContent);
 
     modal.style.display = "flex";
+
+    // Fermer la popup automatiquement après 4 secondes
+    setTimeout(() => {
+        modal.style.display = "none";
+    }, 1000);
 }
 
 function getPlayerElementById(playerId) {
