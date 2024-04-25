@@ -84,28 +84,29 @@ body {
 
     width: 65vw;
     height: 86vh;
-    
+
     padding: calc(-1px) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw) - 1px) calc(min(11vh, 10vw) - 1px) calc(min(3.5vh, 3vw) + min(5.5vh, 5vw) - 1px);
 
-    background: 
-    /* top-left corner */
-    url("img/home/top_left_corner.png") top left/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
-    /* top-right corner */
-    url("img/home/top_right_corner.png") top right/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
-    /* bottom-left corner */
-    url("img/home/bottom_left_corner.png") bottom min(5.5vh, 5vw) left/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
-    /* bottom-right corner */
-    url("img/home/bottom_right_corner.png") bottom min(5.5vh, 5vw) right/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
-    /* bottom-middle corner */
-    url("img/home/bottom_middle_block.png") bottom/min(14.5vh, 13vw) min(11vh, 10vw) no-repeat,
-    /* top wall */
-    url("img/home/top_bar.png") top left min(10vh, 9vw)/calc(65vw - min(20vh, 18vw)) min(11vh, 10vw) no-repeat,
-    /* bottom wall */
-    url("img/home/bottom_bar.png") bottom min(2vh, 2vw) left min(10.75vh, 9.75vw)/calc(65vw - min(21.5vh, 19.5vw)) min(9vh, 8vw) no-repeat,
-    /* left wall */
-    url("img/home/left_bar.png") top min(10vh, 9vw) left min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat,
-    /* right wall */
-    url("img/home/right_bar.png") top min(10vh, 9vw) right min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat;
+
+    background:
+        /* top-left corner */
+            url("img/home/top_left_corner.png") top left/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
+                /* top-right corner */
+            url("img/home/top_right_corner.png") top right/min(11vh, 10vw) min(11vh, 10vw) no-repeat,
+                /* bottom-left corner */
+            url("img/home/bottom_left_corner.png") bottom min(5.5vh, 5vw) left/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
+                /* bottom-right corner */
+            url("img/home/bottom_right_corner.png") bottom min(5.5vh, 5vw) right/min(11vh, 10vw) min(5.5vh, 5vw) no-repeat,
+                /* bottom-middle corner */
+            url("img/home/bottom_middle_block.png") bottom/min(14.5vh, 13vw) min(11vh, 10vw) no-repeat,
+                /* top wall */
+            url("img/home/top_bar.png") top left min(10vh, 9vw)/calc(65vw - min(20vh, 18vw)) min(11vh, 10vw) no-repeat,
+                /* bottom wall */
+            url("img/home/bottom_bar.png") bottom min(2vh, 2vw) left min(10.75vh, 9.75vw)/calc(65vw - min(21.5vh, 19.5vw)) min(9vh, 8vw) no-repeat,
+                /* left wall */
+            url("img/home/left_bar.png") top min(10vh, 9vw) left min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat,
+                /* right wall */
+            url("img/home/right_bar.png") top min(10vh, 9vw) right min(3.5vh, 3vw)/min(5.5vh, 5vw) calc(86vh - min(16.5vh, 15vw)) no-repeat;
     /*top 100px -> à 100px du haut de l'élément / right -> à droite / 100px -> largeur de l'image / calc… -> hauteur de l'image*/
 }
 
@@ -135,11 +136,68 @@ body {
 .information-image {
     width: 100%;
     height: auto;
-    max-width: calc(65vw - 260px);
+}
+
+#connect_text_1{
+    color: #fec32c;
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+    margin-bottom: 0;
+
+}
+
+#connect_text_2{
+    color: #ffffff;
+    font-family: 'Pusab', sans-serif;
+    margin-bottom: 0;
+    font-size: 2vw;
+    line-height: 1;
+    letter-spacing: 2px;
+}
+
+@media screen and (max-width: 630px){
+    #connect_text_1{
+        font-size: 5vw;
+    }
+    #connect_text_2 {
+        font-size: 4vw;
+    }
+}
+
+.usernameSignUp{
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+    background-image: linear-gradient(181deg, #f8a218, #fde147);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-top: 10%;
+
+
+}
+.usernameLogIn{
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
+    background-image: linear-gradient(181deg, #f8a218, #fde147);
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    padding-top: 10%;
+}
+
+#passwordSignUp{
+    color: #fec32c;
+    font-family: 'Pusab', sans-serif;
+    font-size: 3vw;
 }
 
 .account-text-container {
-    width: 80%;
+    width: 95%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
 }
 
 #account-elements, #loginForm, #signupForm, #rank-elements, #friends-elements, #skin-elements {
@@ -223,10 +281,27 @@ body {
     align-items: center;
     flex-direction: row;
     gap: 2vw;
+    flex-wrap: wrap;
+}
+
+#connectedMSG{
+    font-family: 'Pusab', sans-serif;
+    font-size: 4vw;
+    color: #fec32c;
+    letter-spacing: 2px;
+}
+
+#disconnectTip{
+    font-family: 'Pusab', sans-serif;
+    font-size: 2vw;
+    color: #ffffff;
+    margin-top: 5vh;
+    letter-spacing: 2px;
+    line-height: 1;
 }
 
 #signUpButtonValidation, #loginButton {
-    width: 25vw;
+    width: 30vw;
     height: auto;
 }
 
@@ -299,11 +374,11 @@ label img {
     color: #fec32c;
     margin-right: 2vw;
     text-shadow:
-        3px 2px 3px #000,
-        -1px -1px 0 #000,  
-         1px -1px 0 #000,
-        -1px  1px 0 #000,
-         1px  1px 0 #000; /* Effet de bordure noire */
+            3px 2px 3px #000,
+            -1px -1px 0 #000,
+            1px -1px 0 #000,
+            -1px  1px 0 #000,
+            1px  1px 0 #000; /* Effet de bordure noire */
 }
 
 .friendsTab {

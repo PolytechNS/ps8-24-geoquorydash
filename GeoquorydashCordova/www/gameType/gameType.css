@@ -11,7 +11,18 @@ body {
     position: relative;
 }
 
-.buttons {
+
+#burger-chat-button{
+    cursor: pointer;
+}
+#burger-menu-button{
+    cursor: pointer;
+}
+
+.buttons{
+    position: absolute;
+
+
     display: flex;
     justify-content: space-around;
     align-items: center;
