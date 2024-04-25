@@ -555,6 +555,15 @@ label img {
     height: 100%;
 }
 
+#openFriendsPage {
+    position: relative;
+    display: inline-block;
+}
+
+#openFriendsPage img.default {
+    height: auto;
+}
+
 @keyframes fade-in-out {
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
@@ -564,7 +573,8 @@ label img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 8vw;
+    width: min(8vw, 20vh);
+    height: auto;
     opacity: 0;
 }
 
