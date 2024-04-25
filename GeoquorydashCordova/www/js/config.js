@@ -1,1 +1,1 @@
-export const API_ENDPOINT = 'http://35.181.197.96:8000';
+export const API_ENDPOINT = 'http://geoquorydash.ps8.academy';
