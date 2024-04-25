@@ -9,7 +9,6 @@
         Apache Cordova Team
     </author>
     <content src="home.html" />
-    <preference name="scheme" value="http" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
 
@@ -17,8 +16,11 @@
     <allow-navigation href="http://localhost/*" />
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
-    <preference name="hostname" value="localhost:8000" />
+    <preference name="scheme" value="http" />
+    <preference name="hostname" value="geoquorydash.ps8.academy" />
     <preference name="AndroidXEnabled" value="true" />
+    <preference name="orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
 
     <preference name="LottieRemoteEnabled" value="false" />
     <preference name="LottieAnimationLocation" value="www/lottie/first_anim.json" />
@@ -38,11 +40,13 @@
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
-        <!-- <preference name="LottieAnimationLocationLight" value="./www/img/Skin002.png" />
-        <preference name="LottieBackgroundColor" value="#fff000a3" />
-        <preference name="LottieWidth" value="350" />
-        <preference name="LottieHeight" value="350" /> -->
+        <config-file parent="/manifest" target="AndroidManifest.xml">
+            <uses-permission android:name="android.permission.INTERNET" />
+            <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+            <uses-permission android:name="android.permission.WAKE_LOCK" />
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+            <uses-permission android:name="android.permission.VIBRATE" />
+        </config-file>
     </platform>
-    <preference name="orientation" value="landscape" />
-    <preference name="Fullscreen" value="true" />
+
 </widget>

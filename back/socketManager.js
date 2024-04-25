@@ -376,14 +376,18 @@ const setupSocket = (io) => {
         socket.on('gameRequestAccepted', async (token, usernameSenderRequest) => {
             const userIdReceiverRequest = verifyAndValidateUserID(token);
             if (userIdReceiverRequest) {
-                const userIdSenderRequest = await findUserIdByUsername(usernameSenderRequest);
-                const roomId = userIdSenderRequest + userIdReceiverRequest;
-                const data = {
-                    userIdReceiver: userIdReceiverRequest,
-                    waitingRoomId: roomId,
-                };
-                await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
-                await gameOnlineManager.tryMatchmakingFriend(io, roomId);
+                try {
+                    const userIdSenderRequest = await findUserIdByUsername(usernameSenderRequest);
+                    const roomId = userIdSenderRequest + userIdReceiverRequest;
+                    const data = {
+                        userIdReceiver: userIdReceiverRequest,
+                        waitingRoomId: roomId,
+                    };
+                    await gameOnlineManager.joinGameRequestWaitingRoom(data, socket);
+                    await gameOnlineManager.tryMatchmakingFriend(io, roomId);
+                } catch (error) {
+                    console.log("Une erreur inattendue est survenue : ", error.message);
+                }
             } else {
                 console.log(`User ${usernameSenderRequest} is not connected.`);
                 socket.emit('gameRequestDeclined');

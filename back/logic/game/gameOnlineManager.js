@@ -112,18 +112,23 @@ class GameOnlineManager {
             }];
             return waitingRoomId;
         } else {
-            this.gameRequestsWaitingRooms[data.waitingRoomId].push({
-                userId : data.userIdReceiver,
-                socket : socket
-            });
+            try {
+                this.gameRequestsWaitingRooms[data.waitingRoomId].push({
+                    userId : data.userIdReceiver,
+                    socket : socket
+                });
+            } catch (e) {
+                console.log(e);
+                return null;
+            }
         }
     }
 
 
 
     emitUpdateBoard(gameStateID, roomId){
-        console.log(gameStateID, roomId);
-        console.log(this.gameInSession[roomId]);
+        // console.log(gameStateID, roomId);
+        // console.log(this.gameInSession[roomId]);
         const socket1 = this.gameInSession[roomId][0];
         const socket2 = this.gameInSession[roomId][1];
         let visibilityMap = fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap;

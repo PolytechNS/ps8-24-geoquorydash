@@ -26,6 +26,7 @@ var handleDeconnexionClick = function(event) {
         alert('Vous êtes déconnecté');
         const modal = window.parent.document.querySelector('.modal');
         modal.style.display = 'none';
+        window.plugins.OneSignal.logout();
     }
 };
 
@@ -74,7 +75,49 @@ document.addEventListener("DOMContentLoaded", function() {
             accountModal.style.display = "none";
         }
     });
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                window.plugins.OneSignal.login(authUsername.toString());
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            const openFriendsPage = document.getElementById("openFriendsPage");
+                            const notif = openFriendsPage.querySelector('.notif');
+                            notif.classList.add('active');
+                        }
+                    });
+            });
+    }
 });
+
+
+document.addEventListener('deviceready', OneSignalInit, false);
+
+function OneSignalInit() {
+    // Initialise OneSignal avec votre App ID
+    window.plugins.OneSignal.initialize("08eb66f6-d744-4291-b6b9-ff5ae40aa7a2");
+    // window.plugins.OneSignal.logout();
+
+    // Active le niveau de log détaillé pour OneSignal (6 pour le debug)
+    window.plugins.OneSignal.Debug.setLogLevel(6);
+
+    // Ajout d'un écouteur pour les clics sur les notifications
+    // Remarque : Assurez-vous que la méthode `addEventListener` pour les notifications est bien disponible et correctement définie dans index.js.
+    // Le code original utilise une syntaxe TypeScript pour la déclaration de l'event, il faut la convertir en JavaScript pur.
+    const listener = function(event) {
+        const notificationPayload = JSON.stringify(event);
+        console.log(notificationPayload);
+    };
+    window.plugins.OneSignal.Notifications.addEventListener("click", listener);
+
+    // Demande la permission pour les notifications
+    // Assurez-vous que la méthode `requestPermission` est bien disponible et correctement définie dans index.js.
+    window.plugins.OneSignal.Notifications.requestPermission(true).then(function(accepted) {
+        console.log("User accepted notifications: " + accepted);
+    });
+}
 
 // PAGE HOME -> PAGE SIGNUP
 document.addEventListener("DOMContentLoaded", function() {
@@ -172,6 +215,18 @@ document.addEventListener("DOMContentLoaded", function() {
     const addFriendsText = document.getElementById('add_friends_text');
     const requestResults = document.getElementById('requestResults');
     const noPendingDemandText = document.getElementById('no_pending_demand_text');
+
+    if (token) {
+        AuthService.username(token)
+            .then(authUsername => {
+                FriendsService.getRequests(authUsername)
+                    .then(requests => {
+                        if (requests.length > 0){
+                            openFriendsRequestTab.src = '../img/friends/requestButtonNotif.png';
+                        }
+                    });
+            });
+    }
 
     openFriendsPage.addEventListener("click", function(e) {
         if(token) {
@@ -414,6 +469,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Bienvenue ' + username + ' !');
                 loginModal.style.display = "none";
                 updateToken();
+                window.plugins.OneSignal.login(username.toString());
             })
             .catch(error => {
                 console.error('Login error:', error);
@@ -479,36 +535,41 @@ document.addEventListener("DOMContentLoaded", function() {
     const displaySkinImage = document.querySelector('#display-skin img');
 
     openSkinPage.addEventListener("click", function (e) {
-        e.preventDefault();
-        skinModal.style.display = "flex";
+        if(token) {
+            e.preventDefault();
+            skinModal.style.display = "flex";
 
-        AuthService.getSkin(token)
-        .then(data => {
-            console.log("On a bien reçu le skin : " + data.skinURL);
-            displaySkinImage.src = 'img/skin/' + data.skinURL;
-        })
-        .catch(error => {
-            console.error('Erreur de récuparéation du skin :', error);
-        });
-
-        var url = null;
-        var filename = null;
-        skinImages.forEach(image => {
-            image.addEventListener('click', function() {
-                url = image.src; // 'img/skin/Cube001.png' par exemple
-                filename = url.split('/').pop(); // 'Cube001.png' par exemple
-                console.log("URL : " + url + "filename : " + filename);
-
-                AuthService.udpateSkin(token, filename)
-                .then(data => {
-                    console.log("Réponse du back : " + data.message);
-                })
-                .catch(error => {
-                    console.error('Error udpating skin:', error);
-                });
-                displaySkinImage.src = image.src;
+            AuthService.getSkin(token)
+            .then(data => {
+                console.log("On a bien reçu le skin : " + data.skinURL);
+                displaySkinImage.src = 'img/skin/' + data.skinURL;
+            })
+            .catch(error => {
+                console.error('Erreur de récuparéation du skin :', error);
             });
-        });
+
+            var url = null;
+            var filename = null;
+            skinImages.forEach(image => {
+                image.addEventListener('click', function() {
+                    url = image.src; // 'img/skin/Cube001.png' par exemple
+                    filename = url.split('/').pop(); // 'Cube001.png' par exemple
+                    console.log("URL : " + url + "filename : " + filename);
+
+                    AuthService.udpateSkin(token, filename)
+                    .then(data => {
+                        console.log("Réponse du back : " + data.message);
+                    })
+                    .catch(error => {
+                        console.error('Error udpating skin:', error);
+                    });
+                    displaySkinImage.src = image.src;
+                });
+            });
+        } else {
+            alert("Vous devez être connecté pour accéder à vos skins");
+        }
+        
     });
 
     closeSkinModalButton.addEventListener("click", function() {
@@ -692,8 +753,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 
 document.addEventListener("DOMContentLoaded", function() {
-    const profileButton = document.getElementById('settingPage');
-    profileButton.addEventListener('click', function(event) {
+    const settingButton = document.getElementById('settingPage');
+    settingButton.addEventListener('click', function(event) {
         event.preventDefault();
         if (token) {
             AuthService.username(token)
