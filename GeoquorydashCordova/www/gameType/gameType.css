@@ -11,7 +11,12 @@ body {
     position: relative;
 }
 
-
+#networkError{
+    width: 8vh;
+    position: absolute;
+    top: 1vh;
+    right: 4vh;
+}
 #burger-chat-button{
     cursor: pointer;
 }

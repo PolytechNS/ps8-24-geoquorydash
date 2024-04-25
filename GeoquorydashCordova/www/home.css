@@ -118,6 +118,14 @@ body {
     width: 70%;
 }
 
+#networkError{
+    width: 8vh;
+    position: absolute;
+    top: 1vh;
+    right: 4vh;
+}
+
+
 .buttons img {
     width: 100%;
     height: auto;
