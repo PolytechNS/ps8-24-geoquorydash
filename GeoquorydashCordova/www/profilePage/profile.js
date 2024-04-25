@@ -283,17 +283,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
-
 document.addEventListener('DOMContentLoaded', () => {
     const myProfilePictureElement = document.getElementById('profile-picture-me');
     const modalContainer = document.getElementById('modal-container');
     const modalOptionsContainer = document.getElementById('modal-options-container');
-
     myProfilePictureElement.addEventListener('click', () => {
         modalContainer.style.display = 'block';
-
     });
-
     modalOptionsContainer.addEventListener('click', (event) => {
         if (event.target.tagName === 'IMG') {
             const imageUrl = event.target.src;
@@ -316,15 +312,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
         }
     });
-
     window.addEventListener('click', (event) => {
         if (event.target === modalContainer) {
             modalContainer.style.display = 'none';
         }
     });
-
 });
-
 
 
 

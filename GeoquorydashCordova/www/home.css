@@ -573,8 +573,7 @@ label img {
     position: absolute;
     top: 0;
     left: 0;
-    width: min(8vw, 20vh);
-    height: auto;
+    width: 8vw;
     opacity: 0;
 }
 
