@@ -91,53 +91,66 @@ const setupSocket = (io) => {
         socket.on('movePlayer', async (targetPosition, id, token, roomId) => {
             if (token) await setGameStateInProgressBoolean(id, true);
 
+            console.log('ON movePlayer', targetPosition, id);
             var response = movePlayer(targetPosition, id);
+            console.log('AFTER movePlayer', response);
+            var userId = null;
+            if (token) {
+                try {
+                    await moveUserPlayerInDatabase(id, token, targetPosition);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
+                }
 
-            try {
-                await moveUserPlayerInDatabase(id, token, targetPosition);
-            } catch (error) {
-                if (error instanceof InvalidTokenError) {
+                userId = verifyAndValidateUserID(token);
+                if (!userId) {
                     socket.emit('tokenInvalid');
                     return;
-                } else if (error instanceof DatabaseConnectionError) {
-                    socket.emit('databaseConnectionError');
-                } else {
-                    // Gérer toutes les autres erreurs non spécifiques
-                    console.log("Une erreur inattendue est survenue : ", error.message);
                 }
+                statManager.updateTemporaryStat(userId, "move");
             }
 
-            const userId = verifyAndValidateUserID(token);
-            if (!userId) {
-                socket.emit('tokenInvalid');
-                return;
-            }
-            statManager.updateTemporaryStat(userId, "move");
 
             if (response) {
-                await endGameInDatabase(id, token);
+                if (token) {
+                    await endGameInDatabase(id, token);
 
-                await statManager.updateStat(userId, Date.now(), response.id); // response.id est l'id du joueur qui a gagné
+                    await statManager.updateStat(userId, Date.now(), response.id); // response.id est l'id du joueur qui a gagné
 
-                console.log('EMIT endGame');
-                roomId ?
-                    io.of('/api/game').to(roomId).emit("endGame", response) :
+                    console.log('EMIT endGame');
+                    roomId ?
+                        io.of('/api/game').to(roomId).emit("endGame", response) :
+                        socket.emit("endGame", response);
+                    return;
+                } else {
                     socket.emit("endGame", response);
-                return;
+                    return;
+                }
+
             }
             fogOfWar.updateBoardVisibility(id);
 
-            try {
-                await modifyVisibilityMapInDatabase(token, id, fogOfWar.visibilityMapObjectList[id].visibilityMap);
-            } catch (error) {
-                if (error instanceof InvalidTokenError) {
-                    socket.emit('tokenInvalid');
-                    return;
-                } else if (error instanceof DatabaseConnectionError) {
-                    socket.emit('databaseConnectionError');
-                } else {
-                    // Gérer toutes les autres erreurs non spécifiques
-                    console.log("Une erreur inattendue est survenue : ", error.message);
+            if (token) {
+                try {
+                    await modifyVisibilityMapInDatabase(token, id, fogOfWar.visibilityMapObjectList[id].visibilityMap);
+                } catch (error) {
+                    if (error instanceof InvalidTokenError) {
+                        socket.emit('tokenInvalid');
+                        return;
+                    } else if (error instanceof DatabaseConnectionError) {
+                        socket.emit('databaseConnectionError');
+                    } else {
+                        // Gérer toutes les autres erreurs non spécifiques
+                        console.log("Une erreur inattendue est survenue : ", error.message);
+                    }
                 }
             }
 
@@ -177,32 +190,36 @@ const setupSocket = (io) => {
             const onlineGameOption = !!roomId;
             var response = toggleWall(wall, isVertical, onlineGameOption, gameStateID);
             if (response === 1) {
-                try {
-                    await toggleWallInDatabase(gameStateID, wall, isVertical, token);
-                } catch (error) {
-                    if (error instanceof InvalidTokenError) {
-                        socket.emit('tokenInvalid');
-                        return;
-                    } else if (error instanceof DatabaseConnectionError) {
-                        socket.emit('databaseConnectionError');
-                    } else {
-                        // Gérer toutes les autres erreurs non spécifiques
-                        console.log("Une erreur inattendue est survenue : ", error.message);
+                if (token) {
+                    try {
+                        await toggleWallInDatabase(gameStateID, wall, isVertical, token);
+                    } catch (error) {
+                        if (error instanceof InvalidTokenError) {
+                            socket.emit('tokenInvalid');
+                            return;
+                        } else if (error instanceof DatabaseConnectionError) {
+                            socket.emit('databaseConnectionError');
+                        } else {
+                            // Gérer toutes les autres erreurs non spécifiques
+                            console.log("Une erreur inattendue est survenue : ", error.message);
+                        }
                     }
                 }
                 socket.emit('lockWall', wall);
                 fogOfWar.updateBoardVisibility(gameStateID);
-                try{
-                    await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap);
-                }catch (error) {
-                    if (error instanceof InvalidTokenError) {
-                        socket.emit('tokenInvalid');
-                        return;
-                    } else if (error instanceof DatabaseConnectionError) {
-                        socket.emit('databaseConnectionError');
-                    } else {
-                        // Gérer toutes les autres erreurs non spécifiques
-                        console.log("Une erreur inattendue est survenue : ", error.message);
+                if (token) {
+                    try {
+                        await modifyVisibilityMapInDatabase(token, gameStateID, fogOfWar.visibilityMapObjectList[gameStateID].visibilityMap);
+                    } catch (error) {
+                        if (error instanceof InvalidTokenError) {
+                            socket.emit('tokenInvalid');
+                            return;
+                        } else if (error instanceof DatabaseConnectionError) {
+                            socket.emit('databaseConnectionError');
+                        } else {
+                            // Gérer toutes les autres erreurs non spécifiques
+                            console.log("Une erreur inattendue est survenue : ", error.message);
+                        }
                     }
                 }
 
@@ -214,19 +231,21 @@ const setupSocket = (io) => {
                     await handleAIMove(gameStateID, token);
                 }
             } else if (response) {
-                await endGameInDatabase(gameStateID);
+                if (token) await endGameInDatabase(gameStateID);
                 console.log('EMIT endGame');
                 socket.emit("endGame", response);
             } else {
                 socket.emit('ImpossibleWallPosition');
             }
 
-            const userId = verifyAndValidateUserID(token);
-            if (!userId) {
-                socket.emit('tokenInvalid');
-                return;
+            if (token) {
+                const userId = verifyAndValidateUserID(token);
+                if (!userId) {
+                    socket.emit('tokenInvalid');
+                    return;
+                }
+                statManager.updateTemporaryStat(userId, "wall");
             }
-            statManager.updateTemporaryStat(userId, "wall");
         });
 
         socket.on('findMatch', async (token) => {

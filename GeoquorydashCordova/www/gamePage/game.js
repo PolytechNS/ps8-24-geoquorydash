@@ -182,14 +182,7 @@ function askPossibleMove() {
 }
 
 function displayPossibleMove(possibleMove) {
-    var allElements = document.querySelectorAll('*');
-    allElements.forEach(function(cell) {
-        if (cell.moveEventListener) {
-            cell.removeEventListener('click', cell.moveEventListener);
-            cell.moveEventListener = null;
-            cell.classList.remove('blinking');
-        }
-    });
+
 
     possibleMove.forEach(move => {
         let cell = document.getElementById(`cell-${move.x}-${move.y}`);

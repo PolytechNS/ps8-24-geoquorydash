@@ -14,6 +14,15 @@ function hideOldPossibleMoves() {
     for (let i = 0; i < playerCells.length; i++) {
         playerCells[i].classList.remove('blinking');
     }
+
+    var allElements = document.querySelectorAll('*');
+    allElements.forEach(function(cell) {
+        if (cell.moveEventListener) {
+            cell.removeEventListener('click', cell.moveEventListener);
+            cell.moveEventListener = null;
+            cell.classList.remove('blinking');
+        }
+    });
 }
 
 function updateBoardDisplay(gameState, visibilityMap, player) {
@@ -41,14 +50,12 @@ function updateBoardDisplayOnlineGame(gameState, visibilityMap, player) {
     hideOldPossibleMoves(player);
 
     let playerCell = document.getElementById(`cell-${player.position.x}-${player.position.y}`);
-    console.log(getPlayerElementById(player.id));
     playerCell.appendChild(getPlayerElementById(player.id));
     playerCell.firstElementChild.style.opacity = 1;
     playerCell.style.opacity = 1;
 
     let otherPlayer = gameState.players.find(otherPlayer => otherPlayer.id !== player.id);
     let otherPlayerCell = document.getElementById(`cell-${otherPlayer.position.x}-${otherPlayer.position.y}`);
-    console.log(getPlayerElementById(otherPlayer.id));
     var otherPlayerInBoard = getPlayerElementById(otherPlayer.id);
     if (otherPlayerCell.style.opacity === '1'){
         otherPlayerCell.appendChild(otherPlayerInBoard);
