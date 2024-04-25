@@ -1,1 +1,1 @@
-export const API_ENDPOINT = 'geoquorydash.ps8.academy';
+export const API_ENDPOINT = 'http://geoquorydash.ps8.academy';
