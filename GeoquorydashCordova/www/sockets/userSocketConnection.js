@@ -1,3 +1,5 @@
+import {isMobileDevice} from "../js/utils.js";
+
 const token = localStorage.getItem('token');
 const location = window.location.pathname;
 var userSocket = io('/api/user', {
@@ -65,6 +67,9 @@ userSocket.on('removeChatNotification', function(username) {
 });
 
 userSocket.on('friendRequest', function(fromUsername) {
+    if (isMobileDevice()) {
+        return;
+    }
     const popup = document.getElementById('friend-request-modal');
     
     // On affiche la popup
@@ -87,6 +92,7 @@ userSocket.on('friendRequest', function(fromUsername) {
         popup.style.display = 'none';
     }, 3300);
 });
+
 
 userSocket.on('updateFriendRequest', function(friendRequests) {
     const openFriendsPage = document.getElementById("openFriendsPage");
