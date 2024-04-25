@@ -17,10 +17,12 @@ function updateToken() {
     token = localStorage.getItem('token');
 }
 
+initializeAccountButtonImage(token);
 
 var handleDeconnexionClick = function(event) {
     event.preventDefault();
     if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+        accountButtonImage.src = 'img/home/button_login.png';
         localStorage.clear();
         updateToken();
         alert('Vous êtes déconnecté');
@@ -455,6 +457,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // MODULE DE CONNEXION
 document.addEventListener('DOMContentLoaded', () => {
+    const accountButtonImage = document.getElementById('accountButtonImage');
     const loginForm = document.getElementById('loginForm');
     loginForm.addEventListener('submit', function(event) {
         event.preventDefault();
@@ -462,6 +465,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const password = loginForm.querySelector('[name="password"]').value;
         console.log(username);
         console.log(password);
+        accountButtonImage.src = 'img/home/button_logout.png';
 
         AuthService.login(username, password)
             .then(data => {
@@ -773,6 +777,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
 window.addEventListener('load', resizeImageBasedOnHeight);
 window.addEventListener('resize', resizeImageBasedOnHeight);
+
+function initializeAccountButtonImage(token) {
+    if(token) {
+        accountButtonImage.src = 'img/home/button_logout.png';
+    } else {
+        accountButtonImage.src = 'img/home/button_login.png';
+    }
+}
 
 // function resizeImageBasedOnHeight() {
 //     const image = document.querySelector('.top-image');
