@@ -135,13 +135,12 @@ function popUp(text) {
 function confirmationPopup(askTextButtonInteraction) {
     var modal = document.getElementById("myModal");
     var modalContent = document.querySelector('.modal-content');
-    document.querySelector('.modal-content p').textContent = 'Match trouvé! Vous allez être redirigé vers la partie.'
+    document.querySelector('.modal-content p').textContent = 'Match trouvé!'
 
-    var btn = document.getElementById("confirmBtn");
-    btn.onclick = function() {
+    setTimeout(() => {
         modal.style.display = "none";
         askTextButtonInteraction();
-    }
+    }, 1000);
 }
 
 function progress(timeleft, timetotal, currentPlayerID) {
