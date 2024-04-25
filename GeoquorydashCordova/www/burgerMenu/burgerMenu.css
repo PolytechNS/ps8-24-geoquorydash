@@ -20,8 +20,8 @@
         top: 3vh;
         left: 2vw;
         z-index: 999;
-        width: 4vw;
-        height: 8vh;
+        width: min(4vw, 20vh);
+        height: auto;
     }
 
     .burger-menu-button img {

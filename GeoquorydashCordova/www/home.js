@@ -774,11 +774,11 @@ document.addEventListener("DOMContentLoaded", function() {
 window.addEventListener('load', resizeImageBasedOnHeight);
 window.addEventListener('resize', resizeImageBasedOnHeight);
 
-function resizeImageBasedOnHeight() {
-    const image = document.querySelector('.top-image');
-    if (image.offsetHeight >= 40 * window.innerHeight / 100) {
-        image.style.width = 'auto';
-    } else {
-        image.style.width = '80%';
-    }
-}
+// function resizeImageBasedOnHeight() {
+//     const image = document.querySelector('.top-image');
+//     if (image.offsetHeight >= 40 * window.innerHeight / 100) {
+//         image.style.width = 'auto';
+//     } else {
+//         image.style.width = '80%';
+//     }
+// }
