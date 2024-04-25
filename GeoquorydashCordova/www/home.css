@@ -338,6 +338,7 @@ label img {
 .stat-image {
     width: auto;
     height: 3.5vh;
+    min-height: 2vw;
     max-width: 70%;
 }
 
