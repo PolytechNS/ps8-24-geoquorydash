@@ -9,7 +9,6 @@
         Apache Cordova Team
     </author>
     <content src="home.html" />
-    <preference name="scheme" value="http" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
 
@@ -18,7 +17,7 @@
     <allow-navigation href="http://geoquorydash.ps8.academy/*" />
 
     <preference name="scheme" value="http" />
-    <preference name="hostname" value="localhost:8000" />
+    <preference name="hostname" value="10.0.2.2:8000" />
     <preference name="AndroidXEnabled" value="true" />
     <preference name="orientation" value="landscape" />
     <preference name="Fullscreen" value="true" />
@@ -36,9 +35,10 @@
     <preference name="AutoHideSplashScreen" value="true"/>
 
     <platform name="android">
+        <preference name="GradlePluginKotlinEnabled" value="true" />
+        <preference name="GradlePluginKotlinVersion" value="1.7.22" />
         <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
             <application android:usesCleartextTraffic="true" />
         </edit-config>
     </platform>
-    <preference name="orientation" value="landscape" />
 </widget>

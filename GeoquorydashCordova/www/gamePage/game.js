@@ -351,10 +351,10 @@ function getPlayerElementById(playerId) {
 }
 
 function endGame(player) {
-    var modal = document.getElementById("myModal");
-    var modalContent = document.querySelector('.modal-content');
+    var modal = document.getElementById("modalEndGame");
+    var modalContent = document.querySelector('.modal-content-end');
 
-    var textContent = document.querySelector('.modal-content p')
+    var textContent = document.querySelector('.modal-content-end p')
     textContent.textContent = "Le joueur a gagné !";
 
     modal.style.display = "flex";
