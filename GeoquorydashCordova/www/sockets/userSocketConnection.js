@@ -30,8 +30,15 @@ userSocket.on('gameRequestAccepted', function(payload) {
 });
 
 userSocket.on('gameRequestDeclined', function(payload) {
-    alert('Game request declined ');
-    window.location.href = '/';
+    var modal = document.getElementById("myModal");
+    var modalContent = document.querySelector('.modal-content');
+    document.querySelector('.modal-content p').textContent = 'Demande de partie refusée ! Vous allez être redirigé vers la page d\'accueil.'
+
+    var btn = document.getElementById("confirmBtn");
+    btn.onclick = function() {
+        modal.style.display = "none";
+        window.location.href = '/';
+    }
 });
 
 userSocket.on('message', function(data) {
