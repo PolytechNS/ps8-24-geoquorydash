@@ -420,16 +420,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 .catch(error => {
                     console.error('Statistics error:', error);
                 });
-                signupModal.style.display = "none";
-                loginModal.style.display= "flex";
-                var modal = document.getElementById("myModalTempLog");
-                var modalContent = document.querySelector('.modal-content-temp-log');
-                var textContent = document.querySelector('.modal-content-temp-log p')
+                var modal = document.getElementById("myModalTempSign");
+                var modalContent = document.querySelector('.modal-content-temp-sign');
+                var textContent = document.querySelector('.modal-content-temp-sign p')
                 textContent.textContent = "Inscription réussie, vous pouvez maintenant vous connecter";
                 modal.style.display = "flex";
                 // Fermer la popup automatiquement après 4 secondes
                 setTimeout(() => {
                     modal.style.display = "none";
+                    signupModal.style.display = "none";
+                    loginModal.style.display= "flex";
                 }, 1000);
             })
             .catch(error => {
