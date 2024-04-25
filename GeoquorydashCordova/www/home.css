@@ -572,7 +572,7 @@ label img {
 }
 
 #openFriendsPage img.notif.active {
-    animation: fade-in-out 1s infinite; 
+    animation: fade-in-out 1s infinite;
 }
 
 .modal-temp {
