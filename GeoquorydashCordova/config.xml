@@ -23,7 +23,7 @@
     <preference name="Fullscreen" value="true" />
 
     <preference name="LottieRemoteEnabled" value="false" />
-    <preference name="LottieAnimationLocation" value="www/lottie/first_anim.json" />
+    <preference name="LottieAnimationLocation" value="www/lottie/geoquorydash_anim.json" />
     <preference name="LottieLoopAnimation" value="true" />
     <preference name="LottieBackgroundColor" value="#345128" />
     <preference name="LottieEnableHardwareAcceleration" value="true" />
