@@ -16,14 +16,14 @@
     transform: translateX(0);
 }
 
-    .burger-menu-button {
-        position: fixed;
-        top: 3vh;
-        left: 2vw;
-        z-index: 999;
-        width: min(4vw, 20vh);
-        height: auto;
-    }
+.burger-menu-button {
+    position: fixed;
+    top: 3vh;
+    left: 2vw;
+    z-index: 999;
+    width: min(4vw, 20vh);
+    height: auto;
+}
 
 .burger-menu-button img {
     width: 100%;
@@ -123,7 +123,7 @@
     text-align: center;
 }
 
-button {
+.modal-content button, .modal-content-temp button, .modal-content-end button, .modal-content-temp-deco button, .modal-content-temp-sign button, .modal-content-temp-log button, modal-content button{
     padding: 0;
     font-weight: bold;
     background-image: url('../img/gameType/button.png');

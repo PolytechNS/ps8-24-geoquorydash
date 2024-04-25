@@ -5,9 +5,13 @@
         <title>Signup</title>
         <link rel="stylesheet" href="settings.css">
         <link rel="stylesheet" href="../burgerChat/burgerChat.css">
+        <link rel="stylesheet" href="../burgerMenu/burgerMenu.css">
         <link rel="stylesheet" href="../friendRequestNotification/friendRequestNotification.css">
     </head>
     <body>
+        <a id="burger-menu-button" class="burger-menu-button"><img src="../img/menu/menu.png" alt="Menu"></a>
+        <div id="burger-menu-container"></div>
+
         <a id="burger-chat-button" class="burger-chat-button"><img src="../img/chat/chat.png" alt="Chat"></a>
         <div id="burger-chat-container"></div>
 
@@ -38,6 +42,7 @@
         <script src="../friendRequestNotification/friendRequestNotification.js" type="module"></script>
 
         <script type="module" src="settings.js"></script>
+        <script type="module" src="../burgerMenu/burgerMenu.js"></script>
         <script src="../sockets/socket.io.js"></script>
         <script type="module" src="../sockets/userSocketConnection.js"></script>
     </body>
