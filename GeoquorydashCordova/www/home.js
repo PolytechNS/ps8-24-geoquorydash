@@ -19,12 +19,25 @@ function updateToken() {
 
 var handleDeconnexionClick = function(event) {
     event.preventDefault();
-    if (confirm('Êtes-vous sûr de vouloir vous déconnecter?')) {
+    var modal = document.getElementById("myModalTempDeco");
+    var modalContent = document.querySelector('.modal-content-temp-deco');
+
+    var textContent = document.querySelector('.modal-content-temp-deco p')
+    textContent.textContent = "Êtes-vous sûr de vouloir vous déconnecter?";
+
+    modal.style.display = "flex";
+
+    var okButton = document.getElementById('confirmBtn');
+    okButton.onclick = function() {
         localStorage.clear();
-        updateToken();
-        const modal = window.parent.document.querySelector('.modal');
-        modal.style.display = 'none';
-    }
+        modal.style.display = "none";
+        window.location.href = '../home.html';
+    };
+
+    var cancelButton = document.getElementById('cancelBtn');
+    cancelButton.onclick = function() {
+        modal.style.display = "none";
+    };
 };
 
 
@@ -382,7 +395,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 modal.style.display = "none";
             }, 1000);
-            return;
         } else if (password === '') {
             var modal = document.getElementById("myModalTempSign");
             var modalContent = document.querySelector('.modal-content-temp-sign');
@@ -393,7 +405,6 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 modal.style.display = "none";
             }, 1000);
-            return;
         }
         AuthService.signUp(username, password)
             .then(data => {
@@ -411,16 +422,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 signupModal.style.display = "none";
                 loginModal.style.display= "flex";
-                var modal = document.getElementById("myModalTempSign");
-                var modalContent = document.querySelector('.modal-content-temp-sign');
-                var textContent = document.querySelector('.modal-content-temp-sign p')
+                var modal = document.getElementById("myModalTempLog");
+                var modalContent = document.querySelector('.modal-content-temp-log');
+                var textContent = document.querySelector('.modal-content-temp-log p')
                 textContent.textContent = "Inscription réussie, vous pouvez maintenant vous connecter";
                 modal.style.display = "flex";
                 // Fermer la popup automatiquement après 4 secondes
                 setTimeout(() => {
                     modal.style.display = "none";
                 }, 1000);
-                return;            })
+            })
             .catch(error => {
                 console.error('Signup error:', error);
                 // Utilisez le message d'erreur pour déterminer la nature de l'erreur
@@ -434,7 +445,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => {
                         modal.style.display = "none";
                     }, 1000);
-                    return;
                 } else {
                     var modal = document.getElementById("myModalTempSign");
                     var modalContent = document.querySelector('.modal-content-temp-sign');
@@ -445,7 +455,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     setTimeout(() => {
                         modal.style.display = "none";
                     }, 1000);
-                    return;
                 }
             });
         document.getElementById('signupForm').querySelector('[name="username"]').value = '';
@@ -466,17 +475,16 @@ document.addEventListener('DOMContentLoaded', () => {
         AuthService.login(username, password)
             .then(data => {
                 localStorage.setItem('token', data.token);
-                var modal = document.getElementById("myModalTempLog");
-                var modalContent = document.querySelector('.modal-content-temp-log');
-                var textContent = document.querySelector('.modal-content-temp-log p')
+                loginModal.style.display = "none";
+                var modal = document.getElementById("myModalTemp");
+                var modalContent = document.querySelector('.modal-content-temp');
+                var textContent = document.querySelector('.modal-content-temp p')
                 textContent.textContent = "Bienvenue " + username + " !";
                 modal.style.display = "flex";
                 // Fermer la popup automatiquement après 4 secondes
                 setTimeout(() => {
                     modal.style.display = "none";
                 }, 1000);
-                return;
-                loginModal.style.display = "none";
                 updateToken();
             })
             .catch(error => {
@@ -490,7 +498,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 setTimeout(() => {
                     modal.style.display = "none";
                 }, 1000);
-                return;
             });
         document.getElementById('loginForm').querySelector('[name="username"]').value = '';
         document.getElementById('loginForm').querySelector('[name="password"]').value = '';

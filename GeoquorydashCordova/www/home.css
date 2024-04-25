@@ -460,7 +460,7 @@ label img {
     backdrop-filter: blur(2px);
 }
 
-.modal-content-temp, .modal-content-temp-sign, .modal-content-temp-log {
+.modal-content-temp, .modal-content-temp-sign, .modal-content-temp-log, .modal-content-temp-deco {
     position: absolute;
     background-color: #fefefe;
     padding: 2%;
