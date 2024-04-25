@@ -553,8 +553,6 @@ label img {
 }
 
 #openFriendsPage img.default {
-    display: block;
-    width: 8vw;
     height: auto;
 }
 
@@ -567,7 +565,6 @@ label img {
     position: absolute;
     top: 0;
     left: 0;
-    width: 8vw; : auto;
     opacity: 0;
 }
 
