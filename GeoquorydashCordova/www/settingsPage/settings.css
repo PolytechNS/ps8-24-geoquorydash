@@ -61,7 +61,7 @@ body {
     font-family: 'joystix', sans-serif;
     border: none;
     padding: 1vh 2vw;
-    font-size: 2vh;
+    font-size: min(2vh, 1.5vw);
     margin: 0.5vh 1vw 1vh 0.5vw;
     cursor: pointer;
     border-radius: 5px;
@@ -124,31 +124,40 @@ body {
     width: 100%;
 }
 
+#content-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    flex-direction: column;
+}
+
 .carousel-container {
     position: relative;
-    width: 67.3vh;
-    height: 40vh;
+    width: min(80vh, 50vw);
+    height: auto;
     overflow: hidden;
 }
 
 .carousel-wrapper {
     display: flex;
-    width: auto; /* Pour trois slides, chacun de 100% de large */
-    height: 100%;
+    width: 100%;
+    height: auto;
     transition: transform 0.5s ease;
 }
 
 .carousel-slide {
-    width: auto;
-    height: 100%;
+    width: 100%;
+    height: auto;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .carousel-slide img {
-    height: 100%; /* Les images s'adaptent à la taille du slide */
-    width: auto;
+    height: auto;
+    width: min(80vh, 50vw);
 }
 
 .boutons {

@@ -66,7 +66,7 @@ let currentSlide = 0;
 function moveCarousel(direction) {
     const slides = document.querySelectorAll('.carousel-slide');
     const totalSlides = slides.length;
-    currentSlide = (currentSlide + direction + totalSlides) % totalSlides; // Cela permet de boucler le carrousel
+    currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
     const movePercentage = -(100 * currentSlide);
     document.querySelector('.carousel-wrapper').style.transform = `translateX(${movePercentage}%)`;
 }
