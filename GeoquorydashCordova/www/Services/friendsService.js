@@ -1,5 +1,4 @@
 import { API_ENDPOINT } from '../js/config.js';
-import {sendMobileNotification} from "./mobileNotificationsService.js";
 
 export const FriendsService = {
     searchUsers(username) {
@@ -16,12 +15,8 @@ export const FriendsService = {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ currentUser, targetUser }),
         })
-            .then(response => {
-                sendMobileNotification('Hello, user!', [currentUser.toString()])
-                    .then(response => console.log('Notification response:', response))
-                    .catch(error => console.error('Failed to send notification:', error));
-                response.json();
-            });
+            .then(response => response.json());
+
     },
     getRequests(currentUser) {
         return fetch(`${API_ENDPOINT}/api/friends/requests`, {

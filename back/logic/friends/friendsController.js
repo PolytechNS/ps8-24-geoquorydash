@@ -2,45 +2,7 @@ const { parseJSON } = require('../../utils/utils.js');
 const {createUserCollection, findUserIdByUsername} = require('../../models/users/users');
 const createNewChat = require('../chat/chatController').createNewChat;
 const usersConnected = require('../../usersConnected');
-
-const https = require('https');
-
-function sendOneSignalNotification(userId, message) {
-    const data = JSON.stringify({
-        app_id: "08eb66f6-d744-4291-b6b9-ff5ae40aa7a2",
-        contents: { "en": message },
-        filters: [
-            {"field": "tag", "key": "userId", "relation": "=", "value": userId}
-        ]
-    });
-
-    const options = {
-        hostname: 'onesignal.com',
-        port: 443,
-        path: '/api/v1/notifications',
-        method: 'POST',
-        headers: {
-            "Content-Type": "application/json; charset=utf-8",
-            "Authorization": "Basic YmFiNmFkNmUtNjIyZC00ZDRjLWIxNTYtYjIzODRkZjczNTU0"
-        }
-    };
-
-    const req = https.request(options, (res) => {
-        console.log(`StatusCode: ${res.statusCode}`);
-
-        res.on('data', (d) => {
-            process.stdout.write(d);
-        });
-    });
-
-    req.on('error', (e) => {
-        console.error(`Problem with request: ${e.message}`);
-    });
-
-    req.write(data);
-    req.end();
-}
-
+const sendMobileNotification = require("./mobileNotificationsService");
 
 async function searchUsers(req, res) {
     parseJSON(req, async (err, { username }) => {
@@ -86,12 +48,12 @@ async function addFriend(req, res) {
             if (result.modifiedCount > 0) {
                 const targetUserId = await findUserIdByUsername(targetUser);
                 const message = `${currentUser} has sent you a friend request!`;
-                sendOneSignalNotification(targetUser, message);
 
                 if (usersConnected.usersConnected[targetUserId.toString()]) {
                     const targetUserInDB = await usersCollection.findOne({ username: targetUser });
                     usersConnected.usersConnected[targetUserId.toString()].emit('updateFriendRequest', targetUserInDB.friendRequests);
                 }
+                await sendMobileNotification(message, [targetUser.toString()])
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Votre demande d\'ami a bien été envoyée' }));
             } else {
